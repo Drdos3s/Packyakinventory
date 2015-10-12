@@ -1,4 +1,4 @@
-@extends('dashboard')
+@extends('admin_template')
 
 @section('content')
     <div class='row'>
