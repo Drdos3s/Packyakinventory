@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5c6026b96e6fa11a641b51a6ba976f5e",
-    "content-hash": "5bd58fd976f1ee3e9611bc37c006ec46",
+    "hash": "188edbb66dc6aba3a9adea6c76881fc9",
+    "content-hash": "c7e58b367af0356b3e9f9ffe8c17b436",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -573,6 +573,50 @@
                 "storage"
             ],
             "time": "2015-09-30 22:26:59"
+        },
+        {
+            "name": "mashape/unirest-php",
+            "version": "v2.6.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Mashape/unirest-php.git",
+                "reference": "f04b42e75e5c6b2717cc729e42089f124ecf9047"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Mashape/unirest-php/zipball/f04b42e75e5c6b2717cc729e42089f124ecf9047",
+                "reference": "f04b42e75e5c6b2717cc729e42089f124ecf9047",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "0.1.*",
+                "phpunit/phpunit": "~4.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Unirest": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Unirest PHP",
+            "homepage": "https://github.com/Mashape/unirest-php",
+            "keywords": [
+                "client",
+                "curl",
+                "http",
+                "https",
+                "rest"
+            ],
+            "time": "2015-07-27 19:17:35"
         },
         {
             "name": "monolog/monolog",

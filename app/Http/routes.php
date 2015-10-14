@@ -15,4 +15,5 @@ Route::get('/', function () {
     return view('admin_template');
 });
 
-Route::get('test', 'TestController@index');
+Route::get('/', 'TestController@index');
+

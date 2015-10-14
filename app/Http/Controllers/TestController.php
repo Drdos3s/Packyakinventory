@@ -31,9 +31,60 @@ class TestController extends Controller {
                 ],
                 [
                         'name' => 'Develop an Awesome Algorithm',
-                        'progress' => '10',
+                        'progress' => '60',
+                        'color' => 'success'
+                ],
+                                [
+                        'name' => 'Design New Dashboard',
+                        'progress' => '87',
+                        'color' => 'danger'
+                ],
+                [
+                        'name' => 'Create Home Page',
+                        'progress' => '76',
+                        'color' => 'warning'
+                ],
+                [
+                        'name' => 'Some Other Task',
+                        'progress' => '32',
+                        'color' => 'success'
+                ],
+                [
+                        'name' => 'Start Building Website',
+                        'progress' => '56',
+                        'color' => 'info'
+                ],
+                [
+                        'name' => 'Develop an Awesome Algorithm',
+                        'progress' => '60',
+                        'color' => 'success'
+                ],
+                                [
+                        'name' => 'Design New Dashboard',
+                        'progress' => '87',
+                        'color' => 'danger'
+                ],
+                [
+                        'name' => 'Create Home Page',
+                        'progress' => '76',
+                        'color' => 'warning'
+                ],
+                [
+                        'name' => 'Some Other Task',
+                        'progress' => '32',
+                        'color' => 'success'
+                ],
+                [
+                        'name' => 'Start Building Website',
+                        'progress' => '56',
+                        'color' => 'info'
+                ],
+                [
+                        'name' => 'Develop an Awesome Algorithm',
+                        'progress' => '60',
                         'color' => 'success'
                 ]
+
         ];
         return view('test')->with($data);
     }
