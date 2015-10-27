@@ -59,35 +59,140 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <?php
 
 
-$access_token = 'KI0ethBHis2N76q1jyYung';
+/*$access_token = 'KI0ethBHis2N76q1jyYung';
 $curl = curl_init();
 curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Authorization: Bearer ' . $access_token, 'Content-Type: application/json', 'Accept: application/json'));
-curl_setopt($curl, CURLOPT_URL, 'https://connect.squareup.com/v1/me/payments?begin_time=2013-01-15T00:00:00Z&end_time=2013-01-31T00:00:00Z');
+curl_setopt($curl, CURLOPT_URL, 'https://connect.squareup.com/v1/2AT576X1MSDJ9/payments?begin_time=2015-10-24T00:00:00Z&end_time=2015-10-25T00:00:00Z&limit=1');
 curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 
 $json = curl_exec($curl);
 curl_close($curl);
 echo $json;
+echo '-------------------------------------------------------';
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_HTTPHEADER, array('Authorization: Bearer KI0ethBHis2N76q1jyYung', 'Content-Type: application/json', 'Accept: application/json'));
+    curl_setopt ($curl, CURLOPT_URL, "https://connect.squareup.com/v1/2AT576X1MSDJ9/items/");
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+    if(!curl_exec($curl)){
+        die('Error: "' . curl_error($curl) . '" - Code: ' . curl_errno($curl));
+    }
+    $ch = curl_exec ($curl);
+    curl_close ($curl);
+    $ch = json_decode($ch, true);
+    $c = count($ch);
+    echo $c;*/
+    
 
 
-/*require_once base_path('vendor/autoload.php');
+/*$access_token = 'KI0ethBHis2N76q1jyYung';
+$curl = curl_init();
+curl_setopt($curl, CURLOPT_HTTPHEADER, array( 'Authorization: Bearer ' . $access_token, 'Content-Type: application/json', 'Accept: application/json'));
+curl_setopt($curl, CURLOPT_URL, 'https://connect.squareup.com/v1/2AT576X1MSDJ9/items');
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
 
-
+$json = curl_exec($curl);
+curl_close($curl);
+echo $json;*/
 
 require_once base_path('vendor/mashape/unirest-php/src/Unirest.php');
 
-                $access_token = 'KI0ethBHis2N76q1jyYung';
+$access_token = 'KI0ethBHis2N76q1jyYung';
 
-                # The base URL for every Connect API request
-                $connectHost = 'https://connect.squareup.com';
+# The base URL for every Connect API request
+$connectHost = 'https://connect.squareup.com';
+# Standard HTTP headers for every Connect API request
+$requestHeaders = array (
+  'Authorization' => 'Bearer ' . $access_token,
+  'Accept' => 'application/json',
+  'Content-Type' => 'application/json'
+);
+# Creates a "Milkshake" item.
+function createItem() {
+  global $accessToken, $requestHeaders;
+  $access_token = 'KI0ethBHis2N76q1jyYung';
+  $connectHost = 'https://connect.squareup.com';
+  $requestHeaders = array (
+    'Authorization' => 'Bearer ' . $access_token,
+    'Accept' => 'application/json',
+    'Content-Type' => 'application/json'
+  );
+  
 
-# Helper function to convert cent-based money amounts to dollars and cents
+  $request_body = array(
+    "name"=>"Milkshake",
+    "variations"=>array(
+      array(
+        "name"=>"Small",
+        "pricing_type"=>"FIXED_PRICING",
+        "price_money"=>array(
+          "currency_code"=>"USD",
+          "amount"=>400
+        )
+      )
+    )
+  );
+  $response = Unirest\Request::post($connectHost . '/v1/me/items', $requestHeaders, json_encode($request_body));
+  echo $response->code;
+  if ($response->code == 200) {
+    error_log('Successfully created item:');
+    error_log(json_encode($response->body, JSON_PRETTY_PRINT));
+    return $response->body;
+  } else {
+    error_log('Item creation failed');
+    return NULL;
+  }
+}
+
+createItem();
+/*# Updates the Milkshake item to rename it to "Malted Milkshake"
+function updateItem($itemId) {
+  global $accessToken, $connectHost, $requestHeaders;
+  $request_body = array(
+    "name"=>"Malted Milkshake"
+  );
+  $response = Unirest\Request::put($connectHost . '/v1/me/items/' . $itemId, $requestHeaders, json_encode($request_body));
+  if ($response->code == 200) {
+    error_log('Successfully updated item:');
+    error_log(json_encode($response->body, JSON_PRETTY_PRINT));
+    return $response->body;
+  } else {
+    error_log('Item update failed');
+    return NULL;
+  }
+}
+# Deletes the Malted Milkshake item.
+function deleteItem($itemId) {
+  global $accessToken, $connectHost, $requestHeaders;
+  $response = Unirest\Request::delete($connectHost . '/v1/me/items/' . $itemId, $requestHeaders);
+  if ($response->code == 200) {
+    error_log('Successfully deleted item');
+    return $response->body;
+  } else {
+    error_log('Item deletion failed');
+    return NULL;
+  }
+}
+$myItem = createItem();
+# Update and delete the item only if it was successfully created
+if ($myItem) {
+  updateItem($myItem->id);
+  deleteItem($myItem->id);
+} else {
+  error_log("Aborting");
+}*/
+
+
+//-----------------GET PAYMENTS WORKING EXAMPLE-----------------
 function formatMoney($money) {
   return money_format('%+.2n', $money / 100);
 }
-# Retrieves all of a merchant's payments from 2014
+
 function get2014Payments() {
-  global $accessToken, $connectHost;
+  global $accessToken;
+
+  $connectHost = 'https://connect.squareup.com';
   # Restrict the request to the 2014 calendar year, eight hours behind UTC
   # Make sure to URL-encode all parameters
   $parameters = http_build_query(
@@ -96,15 +201,42 @@ function get2014Payments() {
       'end_time'   => '2015-01-02T00:00:00-08:00'
     )
   );
+
+  // GOOD echo $parameters;
   # Standard HTTP headers for every Connect API request
   $requestHeaders = array (
-    'Authorization' => 'Bearer ' . $accessToken,
+    'Authorization' => 'Bearer KI0ethBHis2N76q1jyYung',
     'Accept' => 'application/json',
     'Content-Type' => 'application/json'
   );
+
+  // GOOD echo $requestHeaders['Authorization'];
+  
   $payments = array();
-  $requestPath = $connectHost . '/v1/me/payments?' . $parameters;
-  $moreResults = true;
+  $requestPath = $connectHost . '/v1/me/payments?begin_time=2015-10-20T00:00:00Z&end_time=2015-10-21T00:00:00Z&limit=200';
+
+  // GOOD echo $requestPath;
+
+  $response = Unirest\Request::get($requestPath, $requestHeaders);
+  
+  // GOOD 200 echo $response -> code;     // Headers
+
+  $payments = array_merge($payments, $response->body);
+
+  // GOOD 77 echo count($payments);
+
+  $seenPaymentIds = array();
+  $uniquePayments = array();
+  foreach ($payments as $payment) {
+    if (array_key_exists($payment->id, $seenPaymentIds)) {
+      continue;
+    }
+    $seenPaymentIds[$payment->id] = true;
+    array_push($uniquePayments, $payment);
+  }
+
+  return $uniquePayments;
+  /*$moreResults = true;
   while ($moreResults) {
     # Send a GET request to the List Payments endpoint
     $response = Unirest\Request::get($requestPath, $requestHeaders);
@@ -125,21 +257,9 @@ function get2014Payments() {
       }
     } else {
       $moreResults = false;
-    }
-  }
-  # Remove potential duplicate values from the list of payments
-  $seenPaymentIds = array();
-  $uniquePayments = array();
-  foreach ($payments as $payment) {
-    if (array_key_exists($payment->id, $seenPaymentIds)) {
-      continue;
-    }
-    $seenPaymentIds[$payment->id] = true;
-    array_push($uniquePayments, $payment);
-  }
-  return $uniquePayments;
+    }*/
 }
-# Prints a sales report based on an array of payments
+
 function printSalesReport($payments) {
   # Variables for holding cumulative values of various monetary amounts
   $collectedMoney = $taxes = $tips = $discounts = $processingFees = 0;
@@ -181,14 +301,9 @@ function printSalesReport($payments) {
   echo 'Net total:         ' . formatMoney($netMoney + $refunds + $returned_processingFees) . '<br/>';
   echo '</pre>';
 }
-# Call the functions defined above
-$payments = get2014Payments();
-printSalesReport($payments);*/
 
-
-
-
-
+//$payments = get2014Payments();
+//printSalesReport($payments);
                 ?> 
                 @yield('content')
             </section><!-- /.content -->
