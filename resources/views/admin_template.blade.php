@@ -100,17 +100,24 @@ require_once base_path('vendor/mashape/unirest-php/src/Unirest.php');
 
 $access_token = 'KI0ethBHis2N76q1jyYung';
 
-# The base URL for every Connect API request
-$connectHost = 'https://connect.squareup.com';
-# Standard HTTP headers for every Connect API request
-$requestHeaders = array (
-  'Authorization' => 'Bearer ' . $access_token,
-  'Accept' => 'application/json',
-  'Content-Type' => 'application/json'
-);
+function listLocations() {
+  $access_token = 'KI0ethBHis2N76q1jyYung';
+  $connectHost = 'https://connect.squareup.com';
+  $requestHeaders = array (
+    'Authorization' => 'Bearer ' . $access_token,
+    'Accept' => 'application/json',
+    'Content-Type' => 'application/json'
+  );
+
+  $response = Unirest\Request::get($connectHost . '/v1/me/locations', $requestHeaders);
+
+  echo json_encode($response->body, JSON_PRETTY_PRINT);
+}
+//listLocations();
+
+
 # Creates a "Milkshake" item.
 function createItem() {
-  global $accessToken, $requestHeaders;
   $access_token = 'KI0ethBHis2N76q1jyYung';
   $connectHost = 'https://connect.squareup.com';
   $requestHeaders = array (
@@ -135,6 +142,7 @@ function createItem() {
   );
   $response = Unirest\Request::post($connectHost . '/v1/me/items', $requestHeaders, json_encode($request_body));
   echo $response->code;
+  echo json_encode($response->body, JSON_PRETTY_PRINT);
   if ($response->code == 200) {
     error_log('Successfully created item:');
     error_log(json_encode($response->body, JSON_PRETTY_PRINT));
@@ -144,8 +152,59 @@ function createItem() {
     return NULL;
   }
 }
+//createItem();
 
-createItem();
+function checkItemNum() {
+  $access_token = 'KI0ethBHis2N76q1jyYung';
+  $connectHost = 'https://connect.squareup.com';
+  $requestHeaders = array (
+    'Authorization' => 'Bearer ' . $access_token,
+    'Accept' => 'application/json',
+    'Content-Type' => 'application/json'
+  );
+
+  //DEN -> 1H5A5ZGP2T4DA
+  //PHX -> 3526BMVFNJZZX
+  //OUT -> 9SQD525GSB3T3
+
+
+  $items = array();
+  $response = Unirest\Request::get($connectHost . '/v1/3526BMVFNJZZX/items', $requestHeaders);
+
+  echo json_encode($response->body, JSON_PRETTY_PRINT);
+
+  $items = array_merge($items, $response->body);
+
+  //echo count($items);
+}
+checkItemNum();
+
+
+function getInventory() {
+  $access_token = 'KI0ethBHis2N76q1jyYung';
+  $connectHost = 'https://connect.squareup.com';
+  $requestHeaders = array (
+    'Authorization' => 'Bearer ' . $access_token,
+    'Accept' => 'application/json',
+    'Content-Type' => 'application/json'
+  );
+
+  //DEN -> 1H5A5ZGP2T4DA
+  //PHX -> 3526BMVFNJZZX
+  //OUT -> 9SQD525GSB3T3
+
+
+  $inventory = array();
+  $response = Unirest\Request::get($connectHost . '/v1/3526BMVFNJZZX/inventory', $requestHeaders);
+
+  echo json_encode($response->body, JSON_PRETTY_PRINT);
+
+  $items = array_merge($inventory, $response->body);
+
+  //echo count($inventory);
+}
+getInventory();
+
 /*# Updates the Milkshake item to rename it to "Malted Milkshake"
 function updateItem($itemId) {
   global $accessToken, $connectHost, $requestHeaders;
@@ -161,10 +220,18 @@ function updateItem($itemId) {
     error_log('Item update failed');
     return NULL;
   }
-}
-# Deletes the Malted Milkshake item.
+}*/
+#Deletes the Malted Milkshake item.
 function deleteItem($itemId) {
-  global $accessToken, $connectHost, $requestHeaders;
+  $access_token = 'KI0ethBHis2N76q1jyYung';
+  $connectHost = 'https://connect.squareup.com';
+  $requestHeaders = array (
+    'Authorization' => 'Bearer ' . $access_token,
+    'Accept' => 'application/json',
+    'Content-Type' => 'application/json'
+  );
+
+
   $response = Unirest\Request::delete($connectHost . '/v1/me/items/' . $itemId, $requestHeaders);
   if ($response->code == 200) {
     error_log('Successfully deleted item');
@@ -174,14 +241,7 @@ function deleteItem($itemId) {
     return NULL;
   }
 }
-$myItem = createItem();
-# Update and delete the item only if it was successfully created
-if ($myItem) {
-  updateItem($myItem->id);
-  deleteItem($myItem->id);
-} else {
-  error_log("Aborting");
-}*/
+//deleteItem('e9407738-314a-4b22-950a-a6ba95331f2e');
 
 
 //-----------------GET PAYMENTS WORKING EXAMPLE-----------------
