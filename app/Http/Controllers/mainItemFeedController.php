@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 
 use GuzzleHttp\Client;
 
-class TestController extends Controller {
+class mainItemFeedController extends Controller {
 
-    function checkItemNum() {
+    function index() {
         $uri = 'https://connect.squareup.com/v1';
         $access_token = 'KI0ethBHis2N76q1jyYung';
         $requestHeaders = array (
@@ -20,7 +20,7 @@ class TestController extends Controller {
 
         $client = new Client();
 
-        $request = $client->request('GET', 'https://connect.squareup.com/v1/9SQD525GSB3T3/items', [
+        $request = $client->request('GET', 'https://connect.squareup.com/v1/9SQD525GSB3T3/items/0bae8eec-9db0-4e4d-80eb-fb0034712579', [
         'headers' => [
             'Authorization' => 'Bearer KI0ethBHis2N76q1jyYung' ,
             'Accept' => 'application/json',
@@ -30,7 +30,19 @@ class TestController extends Controller {
 
         //var_dump($request);
 
-        $contents = (string) $request->getBody();
+        $contents = $request->getBody();
+
+        $decoded = json_decode($contents, true);
+
+        var_dump($decoded);
+        // $json = json_encode($response->body);
+
+        // $test = json_decode($json, true);
+
+        // var_dump($test);
+
+
+        echo $decoded['variations'][0]['name'];
 
         //echo $res->getStatusCode();
         // // "200"
@@ -38,50 +50,8 @@ class TestController extends Controller {
         // // 'application/json; charset=utf8'
         // echo $res->getBody();
         // // {"type":"User"...'
-        echo $contents;
-    }
+        //echo $contents;
 
-
-
-
-
-
-
-    // {
-    //       $access_token = 'KI0ethBHis2N76q1jyYung';
-    //       $connectHost = 'https://connect.squareup.com';
-    //       $requestHeaders = array (
-    //         'Authorization' => 'Bearer ' . $access_token,
-    //         'Accept' => 'application/json',
-    //         'Content-Type' => 'application/json'
-    //       );
-
-    //       //DEN -> 1H5A5ZGP2T4DA
-    //       //PHX -> 3526BMVFNJZZX
-    //       //OUT -> 9SQD525GSB3T3
-
-
-    //       $items = array();
-    //       $response = Unirest\Request::get($connectHost . '/v1/3526BMVFNJZZX/items/0063a336-8260-4455-b489-1dba4da0859b', $requestHeaders);
-
-    //       $json = json_encode($response->body);
-
-    //       $test = json_decode($json, true);
-
-    //       //var_dump($test);
-
-
-    //       //echo $test['category']['id'];
-
-    //       //$items = array_merge($items, $response->body);
-
-    //       echo count($items);
-    //     }
-
-
-        
-
-    public function index() {
         $data['tasks'] = [
                 [
                         'name' => 'Design New Dashboard',
@@ -160,8 +130,43 @@ class TestController extends Controller {
                 ]
 
         ];
-        
-        return view('test')->with($data);
+        return view('mainItemFeed')->with($data);
     }
 
+
+
+
+
+
+
+    // {
+    //       $access_token = 'KI0ethBHis2N76q1jyYung';
+    //       $connectHost = 'https://connect.squareup.com';
+    //       $requestHeaders = array (
+    //         'Authorization' => 'Bearer ' . $access_token,
+    //         'Accept' => 'application/json',
+    //         'Content-Type' => 'application/json'
+    //       );
+
+    //       //DEN -> 1H5A5ZGP2T4DA
+    //       //PHX -> 3526BMVFNJZZX
+    //       //OUT -> 9SQD525GSB3T3
+
+
+    //       $items = array();
+    //       $response = Unirest\Request::get($connectHost . '/v1/3526BMVFNJZZX/items/0063a336-8260-4455-b489-1dba4da0859b', $requestHeaders);
+
+    //       $json = json_encode($response->body);
+
+    //       $test = json_decode($json, true);
+
+    //       //var_dump($test);
+
+
+    //       //echo $test['category']['id'];
+
+    //       //$items = array_merge($items, $response->body);
+
+    //       echo count($items);
+    //     }
 }

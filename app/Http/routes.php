@@ -15,7 +15,6 @@ Route::get('/', function () {
     return view('admin_template');
 });
 
-Route::get('/', 'TestController@index');
+Route::get('/', 'mainItemFeedController@index');
 
-Route::get('/', 'TestController@checkItemNum');
 
