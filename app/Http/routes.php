@@ -17,3 +17,5 @@ Route::get('/', function () {
 
 Route::get('/', 'TestController@index');
 
+Route::get('/', 'TestController@checkItemNum');
+

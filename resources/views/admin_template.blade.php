@@ -55,7 +55,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 
 <?php
 
-require_once base_path('vendor/mashape/unirest-php/src/Unirest.php');
+//require_once base_path('vendor/mashape/unirestphp/src/Unirest.php');
 
 $access_token = 'KI0ethBHis2N76q1jyYung';
 
@@ -143,7 +143,7 @@ function checkItemNum() {
 
   //echo count($items);
 }
-checkItemNum();
+//checkItemNum();
 
 
 function getInventory() {
