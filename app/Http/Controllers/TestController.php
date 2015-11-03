@@ -27,13 +27,18 @@ class TestController extends Controller {
             'Content-Type' => 'application/json'
         ]
         ]);
+
+        //var_dump($request);
+
+        $contents = (string) $request->getBody();
+
         //echo $res->getStatusCode();
         // // "200"
         // echo $res->getHeader('content-type');
         // // 'application/json; charset=utf8'
         // echo $res->getBody();
         // // {"type":"User"...'
-        echo 'it works.';
+        echo $contents;
     }
 
 
