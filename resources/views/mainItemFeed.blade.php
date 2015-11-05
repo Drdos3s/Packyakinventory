@@ -13,14 +13,17 @@
                     </div>
                 </div>
                 <div class="box-body">
-                    @foreach($tasks as $task)
+
+                    @foreach($items as $item)
                         <h5>
-                            {{ $task['name'] }}
-                            <small class="label label-{{$task['color']}} pull-right">{{$task['progress']}}%</small>
+                            {{ $item['name'] }}
+                            {{ $item['variations'][0]['name'] }}
                         </h5>
                         <div class="progress progress-xxs">
-                            <div class="progress-bar progress-bar-{{$task['color']}}" style="width: {{$task['progress']}}%"></div>
+                            <div class="progress-bar"></div>
                         </div>
+
+                        <?php //var_dump($item); ?>
                     @endforeach
 
                 </div><!-- /.box-body -->

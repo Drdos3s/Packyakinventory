@@ -20,7 +20,11 @@ class mainItemFeedController extends Controller {
 
         $client = new Client();
 
-        $request = $client->request('GET', 'https://connect.squareup.com/v1/9SQD525GSB3T3/items/0bae8eec-9db0-4e4d-80eb-fb0034712579', [
+  //DEN -> 1H5A5ZGP2T4DA
+  //PHX -> 3526BMVFNJZZX
+  //OUT -> 9SQD525GSB3T3
+
+        $request = $client->request('GET', 'https://connect.squareup.com/v1/3526BMVFNJZZX/items/', [
         'headers' => [
             'Authorization' => 'Bearer KI0ethBHis2N76q1jyYung' ,
             'Accept' => 'application/json',
@@ -32,9 +36,11 @@ class mainItemFeedController extends Controller {
 
         $contents = $request->getBody();
 
-        $decoded = json_decode($contents, true);
+        $decoded['items'] = json_decode($contents, true);
 
-        var_dump($decoded);
+        //var_dump($decoded);
+        
+        //echo $decoded[0]['id']
         // $json = json_encode($response->body);
 
         // $test = json_decode($json, true);
@@ -42,7 +48,7 @@ class mainItemFeedController extends Controller {
         // var_dump($test);
 
 
-        echo $decoded['variations'][0]['name'];
+        //echo $decoded['variations'][0]['name'];
 
         //echo $res->getStatusCode();
         // // "200"
@@ -52,7 +58,7 @@ class mainItemFeedController extends Controller {
         // // {"type":"User"...'
         //echo $contents;
 
-        $data['tasks'] = [
+        $data2['tasks3'] = [
                 [
                         'name' => 'Design New Dashboard',
                         'progress' => '87',
@@ -130,7 +136,9 @@ class mainItemFeedController extends Controller {
                 ]
 
         ];
-        return view('mainItemFeed')->with($data);
+        //echo $decoded['items']['variations'][0]['name'];
+        return view('mainItemFeed')->with($decoded);
+
     }
 
 
