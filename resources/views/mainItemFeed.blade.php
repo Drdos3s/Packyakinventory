@@ -15,15 +15,17 @@
                 <div class="box-body">
 
                     @foreach($items as $item)
-                        <h5>
-                            {{ $item['name'] }}
-                            {{ $item['variations'][0]['name'] }}
-                        </h5>
-                        <div class="progress progress-xxs">
-                            <div class="progress-bar"></div>
-                        </div>
-
-                        <?php //var_dump($item); ?>
+                        
+                        <?php //var_dump($item); 
+                            if($item['variations'][0]['track_inventory'] == true){
+                        ?>
+                            <h5>{{ $item['name'] }}</h5>
+                            <div class="progress progress-xxs">
+                                <div class="progress-bar"></div>
+                            </div>
+                        <?php    
+                            };
+                        ?>
                     @endforeach
 
                 </div><!-- /.box-body -->
