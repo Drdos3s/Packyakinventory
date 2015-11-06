@@ -26,7 +26,7 @@ class mainItemFeedController extends Controller {
 
         $request = $client->request('GET', 'https://connect.squareup.com/v1/1H5A5ZGP2T4DA/items/', [
         'headers' => [
-            'Authorization' => 'Bearer KI0ethBHis2N76q1jyYung' ,
+            'Authorization' => 'Bearer '.$access_token ,
             'Accept' => 'application/json',
             'Content-Type' => 'application/json'
         ]
