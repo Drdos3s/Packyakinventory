@@ -20,16 +20,15 @@
                             if($item['variations'][0]['track_inventory'] == true){
                                 for($i=0; $i < count($item['variations']); $i++){
                         ?>
-                            <h5>{{ $item['name'] }}{{ $item['variations'][$i]['name'] }}</h5>
+                            
+                            <h5>{{ $item['name'] }} <?php echo ' - ' ?> {{ $item['variations'][$i]['name'] }}</h5>
                             <div class="progress progress-xxs">
                                 <div class="progress-bar"></div>
                             </div>
                         
                         <?php    
-                            //$numVariations = count($item['variations']);
-                            //echo $numVariations;
                                 }
-                                //var_dump($item);
+                                var_dump($item);
                             };
                         ?>
 
