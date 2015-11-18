@@ -25,7 +25,7 @@ class mainItemFeedController extends Controller {
   //OUT -> 9SQD525GSB3T3
 
         //make request to get item list
-        $itemsRequest = $client->request('GET', 'https://connect.squareup.com/v1/1H5A5ZGP2T4DA/items/', [
+        $itemsRequest = $client->request('GET', 'https://connect.squareup.com/v1/3526BMVFNJZZX/items/', [
         'headers' => [
             'Authorization' => 'Bearer '.$access_token ,
             'Accept' => 'application/json',
@@ -34,10 +34,10 @@ class mainItemFeedController extends Controller {
         ]);
         //store response
         $itemContents = $itemsRequest->getBody();
-        $decoded['items'] = json_decode($itemContents, true);
+        $itemList['itemDescription'] = json_decode($itemContents, true);
         
         //make request to get inventory
-        $inventoryRequest = $client->request('GET', 'https://connect.squareup.com/v1/1H5A5ZGP2T4DA/inventory', [
+        $inventoryRequest = $client->request('GET', 'https://connect.squareup.com/v1/3526BMVFNJZZX/inventory', [
         'headers' => [
             'Authorization' => 'Bearer '.$access_token ,
             'Accept' => 'application/json',
@@ -47,9 +47,12 @@ class mainItemFeedController extends Controller {
 
         //store response
         $inventoryContents = $inventoryRequest->getBody();
-        $inven = json_decode($inventoryContents, true);
-        var_dump($inven);
+        $inventoryList['inventoryLevel'] = json_decode($inventoryContents, true);
+        
+        //combine inventory nad item description arrays to pass as big array
+        $itemsInventory = $itemList+$inventoryList;
+        //var_dump($itemsInventory);
 
-        return view('mainItemFeed')->with($decoded);
+        return view('mainItemFeed')->with($itemsInventory);
     }
 }
