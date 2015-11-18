@@ -25,19 +25,20 @@ class mainItemFeedController extends Controller {
   //OUT -> 9SQD525GSB3T3
 
         //make request to get item list
-        $itemsRequest = $client->request('GET', 'https://connect.squareup.com/v1/3526BMVFNJZZX/items/', [
+        $itemsRequest = $client->request('GET', 'https://connect.squareup.com/v1/1H5A5ZGP2T4DA/items/', [
         'headers' => [
             'Authorization' => 'Bearer '.$access_token ,
             'Accept' => 'application/json',
             'Content-Type' => 'application/json'
         ]
         ]);
+        
         //store response
         $itemContents = $itemsRequest->getBody();
         $itemList['itemDescription'] = json_decode($itemContents, true);
         
         //make request to get inventory
-        $inventoryRequest = $client->request('GET', 'https://connect.squareup.com/v1/3526BMVFNJZZX/inventory', [
+        $inventoryRequest = $client->request('GET', 'https://connect.squareup.com/v1/1H5A5ZGP2T4DA/inventory', [
         'headers' => [
             'Authorization' => 'Bearer '.$access_token ,
             'Accept' => 'application/json',

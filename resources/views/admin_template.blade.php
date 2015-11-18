@@ -32,14 +32,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
         @include('header')
 
         <!-- Sidebar -->
-        <!--@include('sidebar')-->
+        @include('sidebar')
 
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
             <!-- Content Header (Page header) -->
             <section class="content-header">
                 <h1>
-                    {{ $page_title or "Page Title" }}
+                    {{ $page_title or "LOCATION ITEMS AND INVENTORY" }}
                     <small>{{ $page_description or null }}</small>
                 </h1>
                 <!-- You can dynamically generate breadcrumbs here -->
@@ -54,8 +54,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <!-- Your Page Content Here -->
                 
 <?php
-
-//require_once base_path('vendor/mashape/unirestphp/src/Unirest.php');
 
 $access_token = 'KI0ethBHis2N76q1jyYung';
 
