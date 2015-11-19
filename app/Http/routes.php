@@ -11,11 +11,17 @@
 |
 */
 
-Route::get('/', function () {
+Route::get('/', function() {
+	return view('auth/login');
+});
+
+Route::get('/dashboard', function () {
     return view('admin_template');
 });
 
-Route::get('/', 'mainItemFeedController@index');
+Route::get('/dashboard', 'mainItemFeedController@index');
+
+
 
 // Authentication routes...
 Route::get('auth/login', 'Auth\AuthController@getLogin');

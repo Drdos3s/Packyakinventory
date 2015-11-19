@@ -12,7 +12,7 @@
                     </div>
                 </div>
                 <div class="box-body">
-
+                
                     @foreach($itemDescription as $item)  
                         
                         <?php //var_dump($item); //loops through each item and variation

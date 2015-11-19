@@ -1,5 +1,7 @@
 <?php namespace App\Http\Controllers;
 
+use Auth;
+
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -53,6 +55,12 @@ class mainItemFeedController extends Controller {
         //combine inventory nad item description arrays to pass as big array
         $itemsInventory = $itemList+$inventoryList;
         //var_dump($itemsInventory);
+
+        if (Auth::check()) {
+            echo "USER IS LOGGED IN";// The user is logged in...
+        }else{
+            echo "USER NOT LOGGED IN";
+        }
 
         return view('mainItemFeed')->with($itemsInventory);
     }
