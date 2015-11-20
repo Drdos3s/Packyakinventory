@@ -1,7 +1,10 @@
 /******** MARKETING PAGE ********/
-.packyakNavbarWrapper {
+.packyakNavContainer {
   background-color: #008749;
-  height: 50px;
-  border: 2px; }
+  height: 50px; }
+  .packyakNavContainer .packyakBrand, .packyakNavContainer .navbar-nav > li > a {
+    color: #FFFFFF; }
+  .packyakNavContainer .packyakRegister {
+    padding-right: 15px; }
 
 /*# sourceMappingURL=app.css.map */

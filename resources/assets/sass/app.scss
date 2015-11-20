@@ -2,8 +2,13 @@
 
 
 /******** MARKETING PAGE ********/
-.packyakNavbarWrapper{
+.packyakNavContainer{
 	background-color: #008749;
 	height: 50px; 
-	border: 2px;
+	.packyakBrand, .navbar-nav>li>a {
+		color: #FFFFFF;
+	}
+	.packyakRegister{
+		padding-right: 15px;
+	}
 }

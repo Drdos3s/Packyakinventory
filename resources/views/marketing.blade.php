@@ -11,7 +11,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{{ url('/') }}">PackYak</a>
+                <a class="navbar-brand packyakBrand" href="{{ url('/') }}">PackYak</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -26,7 +26,7 @@
                     <li class="page-scroll">
                         <a href="{{ url('/auth/login') }}">Login</a>
                     </li>
-                    <li class="page-scroll">
+                    <li class="page-scroll packyakRegister">
                         <a href="{{ url('/auth/register') }}">Register</a>
                     </li>
                 </ul>
