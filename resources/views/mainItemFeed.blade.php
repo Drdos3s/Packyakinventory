@@ -1,6 +1,7 @@
 @extends('admin_template')
 
 @section('content')
+
     <div class='row'>
         <div class='col-md-12'>
             <!-- Box -->
@@ -14,26 +15,37 @@
                 <div class="box-body">
                 
                     @foreach($itemDescription as $item)  
-                        
+                        <h5>
                         <?php //var_dump($item); //loops through each item and variation
                             if($item['variations'][0]['track_inventory'] == true){
                                 for($i=0; $i < count($item['variations']); $i++){
+                                    if(array_key_exists('category' , $item)){
+                                        echo $item['category']['name'].' >>> ';
+                                    }else{
+                                        echo 'NO CATEGORY >>> ';
+                                    }
                         ?>
                             
-                            <h5>{{ $item['name'] }} <?php echo ' - '; ?> {{ $item['variations'][$i]['name'] }}  
+                            {{ $item['name'] }} <?php echo ' >>> '; ?> {{ $item['variations'][$i]['name'] }}
                         <?php 
-                            echo ' ->  '; 
+                            echo ' >>>  '; 
                             for($j=0; $j < count($inventoryLevel); $j++){
                                 if($item['variations'][$i]['id'] == $inventoryLevel[$j]['variation_id']){
                         ?>
 
-                            {{ $inventoryLevel[$j]['quantity_on_hand'] }}</h5>
+                            {{ $inventoryLevel[$j]['quantity_on_hand'] }}
 
                         <?php
                                 }
                                 
-                            };
+                            }
+                            if(array_key_exists('sku' , $item['variations'][$i])){
+                                echo ' >>> '.$item['variations'][$i]['sku'];
+                            }else{
+                                echo ' >>> NO SKU';
+                            }
                         ?>
+                        </h5>
                             <div class="progress progress-xxs">
                                 <div class="progress-bar"></div>
                             </div>

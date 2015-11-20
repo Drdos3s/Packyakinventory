@@ -57,7 +57,7 @@ class mainItemFeedController extends Controller {
             
             //combine inventory nad item description arrays to pass as big array
             $itemsInventory = $itemList+$inventoryList;
-            //var_dump($itemsInventory);
+            //var_dump($itemsInventory['itemDescription'][7]);
 
             return view('mainItemFeed')->with($itemsInventory);
             
