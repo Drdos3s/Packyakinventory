@@ -1,6 +1,6 @@
-@extends('admin_template')
+@extends('master_template')
 
-@section('content')
+@section('body')
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-md-8 col-md-offset-2">
