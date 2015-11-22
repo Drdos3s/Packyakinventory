@@ -21,22 +21,27 @@
                                 <th>Variation</th>
                                 <th>Inventory</th>
                                 <th>SKU</th>
+                                <th>Cost</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            <tr>
+                            
                     @foreach($itemDescription as $item)  
+                            
                         <?php //var_dump($item); //loops through each item and variation
                             if($item['variations'][0]['track_inventory'] == true){
                                 for($i=0; $i < count($item['variations']); $i++){
                                     if(array_key_exists('category' , $item)){
                         ?>   
+                                <tr>
                                 <th scope="row"><?php echo $item['category']['name'];?></th>
                         <?php
-                                    }//else{
-                                    //     echo 'NO CATEGORY >>> ';
-                                    // }
+                                    }else{
+                        ?>
+                                <th scope="row"><?php echo 'No Category';?></th>
+                        <?php                 
+                                    }
                         ?>
                                 <td> {{ $item['name'] }} </td>
                                 <td> {{ $item['variations'][$i]['name'] }} </td>
@@ -49,66 +54,25 @@
                                 }
                                 
                             }
-                                if(array_key_exists('sku' , $item['variations'][$i])){
+                                    if(array_key_exists('sku' , $item['variations'][$i])){
                         ?>       
-                                    <td>{{ $item['variations'][$i]['sku'] }}</td>
+                                        <td>{{ $item['variations'][$i]['sku'] }}</td>
                         <?php
-                                    }
-                                }
-                            }
-                        ?>
-                        @endforeach
-                            </tr>
-                        </tbody>
-                    </table>
-
-
-
-
-
-
-
-
-                    @foreach($itemDescription as $item)  
-                        <?php //var_dump($item); //loops through each item and variation
-                            if($item['variations'][0]['track_inventory'] == true){
-                                for($i=0; $i < count($item['variations']); $i++){
-                                    if(array_key_exists('category' , $item)){
-                        ?>
-                                    <?php echo $item['category']['name'];?>
                                     }else{
-                                        echo 'NO CATEGORY >>> ';
-                                    }
                         ?>
-                            
-                            {{ $item['name'] }} <?php echo ' >>> '; ?> {{ $item['variations'][$i]['name'] }}
-                        <?php 
-                            echo ' >>>  '; 
-                            for($j=0; $j < count($inventoryLevel); $j++){
-                                if($item['variations'][$i]['id'] == $inventoryLevel[$j]['variation_id']){
-                        ?>
-
-                            {{ $inventoryLevel[$j]['quantity_on_hand'] }}
-
+                                    <th scope="row"><?php echo 'No SKU';?></th>
                         <?php
-                                }
-                                
-                            }
-                            if(array_key_exists('sku' , $item['variations'][$i])){
-                                echo ' >>> '.$item['variations'][$i]['sku'];
-                            }else{
-                                echo ' >>> NO SKU';
-                            }
-                        ?>
-                            <div class="progress progress-xxs">
-                                <div class="progress-bar"></div>
-                            </div>
-                        
-                        <?php    
+                                    }
                                 }
                             };
-                        ?>
-                    @endforeach
+                        ?>  
+                            </tr>
+
+                        @endforeach
+
+
+                        </tbody>
+                    </table>
 
                 </div><!-- /.box-body -->
                 <div class="box-footer">
