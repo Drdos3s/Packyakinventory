@@ -16,50 +16,76 @@ class mainItemFeedController extends Controller {
             //echo "USER IS LOGGED IN"; // The user is logged in...
 
             $uri = 'https://connect.squareup.com/v1';
+            //access token that is created through square
             $access_token = 'KI0ethBHis2N76q1jyYung';
-            $requestHeaders = array (
-                'Authorization' => 'Bearer '.$access_token,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            );
+
+            $mainItemFeedData = [];
 
             $client = new Client();
 
-      //DEN -> 1H5A5ZGP2T4DA
-      //PHX -> 3526BMVFNJZZX
-      //OUT -> 9SQD525GSB3T3
+            $locationsRequest = $client->request('GET', 'https://connect.squareup.com/v1/me/locations', [
+                'headers' => [
+                    'Authorization' => 'Bearer '.$access_token ,
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json'
+                ]
+            ]);
+            //store response
+            $locationsContents = $locationsRequest->getBody();
+            $locationsList['location'] = json_decode($locationsContents, true);
+
+            //var_dump($locationsList);
+
+            foreach($locationsList['location'] as $location){
+                $itemsRequest = $client->request('GET', 'https://connect.squareup.com/v1/'.$location['id'].'/items', [
+                    'headers' => [
+                        'Authorization' => 'Bearer '.$access_token ,
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json'
+                    ]
+                ]);
+            
+                //store response
+                $itemContents = $itemsRequest->getBody();
+                $itemList['itemDescription'] = json_decode($itemContents, true);
+            
+
+                $inventoryRequest = $client->request('GET', 'https://connect.squareup.com/v1/'.$location['id'].'/inventory', [
+                    'headers' => [
+                        'Authorization' => 'Bearer '.$access_token ,
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json'
+                    ]
+                ]);
+
+
+                //store response
+                $inventoryContents = $inventoryRequest->getBody();
+                $inventoryList['inventoryLevel'] = json_decode($inventoryContents, true);
+
+
+                
+                //combine inventory nad item description arrays to pass as big array
+                $itemsInventory = $location+$itemList+$inventoryList;
+                //var_dump($itemsInventory);
+                array_push($mainItemFeedData, $itemsInventory);
+            }
+
+
+
+
+
+            //DEN -> 1H5A5ZGP2T4DA
+            //PHX -> 3526BMVFNJZZX
+            //OUT -> 9SQD525GSB3T3
 
             //make request to get item list
-            $itemsRequest = $client->request('GET', 'https://connect.squareup.com/v1/1H5A5ZGP2T4DA/items/', [
-            'headers' => [
-                'Authorization' => 'Bearer '.$access_token ,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-            ]);
-            
-            //store response
-            $itemContents = $itemsRequest->getBody();
-            $itemList['itemDescription'] = json_decode($itemContents, true);
+
             
             //make request to get inventory
-            $inventoryRequest = $client->request('GET', 'https://connect.squareup.com/v1/1H5A5ZGP2T4DA/inventory', [
-            'headers' => [
-                'Authorization' => 'Bearer '.$access_token ,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-            ]);
+            var_dump($mainItemFeedData);
 
-            //store response
-            $inventoryContents = $inventoryRequest->getBody();
-            $inventoryList['inventoryLevel'] = json_decode($inventoryContents, true);
-            
-            //combine inventory nad item description arrays to pass as big array
-            $itemsInventory = $itemList+$inventoryList;
-            //var_dump($itemsInventory['itemDescription'][7]);
-
-            return view('mainItemFeed')->with($itemsInventory);
+            return view('mainItemFeed')->with($mainItemFeedData);
             
         }else{
             return redirect('/auth/register');
