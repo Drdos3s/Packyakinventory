@@ -63,12 +63,13 @@ class mainItemFeedController extends Controller {
                 $inventoryContents = $inventoryRequest->getBody();
                 $inventoryList['inventoryLevel'] = json_decode($inventoryContents, true);
 
-
+                //saves location to place in same level index as item inventory and item description
+                $indexPerLocation['location'] = $location;
                 
                 //combine inventory nad item description arrays to pass as big array
-                $itemsInventory = $location+$itemList+$inventoryList;
+                $locationItemsInventory = $indexPerLocation+$itemList+$inventoryList;
                 //var_dump($itemsInventory);
-                array_push($mainItemFeedData, $itemsInventory);
+                array_push($mainItemFeedData, $locationItemsInventory);
             }
 
 
@@ -83,6 +84,7 @@ class mainItemFeedController extends Controller {
 
             
             //make request to get inventory
+            echo count($mainItemFeedData);
             var_dump($mainItemFeedData);
 
             return view('mainItemFeed')->with($mainItemFeedData);
