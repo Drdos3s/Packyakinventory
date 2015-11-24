@@ -19,7 +19,7 @@ class mainItemFeedController extends Controller {
             //access token that is created through square
             $access_token = 'KI0ethBHis2N76q1jyYung';
 
-            $mainItemFeedData = [];
+            $mainItemFeedStorage = [];
 
             $client = new Client();
 
@@ -69,13 +69,13 @@ class mainItemFeedController extends Controller {
                 //combine inventory nad item description arrays to pass as big array
                 $locationItemsInventory = $indexPerLocation+$itemList+$inventoryList;
                 //var_dump($itemsInventory);
-                array_push($mainItemFeedData, $locationItemsInventory);
+                array_push($mainItemFeedStorage, $locationItemsInventory);
             }
 
 
 
 
-
+            $mainItemFeed['data'] = $mainItemFeedStorage;
             //DEN -> 1H5A5ZGP2T4DA
             //PHX -> 3526BMVFNJZZX
             //OUT -> 9SQD525GSB3T3
@@ -84,10 +84,9 @@ class mainItemFeedController extends Controller {
 
             
             //make request to get inventory
-            echo count($mainItemFeedData);
-            var_dump($mainItemFeedData);
 
-            return view('mainItemFeed')->with($mainItemFeedData);
+            //var_dump($test);
+            return view('mainItemFeed', $mainItemFeed);
             
         }else{
             return redirect('/auth/register');
