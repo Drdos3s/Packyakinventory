@@ -1,0 +1,12 @@
+$( document ).ready(function() {
+
+	//Clicking on inventory number changes to textfield
+	$( ".packyakInventory" ).click(function() {
+  		$(this).addClass("hidden");
+  		$(this).next().removeClass("hidden");
+	});
+
+	$( ".packyakCancel" ).click(function() {
+		console.log("works");
+	});
+});
