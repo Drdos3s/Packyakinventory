@@ -26,8 +26,8 @@
                                 <th>Item Name</th>
                                 <th>Variation</th>
                                 <th>Inventory</th>
+                                <th>Price</th>
                                 <th>SKU</th>
-                                <th>Cost</th>
                             </tr>
                         </thead>
 
@@ -43,12 +43,13 @@
                         <?php
                                     }else{
                         ?>
-                                <th scope="row"><?php echo 'No Category';?></th>
+                                        <th scope="row"><?php echo 'No Category';?></th>
                         <?php                 
-                                    }
+                                    }            
                         ?>
                                 <td> {{ $item['name'] }} </td>
                                 <td> {{ $item['variations'][$i]['name'] }} </td>
+
                         <?php 
                             for($j=0; $j < count($location['inventoryLevel']); $j++){
                                 if($item['variations'][$i]['id'] == $location['inventoryLevel'][$j]['variation_id']){
@@ -58,13 +59,19 @@
                                 }
                                 
                             }
+                            if(array_key_exists('price_money', $item['variations'][$i])){
+                        ?>
+                                <td><?php echo '$'.number_format($item['variations'][$i]['price_money']['amount']/100, 2, '.', ' '); ?> </td>
+                        <?php
+                                    }
                                     if(array_key_exists('sku' , $item['variations'][$i])){
                         ?>       
                                         <td>{{ $item['variations'][$i]['sku'] }}</td>
+                                       
                         <?php
                                     }else{
                         ?>
-                                    <th scope="row"><?php echo 'No SKU';?></th>
+                                    <td scope="row"><?php echo 'No SKU';?></td>
                         <?php
                                     }
                                 }
