@@ -55,7 +55,10 @@
                                         if($item['variations'][$i]['id'] == $location['inventoryLevel'][$j]['variation_id']){
                         ?>
                                             <td class='packyakInventory'> {{ $location['inventoryLevel'][$j]['quantity_on_hand'] }} </td>
-                                            <td class='packyakInventoryText hidden'><?php echo Form::text('newInventoryLevel'); ?></td>
+                                            <td class='packyakInventoryText hidden'><?php echo Form::text('newInventoryLevel', $location['inventoryLevel'][$j]['quantity_on_hand'], array('class' => 'packyakTextField')); ?></td>
+
+                                            <!--hidding item id to be pulled by JS but will need to go into the database and removed for security-->
+                                            <td class='packyakInventoryItemID hidden'> {{ $location['inventoryLevel'][$j]['variation_id'] }} </td>
                         <?php
                                         }
                                 
@@ -76,7 +79,7 @@
                         <?php
                                     }
                         ?>
-                                        <td class='packyakSubmit'><?php echo Form::button('Submit'); ?></td>
+                                        <td class='packyakSubmit'><?php echo Form::button('Submit', array('class' => 'packyakSubmitButton')); ?></td>
                                         <td class='packyakCancel'><?php echo Form::button('Cancel'); ?></td>
                         <?php
                                 }

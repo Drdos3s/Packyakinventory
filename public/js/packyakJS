@@ -1,12 +1,19 @@
 $( document ).ready(function() {
 
-	//Clicking on inventory number changes to textfield
+	//Clicking on inventory number changes to textfield and if hit cancel, shows original inventory level
 	$( ".packyakInventory" ).click(function() {
   		$(this).addClass("hidden");
   		$(this).next().removeClass("hidden");
 	});
 
 	$( ".packyakCancel" ).click(function() {
-		console.log("works");
+		$(this).siblings('.packyakInventoryText').addClass('hidden');
+		$(this).siblings('.packyakInventory').removeClass('hidden');
 	});
+
+	//submit function that uses ajax request to update inventory for square
+
+	$('.packyakSubmitButton').click(function() {
+    	console.log($(this).parent().siblings('.packyakInventoryText').children().val());
+  	});
 });
