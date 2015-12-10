@@ -14,6 +14,19 @@ $( document ).ready(function() {
 	//submit function that uses ajax request to update inventory for square
 
 	$('.packyakSubmitButton').click(function() {
-    	console.log($(this).parent().siblings('.packyakInventoryText').children().val());
-  	});
+    	var packyakInventoryBoxVal = $(this).parent().siblings('.packyakInventoryText').children().val();
+    	var packyakItemVarID = $(this).parent().siblings('.packyakInventoryItemID').html();
+    	getLocation();
+    });
+
+
+	function getLocation(){
+		if($('.box-title') == 'Denver'){
+			console.log('Denver');
+		}else if($('.box-title') == 'Phoenix'){
+			console.log('Phoenix');
+		}
+	};
+
+
 });
