@@ -23,6 +23,7 @@ Route::get('/dashboard', 'mainItemFeedController@index');
 
 
 
+
 // Authentication routes...
 Route::get('auth/login', 'Auth\AuthController@getLogin');
 Route::post('auth/login', 'Auth\AuthController@postLogin');

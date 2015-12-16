@@ -13,72 +13,9 @@ use Schema;
 
 class mainItemFeedController extends Controller {
 
-    function index() {
-        if (Auth::check()) {
-            //echo "USER IS LOGGED IN"; // The user is logged in...
+    function updateInventory() {
 
-            //-------------------If locations table does not exist, create table---//
-            if (!Schema::hasTable('locations')){
-                Schema::create('locations', function($table){
-                    $table->increments('id');
-                    $table->char('squareID', 255);
-                    $table->char('businessName', 255);
-                    $table->char('businessEmail', 255);
-                    $table->char('locationAddressLine1', 255);
-                    $table->char('locationAddressLine2', 255);
-                    $table->char('locationCity', 255);
-                    $table->char('locationState', 255);
-                    $table->char('locationZip', 255);
-                    $table->char('locationPhone', 255);
-                    $table->char('locationNickname', 255);
-                });
-
-                //-------------------Get Locations from square--------------//
-                $uri = 'https://connect.squareup.com/v1';
-                //access token that is created through square
-                $access_token = 'KI0ethBHis2N76q1jyYung';
-                $client = new Client();
-
-                $locationsRequest = $client->request('GET', 'https://connect.squareup.com/v1/me/locations', [
-                    'headers' => [
-                        'Authorization' => 'Bearer '.$access_token ,
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json'
-                    ]
-                ]);
-                //store response
-                $locationsContents = $locationsRequest->getBody();
-                $locationsList = json_decode($locationsContents, true);
-
-                var_dump($locationsList);
-
-                //-------------------Get location variables and add to database--------------//
-                foreach($locationsList as $location){
-                    $squareID = $location['id'];
-                    $businessName = $location['name'];
-                    $businessEmail = $location['email'];
-                    $locationAddressLine1 = $location['business_address']['address_line_1'];
-                    $locationAddressLine2 = $location['business_address']['address_line_2'];
-                    $locationCity = $location['business_address']['locality'];
-                    $locationState = $location['business_address']['administrative_district_level_1'];
-                    $locationZip = $location['business_address']['postal_code'];
-                    $locationPhone = $location['business_phone']['number'];
-                    $locationNickname = $location['location_details']['nickname'];
-
-                    DB::insert('insert into locations (squareID, businessName, businessEmail, locationAddressLine1,
-                                                       locationAddressLine2, locationCity, locationState, locationZip,
-                                                       locationPhone, locationNickname) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
-                                                      [$squareID, $businessName, $businessEmail, $locationAddressLine1,
-                                                       $locationAddressLine2, $locationCity, $locationState, $locationZip,
-                                                       $locationPhone, $locationNickname]);
-                }
-            }else{
-                echo 'already created';
-            }
-
-
-
-            $mainItemFeedStorage = [];
+        $mainItemFeedStorage = [];
             /*foreach($locationsList['location'] as $location){
                 $itemsRequest = $client->request('GET', 'https://connect.squareup.com/v1/'.$location['id'].'/items', [
                     'headers' => [
@@ -128,9 +65,102 @@ class mainItemFeedController extends Controller {
             
             //make request to get inventory
 
-            //var_dump($test);
-            return view('mainItemFeed', $mainItemFeed);
-            
+        return view('mainItemFeed', $mainItemFeed);    
+    }
+
+    function updateLocations() {
+        //-------------------Get Locations from square--------------//
+        $numberOfLocations = count(DB::select('select * from locations'));
+
+        //access token that is created through square
+        $access_token = 'KI0ethBHis2N76q1jyYung';
+        $client = new Client();
+
+        $locationsRequest = $client->request('GET', 'https://connect.squareup.com/v1/me/locations', [
+            'headers' => [
+                'Authorization' => 'Bearer '.$access_token ,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        ]);
+        //store response
+        $locationsContents = $locationsRequest->getBody();
+        $locationsList = json_decode($locationsContents, true);
+
+        //var_dump($locationsList);
+
+        if($numberOfLocations !== count($locationsList)){
+            //-------------------Get location variables and add to database--------------//
+            foreach($locationsList as $location){
+                $squareID = $location['id'];
+                $businessName = $location['name'];
+                $businessEmail = $location['email'];
+                $locationAddressLine1 = $location['business_address']['address_line_1'];
+                $locationAddressLine2 = $location['business_address']['address_line_2'];
+                $locationCity = $location['business_address']['locality'];
+                $locationState = $location['business_address']['administrative_district_level_1'];
+                $locationZip = $location['business_address']['postal_code'];
+                $locationPhone = $location['business_phone']['number'];
+                $locationNickname = $location['location_details']['nickname'];
+
+                DB::insert('insert into locations (squareID, businessName, businessEmail, locationAddressLine1,
+                                                   locationAddressLine2, locationCity, locationState, locationZip,
+                                                   locationPhone, locationNickname) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
+                                                  [$squareID, $businessName, $businessEmail, $locationAddressLine1,
+                                                   $locationAddressLine2, $locationCity, $locationState, $locationZip,
+                                                   $locationPhone, $locationNickname]);
+            }
+            echo 'locations have been updated';
+            return $this->updateInventory();
+        }else{
+            echo 'locations did not need updated';
+            return $this->updateInventory();
+        }
+
+
+    }
+
+    function index() {
+        if (Auth::check()) {
+            //echo "USER IS LOGGED IN"; // The user is logged in...
+
+            //-------------------If locations table does not exist, create table---//
+            if (!Schema::hasTable('locations') || !Schema::hasTable('inventoryList')){
+                Schema::create('locations', function($table){
+                    $table->increments('id');
+                    $table->char('squareID', 255);
+                    $table->char('businessName', 255);
+                    $table->char('businessEmail', 255);
+                    $table->char('locationAddressLine1', 255);
+                    $table->char('locationAddressLine2', 255);
+                    $table->char('locationCity', 255);
+                    $table->char('locationState', 255);
+                    $table->char('locationZip', 255);
+                    $table->char('locationPhone', 255);
+                    $table->char('locationNickname', 255);
+                });
+
+                Schema::create('inventoryList', function($table){
+                    $table->increments('id');
+                    $table->char('squareItemID', 255); //<- use the item id from the variation if it is easier
+                    $table->char('itemName', 255);
+                    $table->char('itemDescription', 255);
+                    $table->boolean('availableOnline');
+                    $table->char('itemCategoryName', 255);
+                    $table->char('itemCategoryID', 255);
+                    $table->char('itemVariationName', 255);
+                    $table->char('itemVariationID', 255);
+                    $table->char('itemVariationPrice', 255);
+                    $table->boolean('soldInDenver');
+                    $table->boolean('soldInOutdoor');
+                    $table->boolean('soldInPhoenix');
+                });
+
+                return $this->updateLocations();
+            }else{
+                echo 'tables were already built';
+                return $this->updateLocations();
+            }   
         }else{
             return redirect('/auth/register');
         }
