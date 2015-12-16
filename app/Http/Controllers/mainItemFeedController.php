@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use GuzzleHttp\Client;
+use DB;
+use Schema;
 
 class mainItemFeedController extends Controller {
 
@@ -15,28 +17,69 @@ class mainItemFeedController extends Controller {
         if (Auth::check()) {
             //echo "USER IS LOGGED IN"; // The user is logged in...
 
-            $uri = 'https://connect.squareup.com/v1';
-            //access token that is created through square
-            $access_token = 'KI0ethBHis2N76q1jyYung';
+            //-------------------If locations table does not exist, create table---//
+            if (!Schema::hasTable('locations')){
+                Schema::create('locations', function($table){
+                    $table->increments('id');
+                    $table->char('squareID', 255);
+                    $table->char('businessName', 255);
+                    $table->char('businessEmail', 255);
+                    $table->char('locationAddressLine1', 255);
+                    $table->char('locationAddressLine2', 255);
+                    $table->char('locationCity', 255);
+                    $table->char('locationState', 255);
+                    $table->char('locationZip', 255);
+                    $table->char('locationPhone', 255);
+                    $table->char('locationNickname', 255);
+                });
+
+                //-------------------Get Locations from square--------------//
+                $uri = 'https://connect.squareup.com/v1';
+                //access token that is created through square
+                $access_token = 'KI0ethBHis2N76q1jyYung';
+                $client = new Client();
+
+                $locationsRequest = $client->request('GET', 'https://connect.squareup.com/v1/me/locations', [
+                    'headers' => [
+                        'Authorization' => 'Bearer '.$access_token ,
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json'
+                    ]
+                ]);
+                //store response
+                $locationsContents = $locationsRequest->getBody();
+                $locationsList = json_decode($locationsContents, true);
+
+                var_dump($locationsList);
+
+                //-------------------Get location variables and add to database--------------//
+                foreach($locationsList as $location){
+                    $squareID = $location['id'];
+                    $businessName = $location['name'];
+                    $businessEmail = $location['email'];
+                    $locationAddressLine1 = $location['business_address']['address_line_1'];
+                    $locationAddressLine2 = $location['business_address']['address_line_2'];
+                    $locationCity = $location['business_address']['locality'];
+                    $locationState = $location['business_address']['administrative_district_level_1'];
+                    $locationZip = $location['business_address']['postal_code'];
+                    $locationPhone = $location['business_phone']['number'];
+                    $locationNickname = $location['location_details']['nickname'];
+
+                    DB::insert('insert into locations (squareID, businessName, businessEmail, locationAddressLine1,
+                                                       locationAddressLine2, locationCity, locationState, locationZip,
+                                                       locationPhone, locationNickname) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
+                                                      [$squareID, $businessName, $businessEmail, $locationAddressLine1,
+                                                       $locationAddressLine2, $locationCity, $locationState, $locationZip,
+                                                       $locationPhone, $locationNickname]);
+                }
+            }else{
+                echo 'already created';
+            }
+
+
 
             $mainItemFeedStorage = [];
-
-            $client = new Client();
-
-            $locationsRequest = $client->request('GET', 'https://connect.squareup.com/v1/me/locations', [
-                'headers' => [
-                    'Authorization' => 'Bearer '.$access_token ,
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json'
-                ]
-            ]);
-            //store response
-            $locationsContents = $locationsRequest->getBody();
-            $locationsList['location'] = json_decode($locationsContents, true);
-
-            //var_dump($locationsList);
-
-            foreach($locationsList['location'] as $location){
+            /*foreach($locationsList['location'] as $location){
                 $itemsRequest = $client->request('GET', 'https://connect.squareup.com/v1/'.$location['id'].'/items', [
                     'headers' => [
                         'Authorization' => 'Bearer '.$access_token ,
@@ -70,7 +113,7 @@ class mainItemFeedController extends Controller {
                 $locationItemsInventory = $indexPerLocation+$itemList+$inventoryList;
                 //var_dump($itemsInventory);
                 array_push($mainItemFeedStorage, $locationItemsInventory);
-            }
+            }*/
 
 
 
