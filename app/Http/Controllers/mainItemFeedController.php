@@ -13,9 +13,45 @@ use Schema;
 
 class mainItemFeedController extends Controller {
 
-    function updateInventory() {
+    function updateItems() {
 
         $mainItemFeedStorage = [];
+
+        $access_token = 'KI0ethBHis2N76q1jyYung';
+        $client = new Client();
+        $locationsQuery = DB::select('select * from locations');
+        $locations = json_decode(json_encode($locationsQuery),true);
+
+
+
+        foreach($locations as $location){
+            //var_dump($location);
+            $itemsRequest = $client->request('GET', 'https://connect.squareup.com/v1/'.$location['squareID'].'/items', [
+                    'headers' => [
+                        'Authorization' => 'Bearer '.$access_token ,
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json'
+                    ]
+            ]);
+
+            $itemContents = $itemsRequest->getBody();
+            $itemList = json_decode($itemContents, true);
+            //var_dump($itemList);
+            foreach($itemList as $item){
+                $squareItemID = $item['id'];
+                $itemName = $item['name'];
+                /*$itemDescription = $location['email'];
+                $availableOnline = $location['business_address']['address_line_1'];
+                $itemCategoryName = $location['business_address']['address_line_2'];
+                $itemCategoryID = $location['business_address']['locality'];
+                $itemVariationName = $location['business_address']['administrative_district_level_1'];
+                $itemVariationID = $location['business_address']['postal_code'];
+                $itemVariationPrice = $location['business_phone']['number'];
+                $soldInDenver = $location['location_details']['nickname'];*/
+
+                DB::insert('insert into inventoryList (squareItemID, itemName) values (?, ?)',[$squareItemID, $itemName]);
+            }
+        }
             /*foreach($locationsList['location'] as $location){
                 $itemsRequest = $client->request('GET', 'https://connect.squareup.com/v1/'.$location['id'].'/items', [
                     'headers' => [
@@ -111,10 +147,10 @@ class mainItemFeedController extends Controller {
                                                    $locationPhone, $locationNickname]);
             }
             echo 'locations have been updated';
-            return $this->updateInventory();
+            return $this->updateItems();
         }else{
             echo 'locations did not need updated';
-            return $this->updateInventory();
+            return $this->updateItems();
         }
 
 
@@ -152,8 +188,11 @@ class mainItemFeedController extends Controller {
                     $table->char('itemVariationID', 255);
                     $table->char('itemVariationPrice', 255);
                     $table->boolean('soldInDenver');
+                    $table->integer('inventoryDenver');
                     $table->boolean('soldInOutdoor');
+                    $table->integer('inventoryOutdoor');
                     $table->boolean('soldInPhoenix');
+                    $table->integer('inventoryPhoenix');
                 });
 
                 return $this->updateLocations();
