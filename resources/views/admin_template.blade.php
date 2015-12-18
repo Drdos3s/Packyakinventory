@@ -31,25 +31,6 @@
                 <!-- Your Page Content Here -->
                 
 <?php
-
-$access_token = 'KI0ethBHis2N76q1jyYung';
-
-function listLocations() {
-  $access_token = 'KI0ethBHis2N76q1jyYung';
-  $connectHost = 'https://connect.squareup.com';
-  $requestHeaders = array (
-    'Authorization' => 'Bearer ' . $access_token,
-    'Accept' => 'application/json',
-    'Content-Type' => 'application/json'
-  );
-
-  $response = Unirest\Request::get($connectHost . '/v1/me/locations', $requestHeaders);
-
-  echo json_encode($response->body, JSON_PRETTY_PRINT);
-}
-//listLocations();
-
-
 # Creates a "Milkshake" item.
 function createItem() {
   $access_token = 'KI0ethBHis2N76q1jyYung';
@@ -87,31 +68,6 @@ function createItem() {
   }
 }
 //createItem();
-
-function getInventory() {
-  $access_token = 'KI0ethBHis2N76q1jyYung';
-  $connectHost = 'https://connect.squareup.com';
-  $requestHeaders = array (
-    'Authorization' => 'Bearer ' . $access_token,
-    'Accept' => 'application/json',
-    'Content-Type' => 'application/json'
-  );
-
-  //DEN -> 1H5A5ZGP2T4DA
-  //PHX -> 3526BMVFNJZZX
-  //OUT -> 9SQD525GSB3T3
-
-
-  $inventory = array();
-  $response = Unirest\Request::get($connectHost . '/v1/3526BMVFNJZZX/inventory', $requestHeaders);
-
-  echo json_encode($response->body, JSON_PRETTY_PRINT);
-
-  $items = array_merge($inventory, $response->body);
-
-  //echo count($inventory);
-}
-//getInventory();
 
 #Deletes the Malted Milkshake item.
 function deleteItem($itemId) {

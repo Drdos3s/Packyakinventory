@@ -22,6 +22,11 @@ Route::get('/dashboard', function () {
 Route::get('/dashboard', 'mainItemFeedController@index');
 
 
+Route::get('/locations', function () {
+    return view('admin_template');
+});
+
+Route::get('/locations', 'locationsPageController@index');
 
 
 // Authentication routes...

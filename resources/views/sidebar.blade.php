@@ -31,8 +31,8 @@
         <ul class="sidebar-menu">
             <li class="header">Menu</li>
             <!-- Optionally, you can add icons to the links -->
-            <li class="active"><a href="#"><span>Items & Inventory</span></a></li>
-            <li><a href="#"><span>Locations</span></a></li>
+            <li class="active"><a href="{{ url('/dashboard') }}"><span>Items & Inventory</span></a></li>
+            <li><a href="{{ url('/locations') }}"><span>Locations</span></a></li>
             <li class="treeview">
                 <a href="#"><span>Something Else</span> <i class="fa fa-angle-left pull-right"></i></a>
                 <ul class="treeview-menu">

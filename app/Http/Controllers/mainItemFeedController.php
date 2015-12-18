@@ -58,7 +58,7 @@ class mainItemFeedController extends Controller {
 
 
 
-        foreach($locations as $location){
+        /*foreach($locations as $location){
             //var_dump($location);
             $itemsRequest = $client->request('GET', 'https://connect.squareup.com/v1/'.$location['squareID'].'/items', [
                     'headers' => [
@@ -113,7 +113,7 @@ class mainItemFeedController extends Controller {
                    } 
                 }
             }
-        }
+        }*/
         return $this->getInventory();
     }
 
