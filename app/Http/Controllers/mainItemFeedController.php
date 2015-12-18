@@ -12,11 +12,45 @@ use DB;
 use Schema;
 
 class mainItemFeedController extends Controller {
+    function sendDataToFeedView(){
+        $allItems = DB::select('select * from inventoryList');
+        $itemData['items'] = json_decode(json_encode($allItems),true);
+        return view('mainItemFeed', $itemData);
+    }
 
-    function updateItems() {
+    function getInventory(){
+            $access_token = 'KI0ethBHis2N76q1jyYung';
+            $client = new Client();
+            $locationsQuery = DB::select('select * from locations');
+            $locations = json_decode(json_encode($locationsQuery),true);
 
-        $mainItemFeedStorage = [];
+        foreach($locations as $location){
+            $inventoryRequest = $client->request('GET', 'https://connect.squareup.com/v1/'.$location['squareID'].'/inventory', [
+                'headers' => [
+                    'Authorization' => 'Bearer '.$access_token ,
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json'
+                ]
+            ]);
 
+            //store response
+            $inventoryContents = $inventoryRequest->getBody();
+            $inventoryList = json_decode($inventoryContents, true);
+            //var_dump($inventoryList);
+
+            foreach ($inventoryList as $itemInv) {
+                DB::table('inventoryList')
+                    ->where('itemVariationID', $itemInv['variation_id'])
+                    ->update(['itemVariationInventory' => $itemInv['quantity_on_hand']]);
+            }
+        }
+            //DEN -> 1H5A5ZGP2T4DA
+            //PHX -> 3526BMVFNJZZX
+            //OUT -> 9SQD525GSB3T3
+        return $this->sendDataToFeedView();    
+    }
+
+    function createAndUpdateItems() {
         $access_token = 'KI0ethBHis2N76q1jyYung';
         $client = new Client();
         $locationsQuery = DB::select('select * from locations');
@@ -36,75 +70,54 @@ class mainItemFeedController extends Controller {
 
             $itemContents = $itemsRequest->getBody();
             $itemList = json_decode($itemContents, true);
-            //var_dump($itemList);
-            foreach($itemList as $item){
-                $squareItemID = $item['id'];
-                $itemName = $item['name'];
-                /*$itemDescription = $location['email'];
-                $availableOnline = $location['business_address']['address_line_1'];
-                $itemCategoryName = $location['business_address']['address_line_2'];
-                $itemCategoryID = $location['business_address']['locality'];
-                $itemVariationName = $location['business_address']['administrative_district_level_1'];
-                $itemVariationID = $location['business_address']['postal_code'];
-                $itemVariationPrice = $location['business_phone']['number'];
-                $soldInDenver = $location['location_details']['nickname'];*/
+            foreach($itemList as $item){ //each item
+                foreach ($item['variations'] as $variation) { // <- check each variation
+                    if($variation['track_inventory'] == true){ //<- are we tracking inventory for that item?
+                        
+                        //define variables for each item variation
+                        $squareItemID = $item['id'];
+                        if(isset($item['category']['name'])){
+                            $itemCategoryName = $item['category']['name'];
+                            $itemCategoryID = $item['category']['id'];
+                        }else{
+                            $itemCategoryName = 'No Category';
+                            $itemCategoryID = 'No Category ID';
+                        }
 
-                DB::insert('insert into inventoryList (squareItemID, itemName) values (?, ?)',[$squareItemID, $itemName]);
+                        $itemName = $item['name'];
+                        $itemVariationName = $variation['name'];
+                        $itemVariationID = $variation['id'];
+
+                        if(isset($variation['price_money']['amount'])){
+                            $itemVariationPrice = $variation['price_money']['amount'];
+                        }else{
+                            $itemVariationPrice = 'No Price';
+                        }
+                        if(isset($variation['sku'])){
+                            $itemVariationSKU = $variation['sku'];
+                        }else{
+                            $itemVariationSKU = 'No SKU';
+                        }
+                        
+                        $locationSoldAt = $location['locationCity'];
+
+                        DB::insert('insert into inventoryList (squareItemID, itemName, itemCategoryName,
+                                                                itemCategoryID, itemVariationName, itemVariationID,
+                                                                itemVariationPrice, itemVariationSKU, locationSoldAt
+                                                                ) values (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                                                [$squareItemID, $itemName, $itemCategoryName, 
+                                                                 $itemCategoryID, $itemVariationName, $itemVariationID,
+                                                                 $itemVariationPrice, $itemVariationSKU, $locationSoldAt]);
+                        //echo $location['locationState'].' '.$item['name'].' '.$variation['name'].isset($variation['sku']).' - '; // <- print out item name and variation name
+                         
+                   } 
+                }
             }
         }
-            /*foreach($locationsList['location'] as $location){
-                $itemsRequest = $client->request('GET', 'https://connect.squareup.com/v1/'.$location['id'].'/items', [
-                    'headers' => [
-                        'Authorization' => 'Bearer '.$access_token ,
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json'
-                    ]
-                ]);
-            
-                //store response
-                $itemContents = $itemsRequest->getBody();
-                $itemList['itemDescription'] = json_decode($itemContents, true);
-            
-
-                $inventoryRequest = $client->request('GET', 'https://connect.squareup.com/v1/'.$location['id'].'/inventory', [
-                    'headers' => [
-                        'Authorization' => 'Bearer '.$access_token ,
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json'
-                    ]
-                ]);
-
-
-                //store response
-                $inventoryContents = $inventoryRequest->getBody();
-                $inventoryList['inventoryLevel'] = json_decode($inventoryContents, true);
-
-                //saves location to place in same level index as item inventory and item description
-                $indexPerLocation['location'] = $location;
-                
-                //combine inventory nad item description arrays to pass as big array
-                $locationItemsInventory = $indexPerLocation+$itemList+$inventoryList;
-                //var_dump($itemsInventory);
-                array_push($mainItemFeedStorage, $locationItemsInventory);
-            }*/
-
-
-
-
-            $mainItemFeed['data'] = $mainItemFeedStorage;
-            //DEN -> 1H5A5ZGP2T4DA
-            //PHX -> 3526BMVFNJZZX
-            //OUT -> 9SQD525GSB3T3
-
-            //make request to get item list
-
-            
-            //make request to get inventory
-
-        return view('mainItemFeed', $mainItemFeed);    
+        return $this->getInventory();
     }
 
-    function updateLocations() {
+    function createLocations() {
         //-------------------Get Locations from square--------------//
         $numberOfLocations = count(DB::select('select * from locations'));
 
@@ -146,14 +159,12 @@ class mainItemFeedController extends Controller {
                                                    $locationAddressLine2, $locationCity, $locationState, $locationZip,
                                                    $locationPhone, $locationNickname]);
             }
-            echo 'locations have been updated';
-            return $this->updateItems();
+            //echo 'locations have been updated ';
+            return $this->createAndUpdateItems();
         }else{
-            echo 'locations did not need updated';
-            return $this->updateItems();
+            //echo 'locations did not need updated ';
+            return $this->createAndUpdateItems();
         }
-
-
     }
 
     function index() {
@@ -180,28 +191,25 @@ class mainItemFeedController extends Controller {
                     $table->increments('id');
                     $table->char('squareItemID', 255); //<- use the item id from the variation if it is easier
                     $table->char('itemName', 255);
-                    $table->char('itemDescription', 255);
-                    $table->boolean('availableOnline');
                     $table->char('itemCategoryName', 255);
                     $table->char('itemCategoryID', 255);
                     $table->char('itemVariationName', 255);
                     $table->char('itemVariationID', 255);
                     $table->char('itemVariationPrice', 255);
-                    $table->boolean('soldInDenver');
-                    $table->integer('inventoryDenver');
-                    $table->boolean('soldInOutdoor');
-                    $table->integer('inventoryOutdoor');
-                    $table->boolean('soldInPhoenix');
-                    $table->integer('inventoryPhoenix');
-                });
+                    $table->char('itemVariationSKU', 255);
+                    $table->char('locationSoldAt', 255);
+                    $table->char('itemVariationInventory', 255);
 
-                return $this->updateLocations();
+                });
+                //echo 'tables got built ';
+                return $this->createLocations();
             }else{
-                echo 'tables were already built';
-                return $this->updateLocations();
+                //echo 'tables were already built ';
+                return $this->createLocations();
             }   
         }else{
             return redirect('/auth/register');
         }
     }
+
 }
