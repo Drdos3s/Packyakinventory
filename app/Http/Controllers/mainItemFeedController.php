@@ -5,11 +5,12 @@ use Auth;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-use Illuminate\Http\Request;
+use Request;
 
 use GuzzleHttp\Client;
 use DB;
 use Schema;
+
 
 class mainItemFeedController extends Controller {
     function sendDataToFeedView(){
@@ -209,6 +210,12 @@ class mainItemFeedController extends Controller {
             }   
         }else{
             return redirect('/auth/register');
+        }
+    }
+
+    function setupAndSendInventoryUpdate() {
+        if(Request::ajax()) {
+            echo 'something happened';
         }
     }
 

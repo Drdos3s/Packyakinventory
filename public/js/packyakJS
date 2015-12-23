@@ -14,19 +14,24 @@ $( document ).ready(function() {
 	//submit function that uses ajax request to update inventory for square
 
 	$('.packyakSubmitButton').click(function() {
-    	var packyakInventoryBoxVal = $(this).parent().siblings('.packyakInventoryText').children().val();
-    	var packyakItemVarID = $(this).parent().siblings('.packyakInventoryItemID').html();
-    	getLocation();
+    	console.log($(this).parent().children('.packyakInventoryText'));
+    	updateItemInventory();
     });
 
+    function updateItemInventory() {
+		$.ajaxSetup({
+		        headers: {
+		            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+		        }
+		});
 
-	function getLocation(){
-		if($('.box-title') == 'Denver'){
-			console.log('Denver');
-		}else if($('.box-title') == 'Phoenix'){
-			console.log('Phoenix');
-		}
-	};
-
-
+    	$.ajax({
+	        type: "POST",
+	        url: './dashboard',
+	        data: {'access_token': 'KI0ethBHis2N76q1jyYung'},
+	        success: function(data) {
+	            console.log(data);
+	        }
+	    })
+    };
 });

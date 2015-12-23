@@ -11,17 +11,22 @@
 |
 */
 
+//Leads to marketing page
 Route::get('/', function() {
 	return view('marketing');
 });
 
+//Main dashboard
 Route::get('/dashboard', function () {
     return view('admin_template');
 });
 
 Route::get('/dashboard', 'mainItemFeedController@index');
+Route::post('/dashboard', 'mainItemFeedController@setupAndSendInventoryUpdate');
 
 
+
+//Locations Page routes
 Route::get('/locations', function () {
     return view('admin_template');
 });

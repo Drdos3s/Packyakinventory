@@ -27,19 +27,27 @@
                                 <th>Inventory</th>
                                 <th>Price</th>
                                 <th>SKU</th>
+                                <th>Submit</th>
+                                <th>Cancel</th>
                             </tr>
                         </thead>
-                        @foreach($items as $row)
                         <tbody>
-                            <td>{{ $row['locationSoldAt'] }}</td>
-                            <td>{{ $row['itemCategoryName'] }}</td>
-                            <td>{{ $row['itemName'] }}</td>
-                            <td>{{ $row['itemVariationName'] }}</td>
-                            <td>{{ $row['itemVariationInventory'] }}</td>
-                            <td><?php echo '$'.number_format($row['itemVariationPrice']/100, 2, '.', ' '); ?></td>
-                            <td>{{ $row['itemVariationSKU'] }}</td> 
+                            @foreach($items as $row)
+                            <tr class='packYakItemFeedRow'>
+                                <td>{{ $row['locationSoldAt'] }}</td>
+                                <td>{{ $row['itemCategoryName'] }}</td>
+                                <td>{{ $row['itemName'] }}</td>
+                                <td>{{ $row['itemVariationName'] }}</td>
+                                <td class='packyakInventory'>{{ $row['itemVariationInventory'] }}</td>
+                                <td class='packyakInventoryText hidden'><?php echo Form::text('newInventoryLevel'); ?></td>
+                                <td><?php echo '$'.number_format($row['itemVariationPrice']/100, 2, '.', ' '); ?></td>
+                                <td>{{ $row['itemVariationSKU'] }}</td>
+                                <td class='packyakSubmitButton'><?php echo Form::button('Submit'); ?></td>
+                                <td class='packyakCancel'><?php echo Form::button('Cancel'); ?></td>
+                                {{ csrf_field() }}
+                            </tr>
+                            @endforeach
                         </tbody>
-                        @endforeach
                     </table>
 
                 </div><!-- /.box-body -->
