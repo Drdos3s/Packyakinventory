@@ -223,7 +223,8 @@ class mainItemFeedController extends Controller {
             $itemLocation = $_POST['itemLocation'];
             $itemVariationID = $_POST['itemVariationID'];
             $quantityDelta = $_POST['quantityDelta'];
-
+            $body = json_encode(array('quantity_delta' => 2, 'adjustment_type' => 'RECEIVE_STOCK'), JSON_FORCE_OBJECT);
+            echo $body;
             switch($itemLocation){
                 case 'Denver':
                     $itemLocationID = '1H5A5ZGP2T4DA';
@@ -238,8 +239,15 @@ class mainItemFeedController extends Controller {
             //DEN -> 1H5A5ZGP2T4DA
             //PHX -> 3526BMVFNJZZX
             //OUT -> 9SQD525GSB3T3
-            $updateInventoryRequest = $client->request('POST', 'https://connect.squareup.com/v1/'.$itemLocationID.'/inventory/'.$itemVariationID, $headers, ['json' => ['quantity_delta' => '1']]);
+            $updateInventoryRequest = $client->post('https://connect.squareup.com/v1/'.$itemLocationID.'/inventory/'.$itemVariationID, [
+                'headers' => ['Authorization' => 'Bearer '.$access_token ,
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json'
+                        ], 
+                        'body' => $body
+            ]);
 
+            echo 'did it work?';
 
             $updateInventoryReponse = json_decode($updateInventoryRequest->getBody(), true);
             var_dump($updateInventoryReponse);
