@@ -56,9 +56,6 @@ class mainItemFeedController extends Controller {
         $client = new Client();
         $locationsQuery = DB::select('select * from locations');
         $locations = json_decode(json_encode($locationsQuery),true);
-
-
-
         /*foreach($locations as $location){
             //var_dump($location);
             $itemsRequest = $client->request('GET', 'https://connect.squareup.com/v1/'.$location['squareID'].'/items', [
@@ -215,7 +212,40 @@ class mainItemFeedController extends Controller {
 
     function setupAndSendInventoryUpdate() {
         if(Request::ajax()) {
-            echo 'something happened';
+            echo 'made it to php function';
+            $access_token = 'KI0ethBHis2N76q1jyYung';
+            $client = new Client();
+            $headers = ['headers' => ['Authorization' => 'Bearer '.$access_token ,
+                        'Accept' => 'application/json',
+                        'Content-Type' => 'application/json'
+                        ]];
+
+            $itemLocation = $_POST['itemLocation'];
+            $itemVariationID = $_POST['itemVariationID'];
+            $quantityDelta = $_POST['quantityDelta'];
+
+            switch($itemLocation){
+                case 'Denver':
+                    $itemLocationID = '1H5A5ZGP2T4DA';
+                    break;
+                case 'Phoenix':
+                    $itemLocationID = '3526BMVFNJZZX';
+                    break;
+                case 'Brighton':
+                    $itemLocationID = '9SQD525GSB3T3';
+                    break;
+            }
+            //DEN -> 1H5A5ZGP2T4DA
+            //PHX -> 3526BMVFNJZZX
+            //OUT -> 9SQD525GSB3T3
+            $updateInventoryRequest = $client->request('POST', 'https://connect.squareup.com/v1/'.$itemLocationID.'/inventory/'.$itemVariationID, $headers, ['json' => ['quantity_delta' => '1']]);
+
+
+            $updateInventoryReponse = json_decode($updateInventoryRequest->getBody(), true);
+            var_dump($updateInventoryReponse);
+            echo $itemLocation.' - '.$itemVariationID.' - '.$quantityDelta;
+            
+            return 'Success';
         }
     }
 

@@ -1,5 +1,4 @@
 $( document ).ready(function() {
-
 	//Clicking on inventory number changes to textfield and if hit cancel, shows original inventory level
 	$( ".packyakInventory" ).click(function() {
   		$(this).addClass("hidden");
@@ -12,26 +11,56 @@ $( document ).ready(function() {
 	});
 
 	//submit function that uses ajax request to update inventory for square
-
 	$('.packyakSubmitButton').click(function() {
-    	console.log($(this).parent().children('.packyakInventoryText'));
-    	updateItemInventory();
-    });
+    	var newInventoryLevel = $(this).siblings('.packyakInventoryText').children().val();
+    	var oldInventoryLevel = $(this).siblings('.packyakInventory').html();
+    	var itemLocation = $(this).siblings('.packyakLocationSold').html();
+    	var itemVariationID = $(this).siblings('.packyakInventoryItemID').html();
 
-    function updateItemInventory() {
-		$.ajaxSetup({
-		        headers: {
-		            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-		        }
+    	$.ajaxSetup({
+	        headers: {
+	            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+	        }
 		});
 
-    	$.ajax({
-	        type: "POST",
-	        url: './dashboard',
-	        data: {'access_token': 'KI0ethBHis2N76q1jyYung'},
-	        success: function(data) {
-	            console.log(data);
-	        }
-	    })
-    };
+    	if($(this).siblings('.packyakInventoryText').is(':visible')){
+			if(newInventoryLevel == oldInventoryLevel){
+	    		alert('Please make a change in inventory level to submit.');
+	    	}else if(newInventoryLevel < oldInventoryLevel){
+	    		var continueWithSelection = confirm('New inventory level is lower than old inventory. Continue?');
+		    	if(continueWithSelection == true){
+		    		var quantityDelta = newInventoryLevel - oldInventoryLevel;
+			    	$.ajax({
+				        type: "POST",
+				        url: './dashboard',
+				        data: {'itemLocation': itemLocation,
+				        	   'itemVariationID': itemVariationID,
+				        	   'quantityDelta': quantityDelta
+				    		  },
+				        success: function(data) {
+				           console.log(data);
+				        }
+				    })
+		    	}else{
+		    		console.log('Canceled request');
+		    	}	
+		    }else{	
+		    	var quantityDelta = newInventoryLevel - oldInventoryLevel;
+		    	$.ajax({
+			        type: "POST",
+			        url: './dashboard',
+			        data: {'itemLocation': itemLocation,
+			        	   'itemVariationID': itemVariationID,
+			        	   'quantityDelta': quantityDelta
+			    		  },
+			        success: function(data) {
+			           console.log(data);
+			        },
+			        error: function(ts) { console.log(ts.responseText) }
+			    })
+		    }
+		}else{
+			console.log('This item new inventory text is not visible. ')
+		}
+    });
 });

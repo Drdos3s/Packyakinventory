@@ -32,19 +32,21 @@
                             </tr>
                         </thead>
                         <tbody>
+                        <?php //var_dump($items); ?>
                             @foreach($items as $row)
                             <tr class='packYakItemFeedRow'>
-                                <td>{{ $row['locationSoldAt'] }}</td>
+                                <td class='packyakLocationSold'>{{ $row['locationSoldAt'] }}</td>
                                 <td>{{ $row['itemCategoryName'] }}</td>
                                 <td>{{ $row['itemName'] }}</td>
                                 <td>{{ $row['itemVariationName'] }}</td>
                                 <td class='packyakInventory'>{{ $row['itemVariationInventory'] }}</td>
-                                <td class='packyakInventoryText hidden'><?php echo Form::text('newInventoryLevel'); ?></td>
+                                <td class='packyakInventoryText hidden'><?php echo Form::input('number','newInventoryLevel', $row['itemVariationInventory'], array('type' => 'number', 'min' => '-5', 'pattern' => '[1-8][0-9]')); ?></td>
                                 <td><?php echo '$'.number_format($row['itemVariationPrice']/100, 2, '.', ' '); ?></td>
                                 <td>{{ $row['itemVariationSKU'] }}</td>
                                 <td class='packyakSubmitButton'><?php echo Form::button('Submit'); ?></td>
                                 <td class='packyakCancel'><?php echo Form::button('Cancel'); ?></td>
                                 {{ csrf_field() }}
+                                <td class='packyakInventoryItemID hidden'>{{ $row['itemVariationID'] }}</td>
                             </tr>
                             @endforeach
                         </tbody>
