@@ -56,7 +56,10 @@ class mainItemFeedController extends Controller {
         $client = new Client();
         $locationsQuery = DB::select('select * from locations');
         $locations = json_decode(json_encode($locationsQuery),true);
-        /*foreach($locations as $location){
+        
+
+        
+        foreach($locations as $location){
             //var_dump($location);
             $itemsRequest = $client->request('GET', 'https://connect.squareup.com/v1/'.$location['squareID'].'/items', [
                     'headers' => [
@@ -68,50 +71,75 @@ class mainItemFeedController extends Controller {
 
             $itemContents = $itemsRequest->getBody();
             $itemList = json_decode($itemContents, true);
-            foreach($itemList as $item){ //each item
+
+
+            $numItemsInDB = DB::table('inventoryList')
+                ->where('locationSoldAt', $location['locationCity'])
+                ->count();
+            
+            $numVariationsFromSquare = 0;
+
+            foreach($itemList as $item){ 
                 foreach ($item['variations'] as $variation) { // <- check each variation
                     if($variation['track_inventory'] == true){ //<- are we tracking inventory for that item?
-                        
-                        //define variables for each item variation
-                        $squareItemID = $item['id'];
-                        if(isset($item['category']['name'])){
-                            $itemCategoryName = $item['category']['name'];
-                            $itemCategoryID = $item['category']['id'];
-                        }else{
-                            $itemCategoryName = 'No Category';
-                            $itemCategoryID = 'No Category ID';
-                        }
 
-                        $itemName = $item['name'];
-                        $itemVariationName = $variation['name'];
-                        $itemVariationID = $variation['id'];
-
-                        if(isset($variation['price_money']['amount'])){
-                            $itemVariationPrice = $variation['price_money']['amount'];
-                        }else{
-                            $itemVariationPrice = 'No Price';
-                        }
-                        if(isset($variation['sku'])){
-                            $itemVariationSKU = $variation['sku'];
-                        }else{
-                            $itemVariationSKU = 'No SKU';
-                        }
-                        
-                        $locationSoldAt = $location['locationCity'];
-
-                        DB::insert('insert into inventoryList (squareItemID, itemName, itemCategoryName,
-                                                                itemCategoryID, itemVariationName, itemVariationID,
-                                                                itemVariationPrice, itemVariationSKU, locationSoldAt
-                                                                ) values (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                                                                [$squareItemID, $itemName, $itemCategoryName, 
-                                                                 $itemCategoryID, $itemVariationName, $itemVariationID,
-                                                                 $itemVariationPrice, $itemVariationSKU, $locationSoldAt]);
-                        //echo $location['locationState'].' '.$item['name'].' '.$variation['name'].isset($variation['sku']).' - '; // <- print out item name and variation name
-                         
-                   } 
+                        $numVariationsFromSquare++;
+                    }
                 }
             }
-        }*/
+
+
+            if($numItemsInDB == 0){
+                echo 'Fresh Install';
+                foreach($itemList as $item){ 
+                    foreach ($item['variations'] as $variation) { // <- check each variation
+                        if($variation['track_inventory'] == true){ //<- are we tracking inventory for that item?
+
+                            //define variables for each item variation
+                            $squareItemID = $item['id'];
+                            if(isset($item['category']['name'])){
+                                $itemCategoryName = $item['category']['name'];
+                                $itemCategoryID = $item['category']['id'];
+                            }else{
+                                $itemCategoryName = 'No Category';
+                                $itemCategoryID = 'No Category ID';
+                            }
+
+                            $itemName = $item['name'];
+                            $itemVariationName = $variation['name'];
+                            $itemVariationID = $variation['id'];
+
+                            if(isset($variation['price_money']['amount'])){
+                                $itemVariationPrice = $variation['price_money']['amount'];
+                            }else{
+                                $itemVariationPrice = 'No Price';
+                            }
+                            if(isset($variation['sku'])){
+                                $itemVariationSKU = $variation['sku'];
+                            }else{
+                                $itemVariationSKU = 'No SKU';
+                            }
+                            
+                            $locationSoldAt = $location['locationCity'];
+
+                            DB::insert('insert into inventoryList (squareItemID, itemName, itemCategoryName,
+                                                                    itemCategoryID, itemVariationName, itemVariationID,
+                                                                    itemVariationPrice, itemVariationSKU, locationSoldAt
+                                                                    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                                                    [$squareItemID, $itemName, $itemCategoryName, 
+                                                                     $itemCategoryID, $itemVariationName, $itemVariationID,
+                                                                     $itemVariationPrice, $itemVariationSKU, $locationSoldAt]);
+                            //echo $location['locationState'].' '.$item['name'].' '.$variation['name'].isset($variation['sku']).' - '; // <- print out item name and variation name
+                             
+                       } 
+                    }
+                }
+            }elseif($numItemsInDB == $numVariationsFromSquare){
+                echo 'No need to update, Please proceed - ';
+            }else{
+                echo 'Needs to be updated - ';
+            }
+        }
         return $this->getInventory();
     }
 
@@ -212,19 +240,13 @@ class mainItemFeedController extends Controller {
 
     function setupAndSendInventoryUpdate() {
         if(Request::ajax()) {
-            echo 'made it to php function';
             $access_token = 'KI0ethBHis2N76q1jyYung';
             $client = new Client();
-            $headers = ['headers' => ['Authorization' => 'Bearer '.$access_token ,
-                        'Accept' => 'application/json',
-                        'Content-Type' => 'application/json'
-                        ]];
-
             $itemLocation = $_POST['itemLocation'];
             $itemVariationID = $_POST['itemVariationID'];
             $quantityDelta = $_POST['quantityDelta'];
-            $body = json_encode(array('quantity_delta' => 2, 'adjustment_type' => 'RECEIVE_STOCK'), JSON_FORCE_OBJECT);
-            echo $body;
+            $body = json_encode(array('quantity_delta' => $quantityDelta, 'adjustment_type' => 'RECEIVE_STOCK'), JSON_FORCE_OBJECT);
+            //echo $body;
             switch($itemLocation){
                 case 'Denver':
                     $itemLocationID = '1H5A5ZGP2T4DA';
@@ -247,14 +269,8 @@ class mainItemFeedController extends Controller {
                         'body' => $body
             ]);
 
-            echo 'did it work?';
-
             $updateInventoryReponse = json_decode($updateInventoryRequest->getBody(), true);
-            var_dump($updateInventoryReponse);
-            echo $itemLocation.' - '.$itemVariationID.' - '.$quantityDelta;
-            
-            return 'Success';
+            return $updateInventoryReponse['quantity_on_hand'];
         }
     }
-
 }

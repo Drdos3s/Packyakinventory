@@ -38,7 +38,7 @@ $( document ).ready(function() {
 				        	   'quantityDelta': quantityDelta
 				    		  },
 				        success: function(data) {
-				           console.log(data);
+				           console.log('this is the upper function');
 				        }
 				    })
 		    	}else{
@@ -54,7 +54,10 @@ $( document ).ready(function() {
 			        	   'quantityDelta': quantityDelta
 			    		  },
 			        success: function(data) {
-			           console.log(data);
+			           console.log($(this).siblings('.packyakInventory'));
+			           $(this).siblings('.packyakInventoryText').addClass('hidden');
+					   $(this).siblings('.packyakInventory').removeClass('hidden');
+			           console.log('Inventory updated');
 			        },
 			        error: function(ts) { console.log(ts.responseText) }
 			    })
