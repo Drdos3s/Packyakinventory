@@ -19,10 +19,10 @@
         <!-- search form (Optional) -->
         <form action="#" method="get" class="sidebar-form">
             <div class="input-group">
-                <input type="text" name="q" class="form-control" placeholder="Search..."/>
-<span class="input-group-btn">
-  <button type='submit' name='search' id='search-btn' class="btn btn-flat"><i class="fa fa-search"></i></button>
-</span>
+                <input type="text" id="packyakInventoryDashSearch" class="form-control" placeholder="Search..."/>
+                <span class="input-group-btn">
+                  <div class="btn btn-flat packyakCancelSearch"><i class="fa fa-times"></i></div>
+                </span>
             </div>
         </form>
         <!-- /.search form -->

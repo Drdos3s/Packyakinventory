@@ -25,7 +25,7 @@ class mainItemFeedController extends Controller {
             $locationsQuery = DB::select('select * from locations');
             $locations = json_decode(json_encode($locationsQuery),true);
 
-        foreach($locations as $location){
+        /*foreach($locations as $location){
             $inventoryRequest = $client->request('GET', 'https://connect.squareup.com/v1/'.$location['squareID'].'/inventory', [
                 'headers' => [
                     'Authorization' => 'Bearer '.$access_token ,
@@ -44,7 +44,7 @@ class mainItemFeedController extends Controller {
                     ->where('itemVariationID', $itemInv['variation_id'])
                     ->update(['itemVariationInventory' => $itemInv['quantity_on_hand']]);
             }
-        }
+        }*/
             //DEN -> 1H5A5ZGP2T4DA
             //PHX -> 3526BMVFNJZZX
             //OUT -> 9SQD525GSB3T3
@@ -89,7 +89,7 @@ class mainItemFeedController extends Controller {
 
 
             if($numItemsInDB == 0){
-                echo 'Fresh Install';
+                //echo 'Fresh Install';
                 foreach($itemList as $item){ 
                     foreach ($item['variations'] as $variation) { // <- check each variation
                         if($variation['track_inventory'] == true){ //<- are we tracking inventory for that item variation?
@@ -134,11 +134,11 @@ class mainItemFeedController extends Controller {
                     }
                 }
             }elseif($numItemsInDB == $numVariationsFromSquare){
-                echo 'No need to update, Please proceed - ';
+                //echo 'No need to update, Please proceed - ';
             }else{
-                echo 'Needs to be updated - ';
-                echo 'Number of items in database: '.$numItemsInDB;
-                echo 'Number of Variations from square: '.$numVariationsFromSquare;
+                //echo 'Needs to be updated - ';
+                //echo 'Number of items in database: '.$numItemsInDB;
+                //echo 'Number of Variations from square: '.$numVariationsFromSquare;
 
                 foreach($itemList as $item){ 
                     foreach ($item['variations'] as $variation) { // <- check each variation

@@ -17,7 +17,7 @@
                 </div>
 
                 <div class="box-body">
-                    <table class="table">
+                    <table id='packyakInventoryDashTable' class="table">
                         <thead>
                             <tr>
                                 <th>Location</th>
