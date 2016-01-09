@@ -25,7 +25,7 @@ class mainItemFeedController extends Controller {
             $locationsQuery = DB::select('select * from locations');
             $locations = json_decode(json_encode($locationsQuery),true);
 
-        /*foreach($locations as $location){
+        foreach($locations as $location){
             $inventoryRequest = $client->request('GET', 'https://connect.squareup.com/v1/'.$location['squareID'].'/inventory', [
                 'headers' => [
                     'Authorization' => 'Bearer '.$access_token ,
@@ -44,7 +44,7 @@ class mainItemFeedController extends Controller {
                     ->where('itemVariationID', $itemInv['variation_id'])
                     ->update(['itemVariationInventory' => $itemInv['quantity_on_hand']]);
             }
-        }*/
+        }
             //DEN -> 1H5A5ZGP2T4DA
             //PHX -> 3526BMVFNJZZX
             //OUT -> 9SQD525GSB3T3
@@ -139,14 +139,13 @@ class mainItemFeedController extends Controller {
                 //echo 'Needs to be updated - ';
                 //echo 'Number of items in database: '.$numItemsInDB;
                 //echo 'Number of Variations from square: '.$numVariationsFromSquare;
+                //FIX THIS AND DO IT RIGHT WHEN WE START TRACKING PRICING AND STUFF FOR OUR PURPOSES
+                DB::statement('drop table inventoryList');
 
-                foreach($itemList as $item){ 
-                    foreach ($item['variations'] as $variation) { // <- check each variation
-                        if($variation['track_inventory'] == true){ //<- are we tracking inventory for that item variation?
-                            //need to write the update function here
-                        }
-                    }
-                }
+                DB::statement('drop table locations');
+
+                $this->index();
+
             }
         }
         return $this->getInventory();

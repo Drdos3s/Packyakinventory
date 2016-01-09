@@ -60,5 +60,6 @@
                 
             </div><!-- /.box -->
         </div><!-- /.col -->
+    </div>
 
 @endsection
