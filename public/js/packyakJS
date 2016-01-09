@@ -8,6 +8,7 @@ $( document ).ready(function() {
 	$( ".packyakCancel" ).click(function() {
 		$(this).siblings('.packyakInventoryText').addClass('hidden');
 		$(this).siblings('.packyakInventory').removeClass('hidden');
+
 	});
 
 	//submit function that uses ajax request to update inventory for square
@@ -16,6 +17,10 @@ $( document ).ready(function() {
     	var oldInventoryLevel = $(this).siblings('.packyakInventory').html();
     	var itemLocation = $(this).siblings('.packyakLocationSold').html();
     	var itemVariationID = $(this).siblings('.packyakInventoryItemID').html();
+
+    	//saving the objects into variable to use after ajax request
+    	var thatRowTextbox = $(this).siblings('.packyakInventoryText');
+    	var thatRowInventory = $(this).siblings('.packyakInventory');
 
     	$.ajaxSetup({
 	        headers: {
@@ -38,7 +43,11 @@ $( document ).ready(function() {
 				        	   'quantityDelta': quantityDelta
 				    		  },
 				        success: function(data) {
-				           console.log('this is the upper function');
+				        	thatRowTextbox.addClass('hidden');
+			           		thatRowInventory.html(data);
+			           		thatRowInventory.removeClass('hidden');
+			           		thatRowInventory.parent().addClass('updateSuccess');
+				           	console.log('this is the upper function');
 				        }
 				    })
 		    	}else{
@@ -54,9 +63,11 @@ $( document ).ready(function() {
 			        	   'quantityDelta': quantityDelta
 			    		  },
 			        success: function(data) {
-			           console.log($(this).siblings('.packyakInventory'));
-			           $(this).siblings('.packyakInventoryText').addClass('hidden');
-					   $(this).siblings('.packyakInventory').removeClass('hidden');
+			           thatRowTextbox.addClass('hidden');
+			           thatRowInventory.html(data);
+			           thatRowInventory.removeClass('hidden');
+			           thatRowInventory.parent().addClass('updateSuccess');
+			           
 			           console.log('Inventory updated');
 			        },
 			        error: function(ts) { console.log(ts.responseText) }

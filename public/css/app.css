@@ -7,4 +7,12 @@
   .packyakNavContainer .packyakRegister {
     padding-right: 15px; }
 
+/******** DASHBOARD PAGE ********/
+.updateSuccess {
+  background-color: #00A65A;
+  color: #FFFFFF; }
+
+.packyakInventoryTextInput {
+  max-width: 70px; }
+
 /*# sourceMappingURL=app.css.map */

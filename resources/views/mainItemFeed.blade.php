@@ -40,7 +40,7 @@
                                 <td>{{ $row['itemName'] }}</td>
                                 <td>{{ $row['itemVariationName'] }}</td>
                                 <td class='packyakInventory'>{{ $row['itemVariationInventory'] }}</td>
-                                <td class='packyakInventoryText hidden'><?php echo Form::input('number','newInventoryLevel', $row['itemVariationInventory'], array('type' => 'number', 'min' => '-5', 'pattern' => '[1-8][0-9]')); ?></td>
+                                <td class='packyakInventoryText hidden'><?php echo Form::input('number','newInventoryLevel', $row['itemVariationInventory'], array('class' => 'packyakInventoryTextInput', 'type' => 'number', 'min' => '-5', 'pattern' => '[1-8][0-9]')); ?></td>
                                 <td><?php echo '$'.number_format($row['itemVariationPrice']/100, 2, '.', ' '); ?></td>
                                 <td>{{ $row['itemVariationSKU'] }}</td>
                                 <td class='packyakSubmitButton'><?php echo Form::button('Submit'); ?></td>
