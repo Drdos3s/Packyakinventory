@@ -82,7 +82,6 @@ class mainItemFeedController extends Controller {
             foreach($itemList as $item){ 
                 foreach ($item['variations'] as $variation) { // <- check each variation
                     if($variation['track_inventory'] == true){ //<- are we tracking inventory for that item?
-
                         $numVariationsFromSquare++;
                     }
                 }
@@ -93,7 +92,7 @@ class mainItemFeedController extends Controller {
                 echo 'Fresh Install';
                 foreach($itemList as $item){ 
                     foreach ($item['variations'] as $variation) { // <- check each variation
-                        if($variation['track_inventory'] == true){ //<- are we tracking inventory for that item?
+                        if($variation['track_inventory'] == true){ //<- are we tracking inventory for that item variation?
 
                             //define variables for each item variation
                             $squareItemID = $item['id'];
@@ -138,6 +137,16 @@ class mainItemFeedController extends Controller {
                 echo 'No need to update, Please proceed - ';
             }else{
                 echo 'Needs to be updated - ';
+                echo 'Number of items in database: '.$numItemsInDB;
+                echo 'Number of Variations from square: '.$numVariationsFromSquare;
+
+                foreach($itemList as $item){ 
+                    foreach ($item['variations'] as $variation) { // <- check each variation
+                        if($variation['track_inventory'] == true){ //<- are we tracking inventory for that item variation?
+                            //need to write the update function here
+                        }
+                    }
+                }
             }
         }
         return $this->getInventory();
@@ -238,14 +247,20 @@ class mainItemFeedController extends Controller {
         }
     }
 
-    function setupAndSendInventoryUpdate() {
+    function setupAndSendInventoryUpdate() { //What to do with ajax request 
         if(Request::ajax()) {
             $access_token = 'KI0ethBHis2N76q1jyYung';
             $client = new Client();
             $itemLocation = $_POST['itemLocation'];
             $itemVariationID = $_POST['itemVariationID'];
             $quantityDelta = $_POST['quantityDelta'];
-            $body = json_encode(array('quantity_delta' => $quantityDelta, 'adjustment_type' => 'RECEIVE_STOCK'), JSON_FORCE_OBJECT);
+            $adjustmentType = 'RECEIVE_STOCK';
+
+            if($quantityDelta < 0){
+                $adjustmentType = 'SALE';
+            }
+
+            $body = json_encode(array('quantity_delta' => $quantityDelta, 'adjustment_type' => $adjustmentType), JSON_FORCE_OBJECT);
             //echo $body;
             switch($itemLocation){
                 case 'Denver':
