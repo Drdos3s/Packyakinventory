@@ -33,6 +33,11 @@ Route::get('/locations', function () {
 
 Route::get('/locations', 'locationsPageController@index');
 
+//Purchase order routes
+Route::get('/purchaseOrders', function () {
+    return view('admin_template');
+});
+
 
 // Authentication routes...
 Route::get('auth/login', 'Auth\AuthController@getLogin');
