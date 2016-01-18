@@ -49,7 +49,8 @@
                 </div><!-- /.box-footer-->
                 
             </div><!-- /.box -->
-        </div><!-- /.col -->
+        </div><!-- /.col --> 
 
+</div>
 
 @endsection
