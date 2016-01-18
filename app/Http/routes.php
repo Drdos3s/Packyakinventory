@@ -38,6 +38,7 @@ Route::get('/purchaseOrders', function () {
     return view('admin_template');
 });
 
+Route::get('/purchaseOrders', 'purchaseOrderController@index');
 
 // Authentication routes...
 Route::get('auth/login', 'Auth\AuthController@getLogin');
