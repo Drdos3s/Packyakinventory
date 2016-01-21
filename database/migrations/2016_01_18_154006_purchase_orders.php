@@ -20,6 +20,12 @@ class PurchaseOrders extends Migration
             $table->string('po_vendor');
             $table->timestamps();
         });
+
+        Schema::create('purchase_order_items', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('related_po_id');
+            $table->string('square_variation_id');
+        });
     }
 
     /**
