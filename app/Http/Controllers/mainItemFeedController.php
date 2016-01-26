@@ -10,6 +10,7 @@ use Request;
 use GuzzleHttp\Client;
 use DB;
 use Schema;
+use App\Item;
 
 
 class mainItemFeedController extends Controller {
@@ -121,15 +122,21 @@ class mainItemFeedController extends Controller {
                             
                             $locationSoldAt = $location['locationCity'];
 
-                            DB::insert('insert into inventoryList (squareItemID, itemName, itemCategoryName,
+                            /*DB::insert('insert into inventoryList (squareItemID, itemName, itemCategoryName,
                                                                     itemCategoryID, itemVariationName, itemVariationID,
                                                                     itemVariationPrice, itemVariationSKU, locationSoldAt
                                                                     ) values (?, ?, ?, ?, ?, ?, ?, ?, ?)',
                                                                     [$squareItemID, $itemName, $itemCategoryName, 
                                                                      $itemCategoryID, $itemVariationName, $itemVariationID,
                                                                      $itemVariationPrice, $itemVariationSKU, $locationSoldAt]);
-                            //echo $location['locationState'].' '.$item['name'].' '.$variation['name'].isset($variation['sku']).' - '; // <- print out item name and variation name
-                             
+                            //echo $location['locationState'].' '.$item['name'].' '.$variation['name'].isset($variation['sku']).' - '; // <- print out item name and variation name*/
+                            
+                            Model::updateOrCreate(['primary_key' => $itemVariationID], 
+                                                  ['squareItemID' => $squareItemID, 'itemName' => $itemName, 'itemCategoryName' => $itemCategoryName,
+                                                   'itemCategoryID' => $itemCategoryID, 'itemVariationName' => $itemVariationName, 'itemVariationID' => $itemVariationID,
+                                                   'itemVariationPrice' => $itemVariationPrice, 'itemVariationSKU' => $itemVariationSKU, 'locationSoldAt' => $locationSoldAt]);
+
+
                        } 
                     }
                 }
@@ -202,45 +209,8 @@ class mainItemFeedController extends Controller {
     }
 
     function index() {
-        if (Auth::check()) {
-            //echo "USER IS LOGGED IN"; // The user is logged in...
-
-            //-------------------If locations table does not exist, create table---//
-            if (!Schema::hasTable('locations') || !Schema::hasTable('inventoryList')){
-                Schema::create('locations', function($table){
-                    $table->increments('id');
-                    $table->char('squareID', 255);
-                    $table->char('businessName', 255);
-                    $table->char('businessEmail', 255);
-                    $table->char('locationAddressLine1', 255);
-                    $table->char('locationAddressLine2', 255);
-                    $table->char('locationCity', 255);
-                    $table->char('locationState', 255);
-                    $table->char('locationZip', 255);
-                    $table->char('locationPhone', 255);
-                    $table->char('locationNickname', 255);
-                });
-
-                Schema::create('inventoryList', function($table){
-                    $table->increments('id');
-                    $table->char('squareItemID', 255); //<- use the item id from the variation if it is easier
-                    $table->char('itemName', 255);
-                    $table->char('itemCategoryName', 255);
-                    $table->char('itemCategoryID', 255);
-                    $table->char('itemVariationName', 255);
-                    $table->char('itemVariationID', 255);
-                    $table->char('itemVariationPrice', 255);
-                    $table->char('itemVariationSKU', 255);
-                    $table->char('locationSoldAt', 255);
-                    $table->char('itemVariationInventory', 255);
-
-                });
-                //echo 'tables got built ';
-                return $this->createLocations();
-            }else{
-                //echo 'tables were already built ';
-                return $this->createLocations();
-            }   
+        if (Auth::check()){//The user is logged in
+            return $this->createLocations(); 
         }else{
             return redirect('/auth/register');
         }
