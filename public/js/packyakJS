@@ -104,11 +104,12 @@ $( document ).ready(function() {
 
 	/*--------------------ADDING ITEM TO A PURCHASE ORDER IN DATABASE----------------------------*/
 	$('.packyakPurchaseOrderCreateButton').click(function() {
-		var po_name = 'this is a test';//
-		var po_status = 'this is a test';//
-		var po_vendor = 'this is a test';//
-		var po_location = 'this is a test';//
-		var po_invoice_number = 'this is a test';//
+		console.log()
+		var po_name = $('#newPurchaseOrderTitle').val();//
+		var po_status = $('#purchaseOrderStatusSelect').val();//
+		var po_vendor = $('#purchaseOrderVendorSelect').val();//
+		var po_location = $('#purchaseOrderLocationSelect').val();//
+		var po_invoice_number = $('#purchaseOrderInvoiceNumber').val();//
 
 
     	$.ajaxSetup({
@@ -128,6 +129,7 @@ $( document ).ready(function() {
 	    		  },
 	        success: function(data) {
 	           console.log(data);
+	           $('#myModal').modal('toggle');
 	           console.log('New Purchase Order Created');
 	        },
 	        error: function(ts) { console.log(ts.responseText) }

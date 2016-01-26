@@ -14,12 +14,13 @@
             </button>
         </div>
 
-
+        
         <div class='col-md-12'>
+        @foreach($existingPurchaseOrders as $purchaseOrder)
         <!-- Box -->
             <div class="box box-primary">
                 <div class="box-header with-border">
-                    <h3 class="box-title"><?php echo 'Locations'?></h3>
+                    <h3 class="box-title"><?php echo $purchaseOrder->po_name?></h3>
                     <div class="box-tools pull-right">
                         <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
                     </div>
@@ -30,9 +31,9 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Category</th>
-                                <th>Name</th>
-                                <th>SKU</th>
+                                <th>Status</th>
+                                <th>Invoice #</th>
+                                <th>Vendor</th>
                                 <th>Price</th>
                                 <th>Quantity</th>
                                 <th></th>
@@ -41,11 +42,11 @@
                         </thead>
                         
                         <tbody>
-                            <td>Test</td>
-                            <td>Test</td>
-                            <td>Test</td>
-                            <td>Test</td>
-                            <td>Test</td>
+                            <td><?php echo $purchaseOrder->po_status?></td>
+                            <td><?php echo $purchaseOrder->po_invoice_number?></td>
+                            <td><?php echo $purchaseOrder->po_vendor?></td>
+                            <td><?php echo $purchaseOrder->po_name?></td>
+                            <td><?php echo $purchaseOrder->po_name?></td>
                             <td>Test</td>
                             <td>Test</td> 
                         </tbody>
@@ -59,8 +60,9 @@
                 </div><!-- /.box-footer-->
                 
             </div><!-- /.box -->
+            @endforeach
 
-
+<?php var_dump($existingPurchaseOrders);?>
 
 
 <!-- Modal -->
@@ -85,7 +87,7 @@
     <div class="form-group">
         <label for="inputPassword3" class="col-sm-2 control-label">Invoice #</label>
         <div class="col-sm-6">
-          <input class="form-control" id="inputPassword3" placeholder="(Optional)">
+          <input class="form-control" id="purchaseOrderInvoiceNumber" placeholder="(Optional)">
         </div>
     </div>
 
@@ -104,7 +106,7 @@
     <div class="form-group col-sm-12">
         <label for="purchaseOrderVendorSelect" class="col-sm-2 control-label">Vendor</label>
         <div class="btn-group">
-            <select id="purchaseOrderLocationSelect" class="form-control col-sm-10">
+            <select id="purchaseOrderVendorSelect" class="form-control col-sm-10">
             <!-- Need to input dynamic location functionality -->
                   <option>Valken</option>
                   <option>Elite Force</option>

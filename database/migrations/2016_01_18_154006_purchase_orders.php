@@ -12,6 +12,7 @@ class PurchaseOrders extends Migration
      */
     public function up()
     {
+        //Create table for purchase orders
         Schema::create('purchase_orders', function (Blueprint $table) {
             $table->increments('id');
             $table->string('po_name');
@@ -21,11 +22,12 @@ class PurchaseOrders extends Migration
             $table->timestamps();
         });
 
-        Schema::create('purchase_order_items', function (Blueprint $table) {
+        //Create table for purchase order items
+        /*Schema::create('purchase_order_items', function (Blueprint $table) {
             $table->increments('id');
             $table->string('related_po_id');
             $table->string('square_variation_id');
-        });
+        });*/
     }
 
     /**
