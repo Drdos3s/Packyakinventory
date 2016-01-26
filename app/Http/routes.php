@@ -11,12 +11,12 @@
 |
 */
 
-//Leads to marketing page
+//Leads to marketing page--->
 Route::get('/', function() {
 	return view('marketing');
 });
 
-//Main dashboard
+//Main dashboard--->
 Route::get('/dashboard', function () {
     return view('admin_template');
 });
@@ -26,17 +26,20 @@ Route::post('/dashboard', 'mainItemFeedController@setupAndSendInventoryUpdate');
 
 
 
-//Locations Page routes
+//Locations Page routes--->
 Route::get('/locations', function () {
     return view('admin_template');
 });
 
 Route::get('/locations', 'locationsPageController@index');
 
-//Purchase order routes
+//Purchase order routes--->
 Route::get('/purchaseOrders', function () {
     return view('admin_template');
 });
+
+Route::get('/purchaseOrders', 'purchaseOrderController@index');
+Route::post('/purchaseOrders', 'purchaseOrderController@createNewPurchaseOrder');
 
 
 // Authentication routes...

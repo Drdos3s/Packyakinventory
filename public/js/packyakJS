@@ -101,4 +101,38 @@ $( document ).ready(function() {
 			console.log('This item new inventory text is not visible. ')
 		}
     });
+
+	/*--------------------ADDING ITEM TO A PURCHASE ORDER IN DATABASE----------------------------*/
+	$('.packyakPurchaseOrderCreateButton').click(function() {
+		console.log()
+		var po_name = $('#newPurchaseOrderTitle').val();//
+		var po_status = $('#purchaseOrderStatusSelect').val();//
+		var po_vendor = $('#purchaseOrderVendorSelect').val();//
+		var po_location = $('#purchaseOrderLocationSelect').val();//
+		var po_invoice_number = $('#purchaseOrderInvoiceNumber').val();//
+
+
+    	$.ajaxSetup({
+	        headers: {
+	            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+	        }
+		});
+
+		$.ajax({
+	        type: "POST",
+	        url: './purchaseOrders',
+	        data: {'po_name': po_name,
+	        	   'po_status': po_status,
+	        	   'po_vendor': po_vendor,
+	        	   'po_location': po_location,
+	        	   'po_invoice_number': po_invoice_number
+	    		  },
+	        success: function(data) {
+	           console.log(data);
+	           $('#myModal').modal('toggle');
+	           console.log('New Purchase Order Created');
+	        },
+	        error: function(ts) { console.log(ts.responseText) }
+	    })
+	});
 });
