@@ -6,8 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Item extends Model
 {
-    protected $table = 'inventoryList'; //chanign the default table
+
+	protected $table = 'inventoryList';
     public $timestamps = false; //not using timestamps
-    $primaryKey = 'itemVariationID';
-    $incrementing = false;
+    public $incrementing = false;
+    //protected $fillable = ['squareItemID', 'itemName', 'itemCategoryName', 'itemCategoryID', 'itemVariationName', 'itemVariationID'];
+    protected $fillable = ['*'];
+    protected $primaryKey = 'itemVariationID';
+     //chanign the default table
 }

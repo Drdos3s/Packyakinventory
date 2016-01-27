@@ -1,4 +1,5 @@
-<?php namespace App\Http\Controllers;
+<?php 
+namespace App\Http\Controllers;
 
 use Auth;
 
@@ -73,29 +74,12 @@ class mainItemFeedController extends Controller {
             $itemContents = $itemsRequest->getBody();
             $itemList = json_decode($itemContents, true);
 
-
-            $numItemsInDB = DB::table('inventoryList')
-                ->where('locationSoldAt', $location['locationCity'])
-                ->count();
-            
-            $numVariationsFromSquare = 0;
-
-            foreach($itemList as $item){ 
-                foreach ($item['variations'] as $variation) { // <- check each variation
-                    if($variation['track_inventory'] == true){ //<- are we tracking inventory for that item?
-                        $numVariationsFromSquare++;
-                    }
-                }
-            }
-
-
-            if($numItemsInDB == 0){
-                //echo 'Fresh Install';
                 foreach($itemList as $item){ 
                     foreach ($item['variations'] as $variation) { // <- check each variation
                         if($variation['track_inventory'] == true){ //<- are we tracking inventory for that item variation?
 
                             //define variables for each item variation
+
                             $squareItemID = $item['id'];
                             if(isset($item['category']['name'])){
                                 $itemCategoryName = $item['category']['name'];
@@ -121,39 +105,23 @@ class mainItemFeedController extends Controller {
                             }
                             
                             $locationSoldAt = $location['locationCity'];
-
-                            /*DB::insert('insert into inventoryList (squareItemID, itemName, itemCategoryName,
-                                                                    itemCategoryID, itemVariationName, itemVariationID,
-                                                                    itemVariationPrice, itemVariationSKU, locationSoldAt
-                                                                    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                                                                    [$squareItemID, $itemName, $itemCategoryName, 
-                                                                     $itemCategoryID, $itemVariationName, $itemVariationID,
-                                                                     $itemVariationPrice, $itemVariationSKU, $locationSoldAt]);
-                            //echo $location['locationState'].' '.$item['name'].' '.$variation['name'].isset($variation['sku']).' - '; // <- print out item name and variation name*/
                             
-                            Model::updateOrCreate(['primary_key' => $itemVariationID], 
-                                                  ['squareItemID' => $squareItemID, 'itemName' => $itemName, 'itemCategoryName' => $itemCategoryName,
-                                                   'itemCategoryID' => $itemCategoryID, 'itemVariationName' => $itemVariationName, 'itemVariationID' => $itemVariationID,
-                                                   'itemVariationPrice' => $itemVariationPrice, 'itemVariationSKU' => $itemVariationSKU, 'locationSoldAt' => $locationSoldAt]);
+                            $itemInDB = Item::firstOrNew(['itemVariationID' => $itemVariationID]);
+                            $itemInDB -> squareItemID = $squareItemID; 
+                            $itemInDB -> itemName = $itemName; 
+                            $itemInDB -> itemCategoryName = $itemCategoryName;                     
+                            $itemInDB -> itemCategoryID = $itemCategoryID; 
+                            $itemInDB -> itemVariationName = $itemVariationName; 
+                            $itemInDB -> itemVariationID = $itemVariationID;                    
+                            $itemInDB -> itemVariationPrice = $itemVariationPrice; 
+                            $itemInDB -> itemVariationSKU = $itemVariationSKU; 
+                            $itemInDB -> locationSoldAt = $locationSoldAt;
+                            $itemInDB -> save();
 
 
                        } 
                     }
                 }
-            }elseif($numItemsInDB == $numVariationsFromSquare){
-                //echo 'No need to update, Please proceed - ';
-            }else{
-                //echo 'Needs to be updated - ';
-                //echo 'Number of items in database: '.$numItemsInDB;
-                //echo 'Number of Variations from square: '.$numVariationsFromSquare;
-                //FIX THIS AND DO IT RIGHT WHEN WE START TRACKING PRICING AND STUFF FOR OUR PURPOSES
-                DB::statement('drop table inventoryList');
-
-                DB::statement('drop table locations');
-
-                $this->index();
-
-            }
         }
         return $this->getInventory();
     }
