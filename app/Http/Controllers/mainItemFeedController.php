@@ -189,7 +189,7 @@ class mainItemFeedController extends Controller {
             $itemLocation = $_POST['itemLocation'];
             $itemVariationID = $_POST['itemVariationID'];
             $quantityDelta = $_POST['quantityDelta'];
-            $updatedUnitPrice = $_POST['updatedUnitPrice'];
+            $updatedUnitPrice = $_POST['updatedUnitPrice']*100;
             $adjustmentType = 'RECEIVE_STOCK';
 
             //Update database variation with new cost of goods
@@ -243,13 +243,3 @@ class mainItemFeedController extends Controller {
         }
     }
 }
-
-    /*function setupAndSendUnitPriceUpdate() {
-        if(Request::ajax()){
-            $updatedUnitPrice = $_POST['updatedUnitPrice'];
-            $itemVariationID = $_POST['itemVariationID'];
-
-            echo $updatedUnitPrice.'+++'.$itemVariationID;
-            return 'it works??';
-        }
-    }*/

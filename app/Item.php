@@ -8,7 +8,7 @@ class Item extends Model
 {
 
 	protected $table = 'inventoryList';
-    public $timestamps = false; //not using timestamps
+    public $timestamps = true; //not using timestamps
     public $incrementing = false;
     //protected $fillable = ['squareItemID', 'itemName', 'itemCategoryName', 'itemCategoryID', 'itemVariationName', 'itemVariationID'];
     protected $fillable = ['*'];

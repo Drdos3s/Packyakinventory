@@ -42,13 +42,13 @@
                                 <td>{{ $row['itemVariationName'] }}</td>
                                 
                                 <td class='packyakInventory'>{{ $row['itemVariationInventory'] }}</td>
-                                <td class='packyakInventoryText hidden'><?php echo Form::input('number','newInventoryLevel', $row['itemVariationInventory'], array('class' => 'packyakInventoryTextInput', 'type' => 'number', 'min' => '-5', 'pattern' => '[1-8][0-9]')); ?></td>
+                                <td class='packyakInventoryText hidden'><?php echo Form::input('number','newInventoryLevel', $row['itemVariationInventory'], array('class' => 'packyakInventoryTextInput', 'type' => 'number', 'min' => '-5', 'step' => '1')); ?></td>
                                 
                                 <td><?php echo '$'.number_format($row['itemVariationPrice']/100, 2, '.', ' '); ?></td>
                                 <td>{{ $row['itemVariationSKU'] }}</td>
 
-                                <td class='packyakUnitPrice'>${{ $row['itemVariationUnitCost'] }}</td>
-                                <td class='packyakUnitPriceText hidden'>$<input type="text" class="packyakUnitPriceTextInput" name="currency" pattern="^\d*(\.\d{2}$)?" value = {{ $row['itemVariationUnitCost'] }}></td>
+                                <td class='packyakUnitPrice'><?php echo '$'.number_format($row['itemVariationUnitCost']/100, 2, '.', ' '); ?></td>
+                                <td class='packyakUnitPriceText hidden'>$<?php echo Form::input('number','currency', number_format($row['itemVariationUnitCost']/100, 2, '.', ' '), array('class' => 'packyakUnitPriceTextInput', 'min' => '.00', 'step' => '.01')); ?></td>
                                 
                                 <td class='packyakSubmitButton'><?php echo Form::button('Submit'); ?></td>
                                 <td class='packyakCancel'><?php echo Form::button('Cancel'); ?></td>

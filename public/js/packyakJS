@@ -81,12 +81,14 @@ $( document ).ready(function() {
 				    		  },
 				        success: function(data) {
 				        	//switching classes back to normal
+						var responseData = $.parseJSON(data)
+			            console.log(data);
 			        	thatRowInventoryTextbox.addClass('hidden');
-		           		thatRowInventory.html(data.itemVariationInventory);
+		           		thatRowInventory.html(responseData.itemVariationInventory);
 		           		thatRowInventory.removeClass('hidden');
 		           		thatRowInventory.parent().addClass('updateSuccess');
 		           		thatRowUnitPriceTextbox.addClass('hidden');
-		           		thatRowUnitPrice.html(data.itemVariationUnitPrice);
+		           		thatRowUnitPrice.html(responseData.itemVariationUnitPrice);
 		           		thatRowUnitPrice.removeClass('hidden');
 				           	console.log('this is the upper function');
 
@@ -109,13 +111,15 @@ $( document ).ready(function() {
 			        success: function(data) {
 			            //switching classes back to normal
 			            var responseData = $.parseJSON(data)
+						var rawUnitCost = parseInt(responseData.itemVariationUnitPrice, 10)/100;
+						var formattedUnitCost = '$' + rawUnitCost.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
 			            console.log(data);
 			        	thatRowInventoryTextbox.addClass('hidden');
 		           		thatRowInventory.html(responseData.itemVariationInventory);
 		           		thatRowInventory.removeClass('hidden');
 		           		thatRowInventory.parent().addClass('updateSuccess');
 		           		thatRowUnitPriceTextbox.addClass('hidden');
-		           		thatRowUnitPrice.html(responseData.itemVariationUnitPrice);
+		           		thatRowUnitPrice.html(formattedUnitCost);
 		           		thatRowUnitPrice.removeClass('hidden');
 
 
