@@ -117,8 +117,6 @@ class mainItemFeedController extends Controller {
                             $itemInDB -> itemVariationSKU = $itemVariationSKU; 
                             $itemInDB -> locationSoldAt = $locationSoldAt;
                             $itemInDB -> save();
-
-
                        } 
                     }
                 }
@@ -191,7 +189,13 @@ class mainItemFeedController extends Controller {
             $itemLocation = $_POST['itemLocation'];
             $itemVariationID = $_POST['itemVariationID'];
             $quantityDelta = $_POST['quantityDelta'];
+            $updatedUnitPrice = $_POST['updatedUnitPrice'];
             $adjustmentType = 'RECEIVE_STOCK';
+
+            //Update database variation with new cost of goods
+            DB::table('inventoryList')
+                    ->where('itemVariationID', $itemVariationID)
+                    ->update(['itemVariationUnitCost' => $updatedUnitPrice]);
 
             if($quantityDelta < 0){
                 $adjustmentType = 'SALE';
@@ -213,16 +217,39 @@ class mainItemFeedController extends Controller {
             //DEN -> 1H5A5ZGP2T4DA
             //PHX -> 3526BMVFNJZZX
             //OUT -> 9SQD525GSB3T3
-            $updateInventoryRequest = $client->post('https://connect.squareup.com/v1/'.$itemLocationID.'/inventory/'.$itemVariationID, [
+
+            //If quantity delta does not equal 0 then send square request
+            if($quantityDelta != 0){
+                $updateInventoryRequest = $client->post('https://connect.squareup.com/v1/'.$itemLocationID.'/inventory/'.$itemVariationID, [
                 'headers' => ['Authorization' => 'Bearer '.$access_token ,
                         'Accept' => 'application/json',
                         'Content-Type' => 'application/json'
                         ], 
                         'body' => $body
-            ]);
+                ]);
 
-            $updateInventoryReponse = json_decode($updateInventoryRequest->getBody(), true);
-            return $updateInventoryReponse['quantity_on_hand'];
+                $updateInventoryReponse = json_decode($updateInventoryRequest->getBody(), true);
+
+                $successResponse = json_encode(array('itemVariationInventory' => $updateInventoryReponse['quantity_on_hand'], 'itemVariationUnitPrice' => $updatedUnitPrice));
+                
+                return $successResponse;
+            }else{
+                //If the quantity delta is 0 then just update and do the stuff. 
+                $updatedItem = DB::table('inventoryList')->where('itemVariationID', $itemVariationID)->first();
+                $successResponse = json_encode(array('itemVariationInventory' => $updatedItem->itemVariationInventory, 'itemVariationUnitPrice' => $updatedItem->itemVariationUnitCost));
+                return $successResponse;
+            }
+            
         }
     }
 }
+
+    /*function setupAndSendUnitPriceUpdate() {
+        if(Request::ajax()){
+            $updatedUnitPrice = $_POST['updatedUnitPrice'];
+            $itemVariationID = $_POST['itemVariationID'];
+
+            echo $updatedUnitPrice.'+++'.$itemVariationID;
+            return 'it works??';
+        }
+    }*/

@@ -22,7 +22,13 @@ Route::get('/dashboard', function () {
 });
 
 Route::get('/dashboard', 'mainItemFeedController@index');
+
+
 Route::post('/dashboard', 'mainItemFeedController@setupAndSendInventoryUpdate');
+//Route::post('/dashboard', 'mainItemFeedController@setupAndSendUnitPriceUpdate');
+
+
+
 
 
 

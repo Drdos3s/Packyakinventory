@@ -12,7 +12,7 @@
   background-color: #00A65A;
   color: #FFFFFF; }
 
-.packyakInventoryTextInput {
-  max-width: 70px; }
+.packyakInventoryTextInput, .packyakUnitPriceTextInput {
+  max-width: 30px; }
 
 /*# sourceMappingURL=app.css.map */

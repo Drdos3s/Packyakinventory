@@ -24,6 +24,8 @@ class InventoryList extends Migration
             $table->char('itemVariationSKU', 255);
             $table->char('locationSoldAt', 255);
             $table->char('itemVariationInventory', 255);
+            $table->char('itemVendorToOrderFrom', 255);
+            $table->integer('itemVariationUnitCost');
             $table->timestamps();
         });
     }

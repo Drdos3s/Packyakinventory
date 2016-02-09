@@ -23,7 +23,12 @@ $( document ).ready(function() {
     	$('#packyakInventoryDashSearch').val('').keyup();
     });
 
-	//Clicking on inventory number changes to textfield and if hit cancel, shows original inventory level
+	//Clicking on inventory and unit price number changes to textfield and if hit cancel, shows original inventory level
+	$(".packyakUnitPrice").click(function() {
+		$(this).addClass("hidden");
+		$(this).next().removeClass("hidden");
+	});
+
 	$( ".packyakInventory" ).click(function() {
   		$(this).addClass("hidden");
   		$(this).next().removeClass("hidden");
@@ -32,6 +37,8 @@ $( document ).ready(function() {
 	$( ".packyakCancel" ).click(function() {
 		$(this).siblings('.packyakInventoryText').addClass('hidden');
 		$(this).siblings('.packyakInventory').removeClass('hidden');
+		$(this).siblings('.packyakUnitPriceText').addClass('hidden');
+		$(this).siblings('.packyakUnitPrice').removeClass('hidden');
 
 	});
 
@@ -41,10 +48,14 @@ $( document ).ready(function() {
     	var oldInventoryLevel = $(this).siblings('.packyakInventory').html();
     	var itemLocation = $(this).siblings('.packyakLocationSold').html();
     	var itemVariationID = $(this).siblings('.packyakInventoryItemID').html();
+    	var updatedUnitPrice = $(this).siblings('.packyakUnitPriceText').children().val();
+    	var oldUnitPrice = $(this).siblings('.packyakUnitPrice').html();
 
     	//saving the objects into variable to use after ajax request
-    	var thatRowTextbox = $(this).siblings('.packyakInventoryText');
+    	var thatRowInventoryTextbox = $(this).siblings('.packyakInventoryText');
     	var thatRowInventory = $(this).siblings('.packyakInventory');
+    	var thatRowUnitPriceTextbox = $(this).siblings('.packyakUnitPriceText');
+    	var thatRowUnitPrice = $(this).siblings('.packyakUnitPrice');
 
     	$.ajaxSetup({
 	        headers: {
@@ -52,26 +63,33 @@ $( document ).ready(function() {
 	        }
 		});
 
-    	if($(this).siblings('.packyakInventoryText').is(':visible')){
-			if(newInventoryLevel == oldInventoryLevel){
-	    		alert('Please make a change in inventory level to submit.');
-	    	}else if(newInventoryLevel < oldInventoryLevel){
-	    		var continueWithSelection = confirm('New inventory level is lower than old inventory. Continue?');
+    	if($(this).siblings('.packyakInventoryText').is(':visible') || $(this).siblings('.packyakUnitPriceText').is(':visible')){
+			if(updatedUnitPrice == oldUnitPrice && newInventoryLevel == oldInventoryLevel){
+	    		alert('Please make a change in inventory or unit cost to submit.');
+	    	}else if(newInventoryLevel < oldInventoryLevel || updatedUnitPrice < oldUnitPrice){
+	    		var continueWithSelection = confirm('New inventory amount or unit price is lower than current levels. Continue?');
 		    	if(continueWithSelection == true){
 		    		var quantityDelta = newInventoryLevel - oldInventoryLevel;
+		    		console.log(quantityDelta);
 			    	$.ajax({
 				        type: "POST",
 				        url: './dashboard',
 				        data: {'itemLocation': itemLocation,
 				        	   'itemVariationID': itemVariationID,
-				        	   'quantityDelta': quantityDelta
+				        	   'quantityDelta': quantityDelta,
+				        	   'updatedUnitPrice': updatedUnitPrice
 				    		  },
 				        success: function(data) {
-				        	thatRowTextbox.addClass('hidden');
-			           		thatRowInventory.html(data);
-			           		thatRowInventory.removeClass('hidden');
-			           		thatRowInventory.parent().addClass('updateSuccess');
+				        	//switching classes back to normal
+			        	thatRowInventoryTextbox.addClass('hidden');
+		           		thatRowInventory.html(data.itemVariationInventory);
+		           		thatRowInventory.removeClass('hidden');
+		           		thatRowInventory.parent().addClass('updateSuccess');
+		           		thatRowUnitPriceTextbox.addClass('hidden');
+		           		thatRowUnitPrice.html(data.itemVariationUnitPrice);
+		           		thatRowUnitPrice.removeClass('hidden');
 				           	console.log('this is the upper function');
+
 				        }
 				    })
 		    	}else{
@@ -79,18 +97,28 @@ $( document ).ready(function() {
 		    	}	
 		    }else{	
 		    	var quantityDelta = newInventoryLevel - oldInventoryLevel;
+		    	console.log(quantityDelta);
 		    	$.ajax({
 			        type: "POST",
 			        url: './dashboard',
 			        data: {'itemLocation': itemLocation,
 			        	   'itemVariationID': itemVariationID,
-			        	   'quantityDelta': quantityDelta
+			        	   'quantityDelta': quantityDelta,
+			        	   'updatedUnitPrice': updatedUnitPrice
 			    		  },
 			        success: function(data) {
-			           thatRowTextbox.addClass('hidden');
-			           thatRowInventory.html(data);
-			           thatRowInventory.removeClass('hidden');
-			           thatRowInventory.parent().addClass('updateSuccess');
+			            //switching classes back to normal
+			            var responseData = $.parseJSON(data)
+			            console.log(data);
+			        	thatRowInventoryTextbox.addClass('hidden');
+		           		thatRowInventory.html(responseData.itemVariationInventory);
+		           		thatRowInventory.removeClass('hidden');
+		           		thatRowInventory.parent().addClass('updateSuccess');
+		           		thatRowUnitPriceTextbox.addClass('hidden');
+		           		thatRowUnitPrice.html(responseData.itemVariationUnitPrice);
+		           		thatRowUnitPrice.removeClass('hidden');
+
+
 			           
 			           console.log('Inventory updated');
 			        },
@@ -98,7 +126,7 @@ $( document ).ready(function() {
 			    })
 		    }
 		}else{
-			console.log('This item new inventory text is not visible. ')
+			console.log('Please do something in order to submit');
 		}
     });
 
