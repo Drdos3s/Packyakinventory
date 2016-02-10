@@ -19,6 +19,7 @@ class PurchaseOrders extends Migration
             $table->string('po_status');
             $table->string('po_invoice_number');
             $table->string('po_vendor');
+            $table->string('po_location');
             $table->timestamps();
         });
 

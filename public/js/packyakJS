@@ -110,7 +110,7 @@ $( document ).ready(function() {
 			    		  },
 			        success: function(data) {
 			            //switching classes back to normal
-			            var responseData = $.parseJSON(data)
+			            var responseData = $.parseJSON(data);
 						var rawUnitCost = parseInt(responseData.itemVariationUnitPrice, 10)/100;
 						var formattedUnitCost = '$' + rawUnitCost.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
 			            console.log(data);
@@ -134,15 +134,13 @@ $( document ).ready(function() {
 		}
     });
 
-	/*--------------------ADDING ITEM TO A PURCHASE ORDER IN DATABASE----------------------------*/
+	/*--------------------ADDING A PURCHASE ORDER IN DATABASE----------------------------*/
 	$('.packyakPurchaseOrderCreateButton').click(function() {
-		console.log()
 		var po_name = $('#newPurchaseOrderTitle').val();//
 		var po_status = $('#purchaseOrderStatusSelect').val();//
 		var po_vendor = $('#purchaseOrderVendorSelect').val();//
 		var po_location = $('#purchaseOrderLocationSelect').val();//
 		var po_invoice_number = $('#purchaseOrderInvoiceNumber').val();//
-
 
     	$.ajaxSetup({
 	        headers: {
@@ -160,9 +158,12 @@ $( document ).ready(function() {
 	        	   'po_invoice_number': po_invoice_number
 	    		  },
 	        success: function(data) {
-	           console.log(data);
 	           $('#myModal').modal('toggle');
-	           console.log('New Purchase Order Created');
+
+	           var responseData = $.parseJSON(data);
+	           console.log(responseData.po_name);
+	           
+
 	        },
 	        error: function(ts) { console.log(ts.responseText) }
 	    })
