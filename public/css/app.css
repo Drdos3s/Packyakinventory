@@ -8,11 +8,31 @@
     padding-right: 15px; }
 
 /******** DASHBOARD PAGE ********/
+.packYakItemFeedRow:hover{
+	background-color: #ECF0F5;
+	color: #333;
+}
+
+/*Change, add to order, and cancel icon button styling*/
+.fa-check-circle-o{
+	color: #00A65A;
+}
+
+.fa-times-circle{
+	color: #DD4B39;
+}
+
+.fa-chevron-circle-down{
+	color: #3C8DBC;
+}
+
+
 .updateSuccess {
   background-color: #00A65A;
   color: #FFFFFF; }
 
 .packyakInventoryTextInput, .packyakUnitPriceTextInput {
   max-width: 70px; }
+
 
 /*# sourceMappingURL=app.css.map */

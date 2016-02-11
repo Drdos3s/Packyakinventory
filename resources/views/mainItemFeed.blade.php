@@ -17,6 +17,25 @@
                 </div>
 
                 <div class="box-body">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                     <table id='packyakInventoryDashTable' class="table">
                         <thead>
                             <tr>
@@ -26,15 +45,14 @@
                                 <th>Variation</th>
                                 <th>Inventory</th>
                                 <th>Price</th>
+                                <th>Unit Cost</th>
+                                <th>Margin</th>
                                 <th>SKU</th>
-                                <th>Unit Price</th>
-                                <th>Submit</th>
-                                <th>Cancel</th>
                             </tr>
                         </thead>
                         <tbody>
-                        <?php //var_dump($items); ?>
-                            @foreach($items as $row)
+                        <?php //var_dump($dashboardDataFinal); ?>
+                            @foreach($dashboardDataFinal['items'] as $row)
                             <tr class='packYakItemFeedRow'>
                                 <td class='packyakLocationSold'>{{ $row['locationSoldAt'] }}</td>
                                 <td>{{ $row['itemCategoryName'] }}</td>
@@ -45,13 +63,22 @@
                                 <td class='packyakInventoryText hidden'><?php echo Form::input('number','newInventoryLevel', $row['itemVariationInventory'], array('class' => 'packyakInventoryTextInput', 'type' => 'number', 'min' => '-5', 'step' => '1')); ?></td>
                                 
                                 <td><?php echo '$'.number_format($row['itemVariationPrice']/100, 2, '.', ' '); ?></td>
-                                <td>{{ $row['itemVariationSKU'] }}</td>
-
                                 <td class='packyakUnitPrice'><?php echo '$'.number_format($row['itemVariationUnitCost']/100, 2, '.', ' '); ?></td>
                                 <td class='packyakUnitPriceText hidden'>$<?php echo Form::input('number','currency', number_format($row['itemVariationUnitCost']/100, 2, '.', ' '), array('class' => 'packyakUnitPriceTextInput', 'min' => '.00', 'step' => '.01')); ?></td>
-                                
-                                <td class='packyakSubmitButton'><?php echo Form::button('Submit'); ?></td>
-                                <td class='packyakCancel'><?php echo Form::button('Cancel'); ?></td>
+                                <td class='packyakProfitMargin'><?php echo '$'.number_format(($row['itemVariationPrice']-$row['itemVariationUnitCost'])/100, 2, '.', ' '); ?></td>
+                                <td>{{ $row['itemVariationSKU'] }}</td>                                
+                                <td class='packyakPurchaseOrderMenuButton'>
+                                    <div class="dropdown">
+                                        <i class="fa fa-chevron-circle-down fa-2 btn btn-default dropdown-toggle" type="button" id="packyakPurchaseOrderList" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></i>
+                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="packyakPurchaseOrderList">
+                                        @foreach($dashboardDataFinal['purchaseOrders'] as $pendingPO)
+                                            <li><a class="packyakPurchaseOrderListItem">{{ $pendingPO['po_name'] }}</a></li>
+                                        @endforeach
+                                      </ul>
+                                    </div>        
+                                </td>
+                                <td class='packyakSubmitButton'><i class="fa fa-check-circle-o fa-2 btn btn-default"></i></td>
+                                <td class='packyakCancel'><i class="fa fa-times-circle fa-2 btn btn-default"></i></td>
                                 {{ csrf_field() }}
                                 <td class='packyakInventoryItemID hidden'>{{ $row['itemVariationID'] }}</td>
                             </tr>

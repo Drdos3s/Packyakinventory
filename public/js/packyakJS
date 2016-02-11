@@ -42,7 +42,7 @@ $( document ).ready(function() {
 
 	});
 
-	//submit function that uses ajax request to update inventory for square
+	//submit function that uses ajax request to update inventory for square and unit price
 	$('.packyakSubmitButton').click(function() {
     	var newInventoryLevel = $(this).siblings('.packyakInventoryText').children().val();
     	var oldInventoryLevel = $(this).siblings('.packyakInventory').html();
@@ -168,4 +168,23 @@ $( document ).ready(function() {
 	        error: function(ts) { console.log(ts.responseText) }
 	    })
 	});
+
+
+	//adding an item to a purchase order
+	$('.packyakPurchaseOrderListItem').click(function(){
+		var selectedPurchaseOrder = $(this).html();
+		var itemvariationID = $('.packyakInventoryItemID')
+		console.log($(this).parents('.packYakItemFeedRow').find('.packyakInventoryItemID').html());
+
+
+
+
+	});
+
+
+
+
+
+
+
 });

@@ -16,9 +16,14 @@ use App\Item;
 
 class mainItemFeedController extends Controller {
     function sendDataToFeedView(){
-        $allItems = DB::select('select * from inventoryList');
-        $itemData['items'] = json_decode(json_encode($allItems),true);
-        return view('mainItemFeed', $itemData);
+        $dashboardData['items'] = DB::select('select * from inventoryList');
+        $dashboardData['purchaseOrders'] = DB::table('purchase_orders')->where('po_status', '=', 'pending')->get();
+
+        //$testVar = json_decode(json_encode(array('$itemData' => $allItems, 'purchaseOrders' => $openPurchaseOrders)),true);
+        //var_dump($dashboardData);
+        $dashboardDataFinal = json_decode(json_encode($dashboardData),true);
+        //var_dump($itemData['items'][0]);
+        return view('mainItemFeed', ['dashboardDataFinal' => $dashboardDataFinal]);
     }
 
     function getInventory(){
