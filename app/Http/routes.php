@@ -45,7 +45,7 @@ Route::get('/purchaseOrders', function () {
 });
 
 Route::get('/purchaseOrders', 'purchaseOrderController@index');
-Route::post('/purchaseOrders', 'purchaseOrderController@createNewPurchaseOrder');
+Route::post('/purchaseOrders', 'purchaseOrderController@ajaxRoute');
 
 
 // Authentication routes...

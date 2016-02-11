@@ -39,8 +39,6 @@
                 <?php //var_dump($places); ?>
                 <div class="box-body">
                     <table class="table">
-                        <thead><th>test</th></thead>
-                        
                         <tbody>
                             <td>Status: <?php echo $purchaseOrder->po_status?></td>
                             <td>Invoice #:<?php echo $purchaseOrder->po_invoice_number?></td>
@@ -50,9 +48,7 @@
                             <td>Test</td>
                             <td>Test</td> 
                         </tbody>
-                        
                     </table>
-
                 </div><!-- /.box-body -->
                 
                 <div class="box-footer">

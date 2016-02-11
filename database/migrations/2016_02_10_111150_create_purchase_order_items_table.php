@@ -13,8 +13,11 @@ class CreatePurchaseOrderItemsTable extends Migration
     public function up()
     {
         Schema::create('purchase_order_items', function (Blueprint $table) {
+            $table->increments('id');
+            $table->char('purchaseOrderName', 255);
             $table->char('purchaseOrderID', 255);
             $table->char('purchaseOrderItemVariationID', 255);
+            $table->integer('quantityToOrder');
             $table->timestamps();
         });
     }

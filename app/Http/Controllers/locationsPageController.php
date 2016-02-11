@@ -8,6 +8,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use DB;
+use Auth;
 
 class locationsPageController extends Controller
 {
@@ -17,9 +18,17 @@ class locationsPageController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(){
-        $locationQuery = DB::select('select * from locations');
-        $locations['places'] = json_decode(json_encode($locationQuery),true);
-        return view('locations', $locations);
+        if (Auth::check()){//The user is logged in
+            $locationQuery = DB::select('select * from locations');
+            $locations['places'] = json_decode(json_encode($locationQuery),true);
+            return view('locations', $locations);
+        }else{
+            return redirect('/auth/register');
+        }
+
+
+
+
     }
 
 }
