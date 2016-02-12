@@ -12,17 +12,36 @@ use App\purchaseOrderItem;
 use DB;
 use Auth;
 
-//Put this in for auth check before finishing and pushing to production
-        /*$locationQuery = DB::select('select * from locations');
-        $locations['places'] = json_decode(json_encode($locationQuery),true);
-        return view('locations', $locations);*/
+//Put in for auth check before finishing and pushing to production
 
 class purchaseOrderController extends Controller
 {
     public function index(){
-        $existingPurchaseOrders = DB::table('purchase_orders')->get();
+        //getting all open purchase orders and converting object to array
+        $existingPurchaseOrders = json_decode(
+                                    json_encode(
+                                        DB::table('purchase_orders')->get()
+                                    ),true);
+        
+        $purchaseOrderDetailsWithItems = [];
+        
+        foreach($existingPurchaseOrders as $existingPurchaseOrder){
+            
+            $existingPurchaseOrder['po_items'] = json_decode(json_encode(DB::table('purchase_order_items')
+                                                ->leftJoin('inventoryList', 'purchase_order_items.purchaseOrderItemVariationID', '=', 'inventoryList.itemVariationID')
+                                                //->select('purchaseOrderItemVariationID')
+                                                ->where('purchaseOrderID', '=', $existingPurchaseOrder['id'])
+                                                ->get()),true);
 
-        return view('purchaseOrder', ['existingPurchaseOrders' => $existingPurchaseOrders]);
+
+            //var_dump($existingPurchaseOrder);
+            array_push($purchaseOrderDetailsWithItems, $existingPurchaseOrder);
+        }
+        
+        //var_dump($purchaseOrderDetailsWithItems);
+        
+
+        return view('purchaseOrder', ['existingPurchaseOrders' => $purchaseOrderDetailsWithItems]);
     }
 
     public function ajaxRoute(){

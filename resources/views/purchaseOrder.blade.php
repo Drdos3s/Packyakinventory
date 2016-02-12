@@ -20,33 +20,52 @@
         <!-- Box -->
             <div class="box box-primary">
                 <div class="box-header with-border">
-                    <div class="col-sm-3"><h3 class="box-title"><strong>Name:  </strong><?php echo $purchaseOrder->po_name ?></h3></div>
-                    <div class="col-sm-2"><h3 class="box-title"><strong>Status: </strong><?php echo $purchaseOrder->po_status ?></h3></div>
-                    <div class="col-sm-2"><h3 class="box-title"><strong>Vendor: </strong><?php echo $purchaseOrder->po_vendor ?></h3></div>
-                    <div class="col-sm-2"><h3 class="box-title"><strong>Location: </strong><?php echo $purchaseOrder->po_location ?></h3></div>
-                    <div class="col-sm-2"><h3 class="box-title"><strong>Created: </strong><?php echo date('m-d-Y',strtotime($purchaseOrder->created_at));?></h3></div>
+                    <div class="col-sm-3"><h3 class="box-title"><strong>Name:  </strong><?php echo $purchaseOrder['po_name'] ?></h3></div>
+                    <div class="col-sm-2"><h3 class="box-title"><strong>Status: </strong><?php echo $purchaseOrder['po_status'] ?></h3></div>
+                    <div class="col-sm-2"><h3 class="box-title"><strong>Vendor: </strong><?php echo $purchaseOrder['po_vendor'] ?></h3></div>
+                    <div class="col-sm-2"><h3 class="box-title"><strong>Location: </strong><?php echo $purchaseOrder['po_location'] ?></h3></div>
+                    <div class="col-sm-2"><h3 class="box-title"><strong>Created: </strong><?php echo date('m-d-Y',strtotime($purchaseOrder['created_at']));?></h3></div>
                     <div class="box-tools pull-right">
                         <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
                     </div>
                 </div>
-                <!--<div class="box-header">
-                    <div class="col-sm-3"><h4 class="box-title"><strong>Invoice #:  </strong><?php echo $purchaseOrder->po_invoice_number ?></h3></div>
-                    <div class="col-sm-2"><h4 class="box-title"><strong>Price: </strong><?php echo $purchaseOrder->po_status ?></h3></div>
-                    <div class="col-sm-2"><h4 class="box-title"><strong>: </strong><?php echo $purchaseOrder->po_vendor ?></h3></div>
-                    <div class="col-sm-2"><h4 class="box-title"><strong>Location: </strong><?php echo $purchaseOrder->po_location ?></h3></div>
-                    <div class="col-sm-2"><h4 class="box-title"><strong>Updated: </strong><?php echo date('m-d-Y',strtotime($purchaseOrder->updated_at));?></h3></div>
-                </div>-->
+
                 <?php //var_dump($places); ?>
                 <div class="box-body">
                     <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Testing </th>
+                                <th>Testing </th>
+                                <th>Testing </th>
+                                <th>Testing </th>
+                                <th>Testing </th>
+                                <th>Testing </th>
+                                <th>Testing </th>
+                                <th>Testing </th>
+                                <th>Testing </th>
+                            </tr>
+                        </thead>
                         <tbody>
-                            <td>Status: <?php echo $purchaseOrder->po_status?></td>
-                            <td>Invoice #:<?php echo $purchaseOrder->po_invoice_number?></td>
-                            <td>Vendor: <?php echo $purchaseOrder->po_vendor?></td>
-                            <td>Created: <?php echo $purchaseOrder->created_at?></td>
-                            <td>Options: THis is some options</td>
-                            <td>Test</td>
-                            <td>Test</td> 
+                            <tr>
+                                <td>Status: <?php echo $purchaseOrder['po_status']?></td>
+                                <td>Invoice #:<?php echo $purchaseOrder['po_invoice_number']?></td>
+                                <td>Vendor: <?php echo $purchaseOrder['po_vendor']?></td>
+                                <td>Created: <?php echo $purchaseOrder['created_at']?></td>
+                                <td>Options: THis is some options</td>
+                                <td>Test</td>
+                                <td>Test</td> 
+                            </tr>
+
+                            @foreach($purchaseOrder['po_items'] as $item)
+                            <tr>
+                                <td>{{ $item['itemName'] }}</td>
+                                <td>{{ $item['itemVariationName'] }}</td>
+
+                            </tr>
+                            @endforeach
+
+                            <?php //var_dump($purchaseOrder['po_items']); ?>
                         </tbody>
                     </table>
                 </div><!-- /.box-body -->
@@ -57,10 +76,6 @@
                 
             </div><!-- /.box -->
             @endforeach
-
-<?php var_dump($existingPurchaseOrders);?>
-
-
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
