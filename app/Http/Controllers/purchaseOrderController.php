@@ -55,6 +55,9 @@ class purchaseOrderController extends Controller
                     case 'addToPO':
                         return addItemToPurchaseOrder();
                         break;
+                    case 'removeItemFromPO':
+                        return removeItemFromPO();
+                        break;
                 }
             }
         }
@@ -109,5 +112,21 @@ function addItemToPurchaseOrder(){
 
 
     return json_encode(array($action, $selectedPurchaseOrder, $itemVariationID, $purchaseOrderID));
+    exit;
+}
+
+function removeItemFromPO(){
+    $action = $_POST['action'];
+    $itemVariationID = $_POST['itemVariationID'];
+    $purchaseOrderID = $_POST['packyakPurchaseOrderID'];
+
+    DB::table('purchase_order_items')
+        ->where('purchaseOrderID', '=', $purchaseOrderID)
+        ->where('purchaseOrderItemVariationID','=', $itemVariationID)
+        ->delete();
+
+
+
+    return 'it still works';
     exit;
 }

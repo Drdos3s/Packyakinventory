@@ -18,14 +18,17 @@
         <div class='col-md-12'>
         @foreach($existingPurchaseOrders as $purchaseOrder)
         <!-- Box -->
-            <div class="box box-primary">
-                <div class="box-header with-border">
+            <div class="box box-primary packyakPOHeader">
+                <div class="box-header with-border ">
+
                     <div class="col-sm-3"><h3 class="box-title"><strong>Name:  </strong><?php echo $purchaseOrder['po_name'] ?></h3></div>
+                    <div class="pypoid hidden"><?php echo $purchaseOrder['id'] ?></div>
                     <div class="col-sm-2"><h3 class="box-title"><strong>Status: </strong><?php echo $purchaseOrder['po_status'] ?></h3></div>
                     <div class="col-sm-2"><h3 class="box-title"><strong>Vendor: </strong><?php echo $purchaseOrder['po_vendor'] ?></h3></div>
                     <div class="col-sm-2"><h3 class="box-title"><strong>Location: </strong><?php echo $purchaseOrder['po_location'] ?></h3></div>
                     <div class="col-sm-2"><h3 class="box-title"><strong>Created: </strong><?php echo date('m-d-Y',strtotime($purchaseOrder['created_at']));?></h3></div>
                     <div class="box-tools pull-right">
+                        <i class="fa fa-pencil"></i>
                         <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
                     </div>
                 </div>
@@ -34,34 +37,33 @@
                 <div class="box-body">
                     <table class="table">
                         <thead>
+
                             <tr>
-                                <th>Testing </th>
-                                <th>Testing </th>
-                                <th>Testing </th>
-                                <th>Testing </th>
-                                <th>Testing </th>
-                                <th>Testing </th>
-                                <th>Testing </th>
-                                <th>Testing </th>
-                                <th>Testing </th>
+                                <th>Category </th>
+                                <th>Item </th>
+                                <th>Variation </th>
+                                <th>Current Inventory</th>
+                                <th>Order Quantity</th>
+                                <th>Unit Cost </th>
+                                <th>Total</th>
+                                <th>Delete</th>
+                                
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Status: <?php echo $purchaseOrder['po_status']?></td>
-                                <td>Invoice #:<?php echo $purchaseOrder['po_invoice_number']?></td>
-                                <td>Vendor: <?php echo $purchaseOrder['po_vendor']?></td>
-                                <td>Created: <?php echo $purchaseOrder['created_at']?></td>
-                                <td>Options: THis is some options</td>
-                                <td>Test</td>
-                                <td>Test</td> 
-                            </tr>
-
                             @foreach($purchaseOrder['po_items'] as $item)
-                            <tr>
-                                <td>{{ $item['itemName'] }}</td>
-                                <td>{{ $item['itemVariationName'] }}</td>
+                            <tr class='packyakPOItemListItem'>
+                                <td class=" poitemid hidden">{{ $item['itemVariationID'] }}</td>
+                                <td><h5>{{ $item['itemCategoryName'] }}</h5></td>
+                                <td><h5>{{ $item['itemName'] }}</h5></td>
+                                <td><h5>{{ $item['itemVariationName'] }}</h5></td>
+                                <td><h5>{{ $item['itemVariationInventory'] }}</h5></td>
+                                <td class='packyakOrderQuantityText'><?php echo Form::input('number','orderQuantity', 0, array('class' => 'packyakOrderQuantityInput', 'type' => 'number', 'min' => '0', 'step' => '1')); ?></td>
+                                <td><h5>{{ $item['itemVariationUnitCost'] }}</h5></td>
+                                <td><h5>0</h5></td>
 
+
+                                <td><i class="fa fa-times-circle fa-2 btn btn-default packyakRemoveFromPO"></i></td>
                             </tr>
                             @endforeach
 
