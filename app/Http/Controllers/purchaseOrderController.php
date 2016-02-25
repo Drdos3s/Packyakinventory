@@ -9,6 +9,7 @@ use Request;
 use GuzzleHttp\Client;
 use App\purchaseOrder;
 use App\purchaseOrderItem;
+//use App\createNewItem
 use DB;
 use Auth;
 
@@ -22,9 +23,16 @@ class purchaseOrderController extends Controller
                                     json_encode(
                                         DB::table('purchase_orders')->get()
                                     ),true);
-        
+        //getting all locations to dynamically populate locations lists used for create items and create purchase orders
+         $existingLocations = json_decode( 
+                                json_encode(
+                                    DB::table('locations')->get()
+                                ),true);
+
         $purchaseOrderDetailsWithItems = [];
-        
+
+
+        //get all the items within a purchase order
         foreach($existingPurchaseOrders as $existingPurchaseOrder){
             
             $existingPurchaseOrder['po_items'] = json_decode(json_encode(DB::table('purchase_order_items')
@@ -36,12 +44,9 @@ class purchaseOrderController extends Controller
 
             //var_dump($existingPurchaseOrder);
             array_push($purchaseOrderDetailsWithItems, $existingPurchaseOrder);
-        }
-        
+        }      
         //var_dump($purchaseOrderDetailsWithItems);
-        
-
-        return view('purchaseOrder', ['existingPurchaseOrders' => $purchaseOrderDetailsWithItems]);
+        return view('purchaseOrder', ['existingPurchaseOrders' => $purchaseOrderDetailsWithItems, 'existingLocations' => $existingLocations]);
     }
 
     public function ajaxRoute(){
@@ -58,7 +63,15 @@ class purchaseOrderController extends Controller
                     case 'removeItemFromPO':
                         return removeItemFromPO();
                         break;
+                    case 'createNewItem':
+                        //retrieve new item object and decode into PHP readable 
+                        $data = $_POST['data'];
+                        $decodedItemData = json_decode($data);
+                        return createNewItem($decodedItemData);
+                        break;
                 }
+            }else{
+                echo 'The action variable is not set in the ajax response';
             }
         }
     }
@@ -96,6 +109,8 @@ function createNewPurchaseOrder(){
     exit;
 };
 
+
+
 function addItemToPurchaseOrder(){
     $action = $_POST['action'];
     $selectedPurchaseOrder = $_POST['selectedPurchaseOrder'];
@@ -113,7 +128,7 @@ function addItemToPurchaseOrder(){
 
     return json_encode(array($action, $selectedPurchaseOrder, $itemVariationID, $purchaseOrderID));
     exit;
-}
+};
 
 function removeItemFromPO(){
     $action = $_POST['action'];
@@ -125,8 +140,13 @@ function removeItemFromPO(){
         ->where('purchaseOrderItemVariationID','=', $itemVariationID)
         ->delete();
 
-
-
-    return 'it still works';
     exit;
-}
+};
+
+function createNewItem($data){
+    //need to add in all the other pieces to build an item and send to square and to DB
+    //var_dump($data);  
+    return $data->newItemCategory;
+    exit;
+
+};

@@ -136,6 +136,13 @@ $( document ).ready(function() {
     });
 
 	/*--------------------ADDING A PURCHASE ORDER IN DATABASE----------------------------*/
+	//Changing the title of the modal so not to use 2 of them
+	$('.packyakNewPOButton').click(function() {
+
+		$('#myModal').find('.modal-title').html('New Purchase Order');
+	});
+
+
 	$('.packyakPurchaseOrderCreateButton').click(function() {
 		var po_name = $('#newPurchaseOrderTitle').val();//
 		var po_status = $('#purchaseOrderStatusSelect').val();//
@@ -215,11 +222,7 @@ $( document ).ready(function() {
 		var itemVariationID = $(this).parents('.packyakPOItemListItem').children('.poitemid').html();
 		var successCancelRow = $(this).parents('.packyakPOItemListItem');
 		
-		$.ajaxSetup({
-	        headers: {
-	            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-	        }
-		});
+		
 		if(confirm('Are you sure you want to remove this item?')){
 	        data =  {'action': action,
 	        		 'itemVariationID': itemVariationID,
@@ -237,5 +240,55 @@ $( document ).ready(function() {
 		        error: function(ts) { console.log(ts.responseText) }
 		    })
 		}
+	});
+
+	//editing purchase order details
+	$('.packyackPOEdit').click(function(){
+		$('#myModal').modal('toggle');
+		$('#myModal').find('.modal-title').html('Edit Purchase Order');
+		var selectedStatus = $(this).parents('.packyakPOHeader').find('.packYakPOStatus').text();
+		var selectedVendor = $(this).parents('.packyakPOHeader').find('.packYakPOVendor').text();
+		var selectedLocation = $(this).parents('.packyakPOHeader').find('.packYakPOLocation').text();
+
+		console.log($(this).parents('.packyakPOHeader').find('.packYakPOName').text());
+
+		$('#newPurchaseOrderTitle').val($(this).parents('.packyakPOHeader').find('.packYakPOName').text());
+		//--Invoice Number not yet showing on the main status-- $('#purchaseOrderInvoiceNumber').val($(this).parents('.packyakPOHeader').find('.packYakPOInvoice').text());
+		$("#purchaseOrderLocationSelect option[value='selectedLocation']").val(selectedLocation);
+		$("#purchaseOrderVendorSelect option[value='selectedVendor']").val(selectedVendor);
+		$("#purchaseOrderStatusSelect option[value='selectedStatus']").val(selectedStatus);
+	});
+
+	//purchase order create new item and send data for new record and prime for square upload
+	$('.packyakCreateNewItemButton').click(function(){
+		var action = 'createNewItem';
+		var newItemOject = {newItemCategory: $('.newItemForm').find('#createNewItemCategory').val(),
+							newItemName: $('.newItemForm').find('#createNewItemName').val(),
+							newItemVariation: $('.newItemForm').find('#createNewItemVariation').val(),
+							newItemSku: $('.newItemForm').find('#reateNewItemSku').val()
+							};
+		var jsonNewItemObject = JSON.stringify( newItemOject );
+
+		console.log(newItemOject);
+		$.ajaxSetup({
+	        headers: {
+	            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+	        }
+		});
+
+		$.ajax({
+	        type: "POST",
+	        url: './purchaseOrders',
+
+	        data: {'action': action, 'data': jsonNewItemObject},
+	        success: function(data) {
+	        	//var responseData = $.parseJSON(data);
+	        	console.log(data);
+	        },
+	        error: function(ts) { console.log(ts.responseText) }
+	    })
+
+		
+		//console.log(json);
 	});
 });

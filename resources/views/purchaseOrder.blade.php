@@ -6,29 +6,27 @@
 
 
 <div class='row'>
-
-        <!-- Modal Button for creating a new purchase order -->
-        <div class='col-md-12'>            
-            <button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal">
-                New Purchase Order
-            </button>
-        </div>
+    <!-- Modal Button for creating a new purchase order -->
+    <div class='col-md-12'>            
+        <button type="button" class="btn btn-primary btn-md packyakNewPOButton" data-toggle="modal" data-target="#myModal">
+            New Purchase Order
+        </button>
+    </div>
 
         
-        <div class='col-md-12'>
+    <div class='col-md-12'>
         @foreach($existingPurchaseOrders as $purchaseOrder)
-        <!-- Box -->
             <div class="box box-primary packyakPOHeader">
                 <div class="box-header with-border ">
 
-                    <div class="col-sm-3"><h3 class="box-title"><strong>Name:  </strong><?php echo $purchaseOrder['po_name'] ?></h3></div>
+                    <div class="col-sm-3"><h4><strong>Name:  </strong></h4><h5 class="packYakPOName"><?php echo ' '.$purchaseOrder['po_name'] ?></h5></div>
                     <div class="pypoid hidden"><?php echo $purchaseOrder['id'] ?></div>
-                    <div class="col-sm-2"><h3 class="box-title"><strong>Status: </strong><?php echo $purchaseOrder['po_status'] ?></h3></div>
-                    <div class="col-sm-2"><h3 class="box-title"><strong>Vendor: </strong><?php echo $purchaseOrder['po_vendor'] ?></h3></div>
-                    <div class="col-sm-2"><h3 class="box-title"><strong>Location: </strong><?php echo $purchaseOrder['po_location'] ?></h3></div>
-                    <div class="col-sm-2"><h3 class="box-title"><strong>Created: </strong><?php echo date('m-d-Y',strtotime($purchaseOrder['created_at']));?></h3></div>
+                    <div class="col-sm-2"><h4><strong>Status: </strong></h4><h5 class="packYakPOStatus"><?php echo ' '.$purchaseOrder['po_status'] ?></h5></div>
+                    <div class="col-sm-2"><h4><strong>Vendor: </strong></h4><h5 class="packYakPOVendor"><?php echo ' '.$purchaseOrder['po_vendor'] ?></h5></div>
+                    <div class="col-sm-2"><h4><strong>Location: </strong></h4><h5 class="packYakPOLocation"><?php echo ' '.$purchaseOrder['po_location'] ?></h5></div>
+                    <div class="col-sm-2"><h4><strong>Created: </strong></h4><h5 class="packYakPOCreated"><?php echo ' '.date('m-d-Y',strtotime($purchaseOrder['created_at']));?></h5></div>
                     <div class="box-tools pull-right">
-                        <i class="fa fa-pencil"></i>
+                        <i class="fa fa-pencil packyackPOEdit"></i>
                         <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
                     </div>
                 </div>
@@ -66,6 +64,7 @@
                                 <td><i class="fa fa-times-circle fa-2 btn btn-default packyakRemoveFromPO"></i></td>
                             </tr>
                             @endforeach
+                            
 
                             <?php //var_dump($purchaseOrder['po_items']); ?>
                         </tbody>
@@ -73,105 +72,193 @@
                 </div><!-- /.box-body -->
                 
                 <div class="box-footer">
-
+                    <button type="button" class="btn btn-primary btn-md packyakNewItemButton" data-toggle="modal" data-target="#createItemModal">
+                        Create New Item
+                    </button>
                 </div><!-- /.box-footer-->
                 
             </div><!-- /.box -->
-            @endforeach
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">New Purchase Order</h4>
-      </div>
-      <div class="modal-body">
-<!-- This is where the content of the modal will go -->
+        @endforeach
+        <?php var_dump($existingLocations);?>
+        <!-- Modal for create and edit PO-->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">New Purchase Order</h4>
+                    </div>
+                    <div class="modal-body">
+                        <!-- This is where the content of the modal will go -->
+                        <form class="form-horizontal newPurchaseOrderForm">
+                            <div class="form-group">
+                                <label for="newPurchaseOrderTitle" class="col-sm-2 control-label">Title</label>
+                                <div class="col-sm-10">
+                                    <input type="email" class="form-control" id="newPurchaseOrderTitle" placeholder="Name your purchase order">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputPassword3" class="col-sm-2 control-label">Invoice #</label>
+                                <div class="col-sm-6">
+                                  <input class="form-control" id="purchaseOrderInvoiceNumber" placeholder="(Optional)">
+                                </div>
+                            </div>
+
+                            <div class="form-group col-sm-12">
+                                <label for="purchaseOrderLocationSelect" class="col-sm-2 control-label">Location</label>
+                                <div class="btn-group">
+                                    <select id="purchaseOrderLocationSelect" class="form-control col-sm-10">
+                                    <!-- Need to input dynamic location functionality -->
+                                        @foreach($existingLocations as $existingLocation)
+                                            <option>{{ $existingLocation['locationCity'] }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-sm-12">
+                                <label for="purchaseOrderVendorSelect" class="col-sm-2 control-label">Vendor</label>
+                                <div class="btn-group">
+                                    <select id="purchaseOrderVendorSelect" class="form-control col-sm-10">
+                                    <!-- Need to input dynamic location functionality -->
+                                          <option>Valken</option>
+                                          <option>Elite Force</option>
+                                          <option>GI Sports</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-sm-12">
+                                <label for="purchaseOrderStatusSelect" class="col-sm-2 control-label">Status</label>
+                                <div class="btn-group">    
+                                    <select id="purchaseOrderStatusSelect" class="form-control col-sm-10">
+                                      <option>Pending</option>
+                                      <option>Confirmed</option>
+                                      <option>Recieved</option>
+                                      <option>Completed</option>
+                                      <option>Closed</option>
+                                    </select>
+                                </div>       
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                  <div class="checkbox">
+                                    <label>
+                                      <input type="checkbox"> Remember me
+                                    </label>
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary packyakPurchaseOrderCreateButton">Create</button>
+                            </div>
+
+                            {{ csrf_field() }}
+                            
+                        </form>
+                        <!-- ___________________END OF MODAL FORM FOR CREATE/ EDIT PURCHASE ORDER______________________ -->
+                    </div>
+                </div>
+            </div>
+        </div><!--END MODAL-->
+
+        <!--START CREATE ITEM MODAL-->
+        <div class="modal fade" id="createItemModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Create New Item</h4>
+                    </div>
+                    <div class="modal-body">
+                        <!-- This is where the content of the modal will go -->
+                        <form class="form-horizontal newItemForm">
+                            <div class="form-group">
+                                <label for="createNewItemCategory" class="col-sm-2 control-label">Category</label>
+                                <div class="col-sm-10">
+                                    <input type="email" class="form-control" id="createNewItemCategory" placeholder="Category">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="createNewItemName" class="col-sm-2 control-label">Name</label>
+                                <div class="col-sm-10">
+                                    <input type="email" class="form-control" id="createNewItemName" placeholder="Name">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="createNewItemVariation" class="col-sm-2 control-label">Variation</label>
+                                <div class="col-sm-10">
+                                    <input type="email" class="form-control" id="createNewItemVariation" placeholder="Regular">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="createNewItemSku" class="col-sm-2 control-label">SKU</label>
+                                <div class="col-sm-10">
+                                    <input type="email" class="form-control" id="createNewItemSku" placeholder="(Optional)">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="createNewItemInventoryLevel" class="col-sm-2 control-label">Quantity On Hand</label>
+                                <div class="col-sm-2">
+                                    <input type="number" class="form-control" id="createNewItemInventoryLevel" placeholder='0' min="0", step='1'>
+                                </div>
+
+                                <label for="createNewItemInventoryAlert" class="col-sm-2 control-label">Alert At</label>
+                                <div class="col-sm-2">
+                                    <input type="number" class="form-control" id="createNewItemInventoryAlert" placeholder='0' min="0", step='1'>
+                                </div>
 
 
-<form class="form-horizontal newPurchaseOrderForm">
-    <div class="form-group">
-        <label for="newPurchaseOrderTitle" class="col-sm-2 control-label">Title</label>
-        <div class="col-sm-10">
-            <input type="email" class="form-control" id="newPurchaseOrderTitle" placeholder="Name your purchase order">
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="inputPassword3" class="col-sm-2 control-label">Invoice #</label>
-        <div class="col-sm-6">
-          <input class="form-control" id="purchaseOrderInvoiceNumber" placeholder="(Optional)">
-        </div>
-    </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="createNewItemUnitCost" class="col-sm-2 control-label">Unit Cost</label>
+                                <div class="col-sm-2">
+                                    <input type="number" class="form-control" id="createNewItemInventoryLevel" placeholder='0.00' min=".00", step='.01'>
+                                </div>
 
-    <div class="form-group col-sm-12">
-        <label for="purchaseOrderLocationSelect" class="col-sm-2 control-label">Location</label>
-        <div class="btn-group">
-            <select id="purchaseOrderLocationSelect" class="form-control col-sm-10">
-            <!-- Need to input dynamic location functionality -->
-                  <option>Denver</option>
-                  <option>Phoenix</option>
-                  <option>Brighton</option>
-            </select>
-        </div>
-    </div>
+                                <label for="createNewItemUnitCost" class="col-sm-2 control-label">Unit Cost</label>
+                                <div class="col-sm-2">
+                                    <input type="number" class="form-control" id="createNewItemInventoryLevel" placeholder='0.00' min=".00", step='.01'>
+                                </div>
+                            </div>
 
-    <div class="form-group col-sm-12">
-        <label for="purchaseOrderVendorSelect" class="col-sm-2 control-label">Vendor</label>
-        <div class="btn-group">
-            <select id="purchaseOrderVendorSelect" class="form-control col-sm-10">
-            <!-- Need to input dynamic location functionality -->
-                  <option>Valken</option>
-                  <option>Elite Force</option>
-                  <option>GI Sports</option>
-            </select>
-        </div>
-    </div>
+                            <div class="form-group col-sm-12">
+                                <label for="createNewItemLocationSelect" class="col-sm-2 control-label">Location(s) Sold At</label>
+                                <div class="btn-group">
+                                    <!-- Need to input dynamic location functionality -->
+                                        @foreach($existingLocations as $existingLocation)
+                                            <input type="checkbox" aria-label="..." class = "createNewItemLocationSelect">{{ $existingLocation['locationCity'] }}
+                                        @endforeach
+                                </div>
+                            </div>
 
-    <div class="form-group col-sm-12">
-        <label for="purchaseOrderStatusSelect" class="col-sm-2 control-label">Status</label>
-        <div class="btn-group">    
-            <select id="purchaseOrderStatusSelect" class="form-control col-sm-10">
-              <option>Pending</option>
-              <option>Confirmed</option>
-              <option>Recieved</option>
-              <option>Completed</option>
-              <option>Closed</option>
-            </select>
-        </div>       
-    </div>
+                            <div class="form-group col-sm-12">
+                                <label for="createNewItemPOAddSelect" class="col-sm-3 control-label">Add Item to PO</label>
+                                <div class="btn-group">
+                                    <select id="createNewItemPOAddSelect" class="form-control col-sm-9">
+                                    <!-- Need to input dynamic location functionality -->
+                                        @foreach($existingPurchaseOrders as $purchaseOrder)
+                                            <option>{{ $purchaseOrder['po_name'] }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary packyakCreateNewItemButton">Create</button>
+                            </div>
 
-    <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-          <div class="checkbox">
-            <label>
-              <input type="checkbox"> Remember me
-            </label>
-          </div>
-        </div>
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary packyakPurchaseOrderCreateButton">Create</button>
-    </div>
-
-    {{ csrf_field() }}
-    
-</form>
-
-<!-- _________________________________________ -->
-
-
-
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-
-        </div><!-- /.col -->
+                            {{ csrf_field() }}
+                            
+                        </form>
+                        <!-- ___________________END OF MODAL FORM FOR CREATE/ EDIT PURCHASE ORDER______________________ -->
+                    </div>
+                </div>
+            </div>
+        </div><!--END MODAL-->
+    </div><!-- /.col -->
 </div>
 
 

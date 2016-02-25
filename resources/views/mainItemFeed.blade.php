@@ -17,25 +17,6 @@
                 </div>
 
                 <div class="box-body">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     <table id='packyakInventoryDashTable' class="table">
                         <thead>
                             <tr>
