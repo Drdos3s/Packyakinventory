@@ -31,43 +31,7 @@
                 <!-- Your Page Content Here -->
                 
 <?php
-# Creates a "Milkshake" item.
-function createItem() {
-  $access_token = 'KI0ethBHis2N76q1jyYung';
-  $connectHost = 'https://connect.squareup.com';
-  $requestHeaders = array (
-    'Authorization' => 'Bearer ' . $access_token,
-    'Accept' => 'application/json',
-    'Content-Type' => 'application/json'
-  );
-  
 
-  $request_body = array(
-    "name"=>"Milkshake",
-    "variations"=>array(
-      array(
-        "name"=>"Small",
-        "pricing_type"=>"FIXED_PRICING",
-        "price_money"=>array(
-          "currency_code"=>"USD",
-          "amount"=>400
-        )
-      )
-    )
-  );
-  $response = Unirest\Request::post($connectHost . '/v1/me/items/', $requestHeaders, json_encode($request_body));
-  echo $response->code;
-  echo json_encode($response->body, JSON_PRETTY_PRINT);
-  if ($response->code == 200) {
-    error_log('Successfully created item:');
-    error_log(json_encode($response->body, JSON_PRETTY_PRINT));
-    return $response->body;
-  } else {
-    error_log('Item creation failed');
-    return NULL;
-  }
-}
-//createItem();
 
 #Deletes the Malted Milkshake item.
 function deleteItem($itemId) {

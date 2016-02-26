@@ -13,6 +13,7 @@ use App\purchaseOrderItem;
 use DB;
 use Auth;
 
+
 //Put in for auth check before finishing and pushing to production
 
 class purchaseOrderController extends Controller
@@ -143,10 +144,57 @@ function removeItemFromPO(){
     exit;
 };
 
-function createNewItem($data){
-    //need to add in all the other pieces to build an item and send to square and to DB
+function createNewItem($createdItem){
+    //setting variables from the post data from ajax call
+    $newItemCategory            = $createdItem->newItemCategory;
+    $newItemName                = $createdItem->newItemName;
+    $newItemVariation           = $createdItem->newItemVariation;
+    $newItemSku                 = $createdItem->newItemSku;
+    $newItemCurrentInventory    = $createdItem->newItemInventoryLevel;
+    $newItemAlertInventoryLevel = $createdItem->newItemInventoryAlert;
+    $newItemPrice               = $createdItem->newItemPriceSold*100;
+    $newItemUnitCost            = $createdItem->newItemUnitCost*100;
+
+
+    $access_token = 'KI0ethBHis2N76q1jyYung';
+    $client = new Client();
+
+    $postData = array(
+      'id' => 'test_1433281487',
+      'name' => 'thisisanewoutdooritem',
+      'description' => 'test2',
+      'variations' => array(array(
+        'id' => 'test_v1433281487',
+        'name' => 'Regular',
+        'price_money' => array(
+          'currency_code' => 'USD',
+          'amount' => '19800',
+        ),
+      )),
+    );
+$json = json_encode($postData);
+
+echo $json;
+
+
+    # Creates a "Milkshake" item.
+    $itemsRequest = $client->request('POST', 'https://connect.squareup.com/v1/9SQD525GSB3T3/items', [
+        'headers' => [
+            'Authorization' => 'Bearer '.$access_token ,
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json'
+        ], 'body' => $json
+    ]);
+
+    //var_dump($createdItem);
+
+    //echo $newItemPrice;
+    //echo $newItemUnitCost;
+    
+
+
     //var_dump($data);  
-    return $data->newItemCategory;
+    return 'it works';
     exit;
 
 };

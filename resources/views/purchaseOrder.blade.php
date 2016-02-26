@@ -140,16 +140,6 @@
                                     </select>
                                 </div>       
                             </div>
-
-                            <div class="form-group">
-                                <div class="col-sm-offset-2 col-sm-10">
-                                  <div class="checkbox">
-                                    <label>
-                                      <input type="checkbox"> Remember me
-                                    </label>
-                                  </div>
-                                </div>
-                            </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                                 <button type="button" class="btn btn-primary packyakPurchaseOrderCreateButton">Create</button>
@@ -189,9 +179,13 @@
                             </div>
                             <div class="form-group">
                                 <label for="createNewItemVariation" class="col-sm-2 control-label">Variation</label>
-                                <div class="col-sm-10">
-                                    <input type="email" class="form-control" id="createNewItemVariation" placeholder="Regular">
+                                <div class="col-sm-10 input-group">   
+                                    <input type="email" class="form-control" id="createNewItemVariation" placeholder="Regular"> 
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button"><i class = 'fa fa-plus fa-2'></i></button>
+                                    </span>                          
                                 </div>
+                               
                             </div>
                             <div class="form-group">
                                 <label for="createNewItemSku" class="col-sm-2 control-label">SKU</label>
@@ -201,26 +195,26 @@
                             </div>
                             <div class="form-group">
                                 <label for="createNewItemInventoryLevel" class="col-sm-2 control-label">Quantity On Hand</label>
-                                <div class="col-sm-2">
+                                <div class="col-sm-3">
                                     <input type="number" class="form-control" id="createNewItemInventoryLevel" placeholder='0' min="0", step='1'>
                                 </div>
 
                                 <label for="createNewItemInventoryAlert" class="col-sm-2 control-label">Alert At</label>
-                                <div class="col-sm-2">
+                                <div class="col-sm-3">
                                     <input type="number" class="form-control" id="createNewItemInventoryAlert" placeholder='0' min="0", step='1'>
                                 </div>
 
 
                             </div>
                             <div class="form-group">
-                                <label for="createNewItemUnitCost" class="col-sm-2 control-label">Unit Cost</label>
-                                <div class="col-sm-2">
-                                    <input type="number" class="form-control" id="createNewItemInventoryLevel" placeholder='0.00' min=".00", step='.01'>
+                                <label for="createNewItemPrice" class="col-sm-2 control-label">Price</label>
+                                <div class="col-sm-3">
+                                    <input type="number" class="form-control" id="createNewItemPrice" placeholder='0.00' min=".00", step='.01'>
                                 </div>
 
                                 <label for="createNewItemUnitCost" class="col-sm-2 control-label">Unit Cost</label>
-                                <div class="col-sm-2">
-                                    <input type="number" class="form-control" id="createNewItemInventoryLevel" placeholder='0.00' min=".00", step='.01'>
+                                <div class="col-sm-3">
+                                    <input type="number" class="form-control" id="createNewItemUnitCost" placeholder='0.00' min=".00", step='.01'>
                                 </div>
                             </div>
 

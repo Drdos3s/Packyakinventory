@@ -265,7 +265,11 @@ $( document ).ready(function() {
 		var newItemOject = {newItemCategory: $('.newItemForm').find('#createNewItemCategory').val(),
 							newItemName: $('.newItemForm').find('#createNewItemName').val(),
 							newItemVariation: $('.newItemForm').find('#createNewItemVariation').val(),
-							newItemSku: $('.newItemForm').find('#reateNewItemSku').val()
+							newItemSku: $('.newItemForm').find('#createNewItemSku').val(),
+							newItemInventoryLevel: $('.newItemForm').find('#createNewItemInventoryLevel').val(),
+							newItemInventoryAlert: $('.newItemForm').find('#createNewItemInventoryAlert').val(),
+							newItemPriceSold: $('.newItemForm').find('#createNewItemPrice').val(),
+							newItemUnitCost: $('.newItemForm').find('#createNewItemUnitCost').val()
 							};
 		var jsonNewItemObject = JSON.stringify( newItemOject );
 
