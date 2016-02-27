@@ -182,7 +182,7 @@
                                 <div class="col-sm-10 input-group">   
                                     <input type="email" class="form-control" id="createNewItemVariation" placeholder="Regular"> 
                                     <span class="input-group-btn">
-                                        <button class="btn btn-default" type="button"><i class = 'fa fa-plus fa-2'></i></button>
+                                        <button class="btn btn-default addNewItemVariation" type="button"><i class = 'fa fa-plus fa-2'></i></button>
                                     </span>                          
                                 </div>
                                
@@ -223,22 +223,23 @@
                                 <div class="btn-group">
                                     <!-- Need to input dynamic location functionality -->
                                         @foreach($existingLocations as $existingLocation)
-                                            <input type="checkbox" aria-label="..." class = "createNewItemLocationSelect">{{ $existingLocation['locationCity'] }}
+                                            <input type="checkbox" aria-label="..." class = "createNewItemLocationSelect">
+                                            <span class='createNewItemLocationSelect' >{{ $existingLocation['locationCity'] }}</span>
                                         @endforeach
                                 </div>
                             </div>
 
-                            <div class="form-group col-sm-12">
+<!--                             <div class="form-group col-sm-12">
                                 <label for="createNewItemPOAddSelect" class="col-sm-3 control-label">Add Item to PO</label>
                                 <div class="btn-group">
                                     <select id="createNewItemPOAddSelect" class="form-control col-sm-9">
-                                    <!-- Need to input dynamic location functionality -->
+                                    Need to input dynamic location functionality
                                         @foreach($existingPurchaseOrders as $purchaseOrder)
                                             <option>{{ $purchaseOrder['po_name'] }}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                                 <button type="button" class="btn btn-primary packyakCreateNewItemButton">Create</button>
@@ -247,7 +248,7 @@
                             {{ csrf_field() }}
                             
                         </form>
-                        <!-- ___________________END OF MODAL FORM FOR CREATE/ EDIT PURCHASE ORDER______________________ -->
+                        <!-- ___________________END OF MODAL FORM FOR CREATE NEW ITEM______________________ -->
                     </div>
                 </div>
             </div>

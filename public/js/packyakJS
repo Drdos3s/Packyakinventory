@@ -261,6 +261,15 @@ $( document ).ready(function() {
 
 	//purchase order create new item and send data for new record and prime for square upload
 	$('.packyakCreateNewItemButton').click(function(){
+
+		//getting array of locations sold at
+		var selectedLocations = new Array();
+		$('.newItemForm').find('.createNewItemLocationSelect:checked').next().each(function(){ 
+																					var locationText = $(this).text();
+																					selectedLocations.push(locationText);
+																				});
+
+		//setting up data to be passed for new item
 		var action = 'createNewItem';
 		var newItemOject = {newItemCategory: $('.newItemForm').find('#createNewItemCategory').val(),
 							newItemName: $('.newItemForm').find('#createNewItemName').val(),
@@ -269,11 +278,13 @@ $( document ).ready(function() {
 							newItemInventoryLevel: $('.newItemForm').find('#createNewItemInventoryLevel').val(),
 							newItemInventoryAlert: $('.newItemForm').find('#createNewItemInventoryAlert').val(),
 							newItemPriceSold: $('.newItemForm').find('#createNewItemPrice').val(),
-							newItemUnitCost: $('.newItemForm').find('#createNewItemUnitCost').val()
+							newItemUnitCost: $('.newItemForm').find('#createNewItemUnitCost').val(),
+							newItemLocationSoldAt: selectedLocations
 							};
+
 		var jsonNewItemObject = JSON.stringify( newItemOject );
 
-		console.log(newItemOject);
+		console.log(selectedLocations);
 		$.ajaxSetup({
 	        headers: {
 	            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -294,5 +305,10 @@ $( document ).ready(function() {
 
 		
 		//console.log(json);
+	});
+
+	//create new variation within the form itself
+	$('.addNewItemVariation').click(function() {
+		
 	});
 });

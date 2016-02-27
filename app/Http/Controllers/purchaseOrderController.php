@@ -154,37 +154,36 @@ function createNewItem($createdItem){
     $newItemAlertInventoryLevel = $createdItem->newItemInventoryAlert;
     $newItemPrice               = $createdItem->newItemPriceSold*100;
     $newItemUnitCost            = $createdItem->newItemUnitCost*100;
+    $newItemLocationSoldAt      = $createdItem->newItemLocationSoldAt;
 
 
     $access_token = 'KI0ethBHis2N76q1jyYung';
     $client = new Client();
 
     $postData = array(
-      'id' => 'test_1433281487',
-      'name' => 'thisisanewoutdooritem',
-      'description' => 'test2',
-      'variations' => array(array(
-        'id' => 'test_v1433281487',
+      'name' => $newItemName,
+      'variations' => array(array(//need to make this run through all the variations that are created
         'name' => 'Regular',
         'price_money' => array(
           'currency_code' => 'USD',
-          'amount' => '19800',
+          'amount' => $newItemPrice,
         ),
       )),
     );
-$json = json_encode($postData);
 
-echo $json;
+    $json = json_encode($postData);
+
+    var_dump($postData);
 
 
     # Creates a "Milkshake" item.
-    $itemsRequest = $client->request('POST', 'https://connect.squareup.com/v1/9SQD525GSB3T3/items', [
+    /*$itemsRequest = $client->request('POST', 'https://connect.squareup.com/v1/9SQD525GSB3T3/items', [
         'headers' => [
             'Authorization' => 'Bearer '.$access_token ,
             'Accept' => 'application/json',
             'Content-Type' => 'application/json'
         ], 'body' => $json
-    ]);
+    ]);*/
 
     //var_dump($createdItem);
 

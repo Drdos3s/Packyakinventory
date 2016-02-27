@@ -244,7 +244,6 @@ class mainItemFeedController extends Controller {
                 $successResponse = json_encode(array('itemVariationInventory' => $updatedItem->itemVariationInventory, 'itemVariationUnitPrice' => $updatedItem->itemVariationUnitCost));
                 return $successResponse;
             }
-            
         }
     }
 }
