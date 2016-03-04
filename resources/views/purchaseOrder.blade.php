@@ -35,7 +35,6 @@
                 <div class="box-body">
                     <table class="table">
                         <thead>
-
                             <tr>
                                 <th>Category </th>
                                 <th>Item </th>
@@ -44,8 +43,7 @@
                                 <th>Order Quantity</th>
                                 <th>Unit Cost </th>
                                 <th>Total</th>
-                                <th>Delete</th>
-                                
+                                <th>Delete</th>                                
                             </tr>
                         </thead>
                         <tbody>
@@ -59,13 +57,9 @@
                                 <td class='packyakOrderQuantityText'><?php echo Form::input('number','orderQuantity', 0, array('class' => 'packyakOrderQuantityInput', 'type' => 'number', 'min' => '0', 'step' => '1')); ?></td>
                                 <td><h5>{{ $item['itemVariationUnitCost'] }}</h5></td>
                                 <td><h5>0</h5></td>
-
-
                                 <td><i class="fa fa-times-circle fa-2 btn btn-default packyakRemoveFromPO"></i></td>
                             </tr>
                             @endforeach
-                            
-
                             <?php //var_dump($purchaseOrder['po_items']); ?>
                         </tbody>
                     </table>
@@ -79,7 +73,7 @@
                 
             </div><!-- /.box -->
         @endforeach
-        <?php var_dump($existingLocations);?>
+        <?php //var_dump($existingLocations);?>
         <!-- Modal for create and edit PO-->
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
             <div class="modal-dialog" role="document">
@@ -177,57 +171,54 @@
                                     <input type="email" class="form-control" id="createNewItemName" placeholder="Name">
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="createNewItemVariation" class="col-sm-2 control-label">Variation</label>
-                                <div class="col-sm-10 input-group">   
-                                    <input type="email" class="form-control" id="createNewItemVariation" placeholder="Regular"> 
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-default addNewItemVariation" type="button"><i class = 'fa fa-plus fa-2'></i></button>
-                                    </span>                          
+                            <div class="form-group createNewItemVariationsWrapper">
+                                <div class='singleVariationWrapper'>
+                                    <label for="createNewItemVariation" class="col-sm-2 control-label">Variation</label>
+                                    <div class="col-sm-10 input-group">   
+                                        <div class="col-sm-7">
+                                            <input type="email" class="form-control" class="createNewItemVariation" placeholder="Regular">
+                                        </div>
+                                        <label for="createNewItemSku" class="col-sm-1 control-label">SKU</label>
+                                        <div class="col-sm-4">
+                                            <input type="email" class="form-control" class="createNewItemSku" placeholder="SKU">
+                                        </div>
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default addNewItemVariation" type="button"><i class = "fa fa-plus fa-2"></i></button>
+                                        </span>
+                                    </div>
+
+                                    <label for="createNewItemInventoryLine" class="col-sm-2 col-sm-offset-1 control-label">Inventory</label>
+                                    <div class="col-sm-8 input-group createNewItemInventoryLine">   
+                                        <div class="col-sm-4">
+                                            <input type="number" class="form-control" class="createNewItemInventoryLevel" placeholder='Current' min="0", step='1'>
+                                        </div>
+
+                                        <div class="col-sm-4">
+                                            <input type="number" class="form-control" class="createNewItemInventoryAlert" placeholder='Alert At' min="0", step='1'>
+                                        </div>
+                                    </div>
+
+                                    <label for="createNewItemPriceCost" class="col-sm-2 col-sm-offset-1 control-label">Price/Cost</label>
+                                    <div class="col-sm-8 input-group createNewItemPriceCost">   
+                                        <div class="col-sm-4">
+                                            <input type="number" class="form-control" class="createNewItemPrice" placeholder='Price' min=".00", step='.01'>
+                                        </div>
+
+                                        <div class="col-sm-4">
+                                            <input type="number" class="form-control" class="createNewItemUnitCost" placeholder='Unit Cost' min=".00", step='.01'>
+                                        </div>
+                                    </div>
                                 </div>
-                               
                             </div>
                             <div class="form-group">
-                                <label for="createNewItemSku" class="col-sm-2 control-label">SKU</label>
-                                <div class="col-sm-10">
-                                    <input type="email" class="form-control" id="createNewItemSku" placeholder="(Optional)">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="createNewItemInventoryLevel" class="col-sm-2 control-label">Quantity On Hand</label>
-                                <div class="col-sm-3">
-                                    <input type="number" class="form-control" id="createNewItemInventoryLevel" placeholder='0' min="0", step='1'>
-                                </div>
-
-                                <label for="createNewItemInventoryAlert" class="col-sm-2 control-label">Alert At</label>
-                                <div class="col-sm-3">
-                                    <input type="number" class="form-control" id="createNewItemInventoryAlert" placeholder='0' min="0", step='1'>
-                                </div>
-
-
-                            </div>
-                            <div class="form-group">
-                                <label for="createNewItemPrice" class="col-sm-2 control-label">Price</label>
-                                <div class="col-sm-3">
-                                    <input type="number" class="form-control" id="createNewItemPrice" placeholder='0.00' min=".00", step='.01'>
-                                </div>
-
-                                <label for="createNewItemUnitCost" class="col-sm-2 control-label">Unit Cost</label>
-                                <div class="col-sm-3">
-                                    <input type="number" class="form-control" id="createNewItemUnitCost" placeholder='0.00' min=".00", step='.01'>
-                                </div>
-                            </div>
-
-                            <div class="form-group col-sm-12">
-                                <label for="createNewItemLocationSelect" class="col-sm-2 control-label">Location(s) Sold At</label>
+                                <label for="createNewItemLocationSelect" class="col-sm-2 control-label">Sold At</label>
                                 <div class="btn-group">
-                                    <!-- Need to input dynamic location functionality -->
-                                        @foreach($existingLocations as $existingLocation)
-                                            <input type="checkbox" aria-label="..." class = "createNewItemLocationSelect">
-                                            <span class='createNewItemLocationSelect' >{{ $existingLocation['locationCity'] }}</span>
-                                        @endforeach
+                                    @foreach($existingLocations as $existingLocation)
+                                        <input type="checkbox" aria-label="..." class = "createNewItemLocationSelect">
+                                        <span class='createNewItemLocationSelect' >{{ $existingLocation['locationCity'] }}</span>
+                                    @endforeach
                                 </div>
-                            </div>
+                            </div>  
 
 <!--                             <div class="form-group col-sm-12">
                                 <label for="createNewItemPOAddSelect" class="col-sm-3 control-label">Add Item to PO</label>
@@ -240,15 +231,13 @@
                                     </select>
                                 </div>
                             </div> -->
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary packyakCreateNewItemButton">Create</button>
-                            </div>
-
                             {{ csrf_field() }}
-                            
                         </form>
                         <!-- ___________________END OF MODAL FORM FOR CREATE NEW ITEM______________________ -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary packyakCreateNewItemButton">Create</button>
                     </div>
                 </div>
             </div>

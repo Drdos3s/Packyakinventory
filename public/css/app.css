@@ -8,31 +8,38 @@
     padding-right: 15px; }
 
 /******** DASHBOARD PAGE ********/
-.packYakItemFeedRow:hover{
-	background-color: #ECF0F5;
-	color: #333;
-}
+.packYakItemFeedRow:hover {
+  background-color: #ECF0F5;
+  color: #333; }
 
 /*Change, add to order, and cancel icon button styling*/
-.fa-check-circle-o{
-	color: #00A65A;
-}
+.fa-check-circle-o {
+  color: #00A65A; }
 
-.fa-times-circle{
-	color: #DD4B39;
-}
+.fa-times-circle {
+  color: #DD4B39; }
 
-.fa-chevron-circle-down{
-	color: #3C8DBC;
-}
-
+.fa-chevron-circle-down {
+  color: #3C8DBC; }
 
 .updateSuccess {
   background-color: #00A65A;
   color: #FFFFFF; }
 
-.packyakInventoryTextInput, .packyakUnitPriceTextInput {
+.packyakInventoryTextInput {
   max-width: 70px; }
 
+/******** PURCHASE ORDER ********/
+.singleVariationWrapper {
+  border-top: 1px solid #F4F4F4;
+  border-bottom: 1px solid #F4F4F4;
+  padding-top: 15px;
+  padding-bottom: 15px; }
+  .singleVariationWrapper .packyakRemoveVariation {
+    color: #DD4B39; }
+  .singleVariationWrapper .addNewItemVariation {
+    color: #00A65A; }
+  .singleVariationWrapper .input-group-btn {
+    padding-right: 15px; }
 
 /*# sourceMappingURL=app.css.map */
