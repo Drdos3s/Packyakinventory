@@ -263,31 +263,43 @@ $( document ).ready(function() {
 	});
 
 	//purchase order create new item and send data for new record and prime for square upload
-	$('.packyakCreateNewItemButton').click(function(){
+	$(".createNewItemModalContent").on("click", ".packyakCreateNewItemButton", function(e) {
 
-		//getting array of locations sold at
+		//getting array of locations sold at and starting variations array
+		var action = 'createNewItem';
 		var selectedLocations = new Array();
-		$('.newItemForm').find('.createNewItemLocationSelect:checked').next().each(function(){ 
-																					var locationText = $(this).text();
-																					selectedLocations.push(locationText);
-																				});
+		var newItemVariationsList = new Array();
+
+		//populating variations objects
+		$('.singleVariationWrapper').each(function(){
+			var newItemVariation = {
+				newVariationName: $(this).find('.createNewItemVariation').val(),
+				newVariationSKU: $(this).find('.createNewItemSku').val(),
+				newVariationInventoryLevel: $(this).find('.createNewItemInventoryLevel').val(),
+				newVariationInventoryAlert: $(this).find('.createNewItemInventoryAlert').val(),
+				newVariationPrice: $(this).find('.createNewItemPrice').val()*100,
+				newVariationUnitPrice: $(this).find('.createNewItemUnitCost').val()*100
+				//should eventually add the option for variable pricing
+			};	
+			//push the variation to the variations array
+			newItemVariationsList.push(newItemVariation);
+		});
+		//console.log(newItemVariationsList);
+
+		$('.createNewItemLocationSelect:checked').next().each(function(){ selectedLocations.push($(this).text())});
+		//console.log(selectedLocations);
+
 
 		//setting up data to be passed for new item
-		var action = 'createNewItem';
-		var newItemOject = {newItemCategory: $('.newItemForm').find('#createNewItemCategory').val(),
-							newItemName: $('.newItemForm').find('#createNewItemName').val(),
-							newItemVariation: $('.newItemForm').find('#createNewItemVariation').val(),
-							newItemSku: $('.newItemForm').find('#createNewItemSku').val(),
-							newItemInventoryLevel: $('.newItemForm').find('#createNewItemInventoryLevel').val(),
-							newItemInventoryAlert: $('.newItemForm').find('#createNewItemInventoryAlert').val(),
-							newItemPriceSold: $('.newItemForm').find('#createNewItemPrice').val(),
-							newItemUnitCost: $('.newItemForm').find('#createNewItemUnitCost').val(),
+		var newItemOject = {newItemCategory: $('.newItemForm').find('.createNewItemCategory').val(),
+							newItemName: $('.newItemForm').find('.createNewItemName').val(),
+							newItemVariations: newItemVariationsList,
 							newItemLocationSoldAt: selectedLocations
 							};
 
 		var jsonNewItemObject = JSON.stringify( newItemOject );
 
-		console.log(selectedLocations);
+		console.log(jsonNewItemObject);
 		$.ajaxSetup({
 	        headers: {
 	            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -305,7 +317,7 @@ $( document ).ready(function() {
 	        },
 	        error: function(ts) { console.log(ts.responseText) }
 	    })
-		//console.log(json);
+		//console.log(json);*/
 	});
 
 	//create new variation within the form itself
@@ -313,20 +325,20 @@ $( document ).ready(function() {
 		var newVariationStringHtml =  $('<div class="singleVariationWrapper">' +
 										'<label for="createNewItemVariation" class="col-sm-2 control-label">Variation</label>' +
 		                                '<div class="col-sm-10 input-group">' +  
-		                                    '<div class="col-sm-7"><input type="email" class="form-control" class="createNewItemVariation" placeholder="Name"></div>' +                                   
+		                                    '<div class="col-sm-7"><input type="email" class="form-control createNewItemVariation" placeholder="Name"></div>' +                                   
 		                                    '<label for="createNewItemSku" class="col-sm-1 control-label">SKU</label>' +
-		                                    '<div class="col-sm-4"><input type="email" class="form-control" class="createNewItemSku" placeholder="SKU"></div>' +
+		                                    '<div class="col-sm-4 createNewItemSKUWrapper"><input type="email" class="form-control createNewItemSku" placeholder="SKU"></div>' +
 		                                    '<span class="input-group-btn"><button class="btn btn-default packyakRemoveVariation" type="button"><i class = "fa fa-times-circle fa-2"></i></button></span>' +
 		                                '</div>' +
 		                                '<label for="createNewItemInventoryLine" class="col-sm-2 col-sm-offset-1 control-label">Inventory</label>' +
 		                                '<div class="col-sm-8 input-group createNewItemInventoryLine">' +   
-		                                    '<div class="col-sm-4"><input type="number" class="form-control" class="createNewItemInventoryLevel" placeholder="Current" min="0", step="1"></div>' +
-		                                    '<div class="col-sm-4"><input type="number" class="form-control" class="createNewItemInventoryAlert" placeholder="Alert At" min="0", step="1"></div>' +
+		                                    '<div class="col-sm-4"><input type="number" class="form-control createNewItemInventoryLevel" placeholder="Current" min="0", step="1"></div>' +
+		                                    '<div class="col-sm-4"><input type="number" class="form-control createNewItemInventoryAlert" placeholder="Alert At" min="0", step="1"></div>' +
 		                                '</div>' +
 		                                '<label for="createNewItemPriceCost" class="col-sm-2 col-sm-offset-1 control-label">Price/Cost</label>' +
 		                                '<div class="col-sm-8 input-group createNewItemPriceCost">' +   
-		                                    '<div class="col-sm-4"><input type="number" class="form-control" class="createNewItemPrice" placeholder="Price" min=".00", step=".01"></div>' +
-		                                    '<div class="col-sm-4"><input type="number" class="form-control" class="createNewItemUnitCost" placeholder="Unit Cost" min=".00", step=".01"></div>' +
+		                                    '<div class="col-sm-4"><input type="number" class="form-control createNewItemPrice" placeholder="Price" min=".00", step=".01"></div>' +
+		                                    '<div class="col-sm-4"><input type="number" class="form-control createNewItemUnitCost" placeholder="Unit Cost" min=".00", step=".01"></div>' +
 		                                '</div></div>');
 		$(newVariationStringHtml).appendTo('.createNewItemVariationsWrapper');
 	});
@@ -334,6 +346,11 @@ $( document ).ready(function() {
 	//remove variation from create item form
 	$(".createNewItemVariationsWrapper").on("click", ".packyakRemoveVariation", function(e) {
 	    $(this).parents('.singleVariationWrapper').remove();
+
+	});
+
+	$(".createNewItemModalContent").on("click", ".packyakCreateNewItemButton", function(e) {
+
 	});
 
 });

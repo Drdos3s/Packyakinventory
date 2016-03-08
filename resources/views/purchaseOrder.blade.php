@@ -151,7 +151,7 @@
         <!--START CREATE ITEM MODAL-->
         <div class="modal fade" id="createItemModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
             <div class="modal-dialog" role="document">
-                <div class="modal-content">
+                <div class="modal-content createNewItemModalContent">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title" id="myModalLabel">Create New Item</h4>
@@ -162,13 +162,13 @@
                             <div class="form-group">
                                 <label for="createNewItemCategory" class="col-sm-2 control-label">Category</label>
                                 <div class="col-sm-10">
-                                    <input type="email" class="form-control" id="createNewItemCategory" placeholder="Category">
+                                    <input type="email" class="form-control createNewItemCategory" placeholder="Category">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="createNewItemName" class="col-sm-2 control-label">Name</label>
                                 <div class="col-sm-10">
-                                    <input type="email" class="form-control" id="createNewItemName" placeholder="Name">
+                                    <input type="email" class="form-control createNewItemName" placeholder="Name">
                                 </div>
                             </div>
                             <div class="form-group createNewItemVariationsWrapper">
@@ -176,11 +176,11 @@
                                     <label for="createNewItemVariation" class="col-sm-2 control-label">Variation</label>
                                     <div class="col-sm-10 input-group">   
                                         <div class="col-sm-7">
-                                            <input type="email" class="form-control" class="createNewItemVariation" placeholder="Regular">
+                                            <input type="email" class="form-control createNewItemVariation" placeholder="Regular">
                                         </div>
                                         <label for="createNewItemSku" class="col-sm-1 control-label">SKU</label>
-                                        <div class="col-sm-4">
-                                            <input type="email" class="form-control" class="createNewItemSku" placeholder="SKU">
+                                        <div class="col-sm-4 createNewItemSKUWrapper">
+                                            <input type="email" class="form-control createNewItemSku" placeholder="SKU">
                                         </div>
                                         <span class="input-group-btn">
                                             <button class="btn btn-default addNewItemVariation" type="button"><i class = "fa fa-plus fa-2"></i></button>
@@ -190,22 +190,22 @@
                                     <label for="createNewItemInventoryLine" class="col-sm-2 col-sm-offset-1 control-label">Inventory</label>
                                     <div class="col-sm-8 input-group createNewItemInventoryLine">   
                                         <div class="col-sm-4">
-                                            <input type="number" class="form-control" class="createNewItemInventoryLevel" placeholder='Current' min="0", step='1'>
+                                            <input type="number" class="form-control createNewItemInventoryLevel" placeholder='Current' min="0", step='1'>
                                         </div>
 
                                         <div class="col-sm-4">
-                                            <input type="number" class="form-control" class="createNewItemInventoryAlert" placeholder='Alert At' min="0", step='1'>
+                                            <input type="number" class="form-control createNewItemInventoryAlert" placeholder='Alert At' min="0", step='1'>
                                         </div>
                                     </div>
 
                                     <label for="createNewItemPriceCost" class="col-sm-2 col-sm-offset-1 control-label">Price/Cost</label>
                                     <div class="col-sm-8 input-group createNewItemPriceCost">   
                                         <div class="col-sm-4">
-                                            <input type="number" class="form-control" class="createNewItemPrice" placeholder='Price' min=".00", step='.01'>
+                                            <input type="number" class="form-control createNewItemPrice" placeholder='Price' min=".00", step='.01'>
                                         </div>
 
                                         <div class="col-sm-4">
-                                            <input type="number" class="form-control" class="createNewItemUnitCost" placeholder='Unit Cost' min=".00", step='.01'>
+                                            <input type="number" class="form-control createNewItemUnitCost" placeholder='Unit Cost' min=".00", step='.01'>
                                         </div>
                                     </div>
                                 </div>
@@ -214,7 +214,7 @@
                                 <label for="createNewItemLocationSelect" class="col-sm-2 control-label">Sold At</label>
                                 <div class="btn-group">
                                     @foreach($existingLocations as $existingLocation)
-                                        <input type="checkbox" aria-label="..." class = "createNewItemLocationSelect">
+                                        <input type="checkbox" aria-label="..." class = "createNewItemLocationSelect" checked>
                                         <span class='createNewItemLocationSelect' >{{ $existingLocation['locationCity'] }}</span>
                                     @endforeach
                                 </div>

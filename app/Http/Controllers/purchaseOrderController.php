@@ -148,52 +148,80 @@ function createNewItem($createdItem){
     //setting variables from the post data from ajax call
     $newItemCategory            = $createdItem->newItemCategory;
     $newItemName                = $createdItem->newItemName;
-    $newItemVariation           = $createdItem->newItemVariation;
-    $newItemSku                 = $createdItem->newItemSku;
-    $newItemCurrentInventory    = $createdItem->newItemInventoryLevel;
-    $newItemAlertInventoryLevel = $createdItem->newItemInventoryAlert;
-    $newItemPrice               = $createdItem->newItemPriceSold*100;
-    $newItemUnitCost            = $createdItem->newItemUnitCost*100;
+    $newItemVariationsRaw       = $createdItem->newItemVariations;
     $newItemLocationSoldAt      = $createdItem->newItemLocationSoldAt;
 
+    
+    $newItemVariationsDecoded = json_decode(json_encode($newItemVariationsRaw), true);
+    $variationsListForSquare = [];
 
+    foreach($newItemVariationsDecoded as $newItemVariation){
+        $formattedVariation = array(//need to make this run through all the variations that are created
+                'name' => $newItemVariation['newVariationName'],
+                'price_money' => array(
+                  'currency_code' => 'USD',
+                  'amount' => $newItemVariation['newVariationPrice']
+                ),
+                'track_inventory'=> true,
+                'inventory_alert_type'=> "LOW_QUANTITY"
+            );
+
+        array_push($variationsListForSquare, $formattedVariation);
+    }
+
+    //var_dump($variationsListForSquare);
     $access_token = 'KI0ethBHis2N76q1jyYung';
     $client = new Client();
 
+
+    //test category id used for testing ->> 67c8e187-45af-4795-ba56-985f88051453
     $postData = array(
-      'name' => $newItemName,
-      'variations' => array(array(//need to make this run through all the variations that are created
-        'name' => 'Regular',
-        'price_money' => array(
-          'currency_code' => 'USD',
-          'amount' => $newItemPrice,
-        ),
-      )),
+        'name' => 'test item',
+        'variations' => $variationsListForSquare
     );
 
     $json = json_encode($postData);
 
-    var_dump($postData);
+    echo $json;
+
+    
+
+    //***********Working list category request********************//
+    /*$categoryRequest = $client->request('GET', 'https://connect.squareup.com/v1/1H5A5ZGP2T4DA/categories', [
+                'headers' => [
+                    'Authorization' => 'Bearer '.$access_token ,
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json'
+                ]
+            ]);
+
+            //store response
+            $categoryContents = $categoryRequest->getBody();
+            $categoryList = json_decode($categoryContents, true);
+            var_dump($categoryList);*/
 
 
     # Creates a "Milkshake" item.
-    /*$itemsRequest = $client->request('POST', 'https://connect.squareup.com/v1/9SQD525GSB3T3/items', [
+    
+    $itemsRequest = $client->request('POST', 'https://connect.squareup.com/v1/1H5A5ZGP2T4DA/items', [
         'headers' => [
             'Authorization' => 'Bearer '.$access_token ,
             'Accept' => 'application/json',
             'Content-Type' => 'application/json'
         ], 'body' => $json
-    ]);*/
+    ]);
 
-    //var_dump($createdItem);
+    /*$itemsContents = $itemsRequest->getBody();
+    $itemsList = json_decode($itemsContents, true);
+    var_dump($itemsList);
 
     //echo $newItemPrice;
     //echo $newItemUnitCost;
     
 
 
-    //var_dump($data);  
-    return 'it works';
+    //var_dump($data); */ 
+    return 'It works?';
     exit;
 
 };
