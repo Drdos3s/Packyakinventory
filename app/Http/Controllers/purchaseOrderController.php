@@ -16,6 +16,20 @@ use Auth;
 
 //Put in for auth check before finishing and pushing to production
 
+    //***********Working list category request********************//
+    /*$categoryRequest = $client->request('GET', 'https://connect.squareup.com/v1/1H5A5ZGP2T4DA/categories', [
+                'headers' => [
+                    'Authorization' => 'Bearer '.$access_token ,
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json'
+                ]
+            ]);
+
+            //store response
+            $categoryContents = $categoryRequest->getBody();
+            $categoryList = json_decode($categoryContents, true);
+            var_dump($categoryList);*/
+
 class purchaseOrderController extends Controller
 {
     public function index(){
@@ -154,6 +168,8 @@ function createNewItem($createdItem){
     
     $newItemVariationsDecoded = json_decode(json_encode($newItemVariationsRaw), true);
     $variationsListForSquare = [];
+    $access_token = 'KI0ethBHis2N76q1jyYung';
+    $client = new Client();
 
     foreach($newItemVariationsDecoded as $newItemVariation){
         $formattedVariation = array(//need to make this run through all the variations that are created
@@ -170,9 +186,6 @@ function createNewItem($createdItem){
     }
 
     //var_dump($variationsListForSquare);
-    $access_token = 'KI0ethBHis2N76q1jyYung';
-    $client = new Client();
-
 
     //test category id used for testing ->> 67c8e187-45af-4795-ba56-985f88051453
     $postData = array(
@@ -182,46 +195,28 @@ function createNewItem($createdItem){
 
     $json = json_encode($postData);
 
-    echo $json;
+    foreach($newItemLocationSoldAt as $newSquareItemLocation){
+        $existingLocation = json_decode( 
+                                json_encode(
+                                    DB::table('locations')
+                                    ->where('locationCity', '=', $newSquareItemLocation)
+                                    ->get()
+                                ),true);
 
-    
+        # Creates an item with the input values item.
+        $itemsRequest = $client->request('POST', 'https://connect.squareup.com/v1/'.$existingLocation[0]['squareID'].'/items', [
+            'headers' => [
+                'Authorization' => 'Bearer '.$access_token ,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ], 'body' => $json
+        ]);
+    }
 
-    //***********Working list category request********************//
-    /*$categoryRequest = $client->request('GET', 'https://connect.squareup.com/v1/1H5A5ZGP2T4DA/categories', [
-                'headers' => [
-                    'Authorization' => 'Bearer '.$access_token ,
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json'
-                ]
-            ]);
-
-            //store response
-            $categoryContents = $categoryRequest->getBody();
-            $categoryList = json_decode($categoryContents, true);
-            var_dump($categoryList);*/
-
-
-    # Creates a "Milkshake" item.
-    
-    $itemsRequest = $client->request('POST', 'https://connect.squareup.com/v1/1H5A5ZGP2T4DA/items', [
-        'headers' => [
-            'Authorization' => 'Bearer '.$access_token ,
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json'
-        ], 'body' => $json
-    ]);
-
-    /*$itemsContents = $itemsRequest->getBody();
+    $itemsContents = $itemsRequest->getBody();
     $itemsList = json_decode($itemsContents, true);
-    var_dump($itemsList);
 
-    //echo $newItemPrice;
-    //echo $newItemUnitCost;
-    
-
-
-    //var_dump($data); */ 
-    return 'It works?';
+    return $itemsContents;
     exit;
 
 };
