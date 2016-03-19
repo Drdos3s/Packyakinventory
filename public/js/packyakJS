@@ -313,6 +313,9 @@ $( document ).ready(function() {
 	        data: {'action': action, 'data': jsonNewItemObject},
 	        success: function(data) {
 	        	console.log(data);
+	        	$('#createItemModal').modal('toggle');
+	        	$('.newItemForm').find("input[type=text], textarea").val("");
+	        	
 	        },
 	        error: function(ts) { console.log(ts.responseText) }
 	    })

@@ -159,6 +159,9 @@ function removeItemFromPO(){
 };
 
 function createNewItem($createdItem){
+
+    //var_dump($createdItem);
+
     //setting variables from the post data from ajax call
     $newItemCategory            = $createdItem->newItemCategory;
     $newItemName                = $createdItem->newItemName;
@@ -169,7 +172,7 @@ function createNewItem($createdItem){
     $newItemVariationsDecoded = json_decode(json_encode($newItemVariationsRaw), true);
     $variationsListForSquare = [];
     $access_token = 'KI0ethBHis2N76q1jyYung';
-    $client = new Client();
+    
 
     foreach($newItemVariationsDecoded as $newItemVariation){
         $formattedVariation = array(//need to make this run through all the variations that are created
@@ -179,6 +182,7 @@ function createNewItem($createdItem){
                   'amount' => $newItemVariation['newVariationPrice']
                 ),
                 'track_inventory'=> true,
+                'sku' => $newItemVariation['newVariationSKU'],
                 'inventory_alert_type'=> "LOW_QUANTITY"
             );
 
@@ -189,13 +193,19 @@ function createNewItem($createdItem){
 
     //test category id used for testing ->> 67c8e187-45af-4795-ba56-985f88051453
     $postData = array(
-        'name' => 'test item',
+        'name' => $newItemName,
+        //'category_id' => '67c8e187-45af-4795-ba56-985f88051453',
         'variations' => $variationsListForSquare
     );
 
+    //var_dump($postData);
+
     $json = json_encode($postData);
 
+    $newItemArray = [];
+
     foreach($newItemLocationSoldAt as $newSquareItemLocation){
+        $client = new Client();
         $existingLocation = json_decode( 
                                 json_encode(
                                     DB::table('locations')
@@ -211,12 +221,64 @@ function createNewItem($createdItem){
                 'Content-Type' => 'application/json'
             ], 'body' => $json
         ]);
-    }
 
-    $itemsContents = $itemsRequest->getBody();
-    $itemsList = json_decode($itemsContents, true);
+        $itemsContents = $itemsRequest->getBody();
+        $itemsList = json_decode($itemsContents, true);
 
-    return $itemsContents;
+        array_push($newItemArray, array('itemID' => $itemsList['id'], 'locationID' => $existingLocation[0]['squareID'], 'locationName' => $newSquareItemLocation));
+    };
+
+    //var_dump($newItemArray);
+    //write get request to make sure I can retrieve all the item corectly
+    $getNewItemsMade = [];
+    $catData = json_encode(array('category_id' => '67c8e187-45af-4795-ba56-985f88051453'));
+
+    $batchBody = array('requests' => array(
+                        array('method' => 'PUT',
+                              'relative_path' => '/v1/3526BMVFNJZZX/items/62c7c04e-37b6-44cd-9d11-c7d36ea154ef',
+                              'access_token' => 'KI0ethBHis2N76q1jyYung',
+                              'body' => array('category_id' => 'b60e92d8-97ef-4ebf-a84f-b2b9a695419e')
+                              ),
+                        array('method' => 'PUT',
+                              'relative_path' => '/v1/1H5A5ZGP2T4DA/items/15055252-67a6-4429-ad3a-c7076e56ff39',
+                              'access_token' => 'KI0ethBHis2N76q1jyYung',
+                              'body' => array('category_id' => '67c8e187-45af-4795-ba56-985f88051453')
+                              )
+                        ));
+
+
+
+    $jsonBatchBody = json_encode($batchBody);
+
+
+//PHX 3526BMVFNJZZX
+    $itemsBatch = $client->request('POST', 'https://connect.squareup.com/v1/batch', [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json'
+                ], 'body' => $jsonBatchBody
+        ]);
+
+        $itemsContents = $itemsBatch->getBody();
+        $itemsList = json_decode($itemsContents, true);
+
+
+    /*foreach ($newItemArray as $getItem) {
+        $itemsRequest2 = $client->request('GET', 'https://connect.squareup.com/v1/'.$getItem['locationID'].'/items'.'/'.$getItem['itemID'], [
+                'headers' => [
+                    'Authorization' => 'Bearer '.$access_token ,
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json'
+                ]
+        ]);
+
+        $itemsContents = $itemsRequest2->getBody();
+        $itemsList = json_decode($itemsContents, true);
+
+        array_push($getNewItemsMade, $itemsList);
+    }*/
+
+    return $itemsList;
     exit;
 
 };
