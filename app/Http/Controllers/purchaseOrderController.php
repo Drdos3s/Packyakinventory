@@ -9,26 +9,13 @@ use Request;
 use GuzzleHttp\Client;
 use App\purchaseOrder;
 use App\purchaseOrderItem;
+use App\ItemCategory;
 //use App\createNewItem
 use DB;
 use Auth;
 
 
 //Put in for auth check before finishing and pushing to production
-
-    //***********Working list category request********************//
-    /*$categoryRequest = $client->request('GET', 'https://connect.squareup.com/v1/1H5A5ZGP2T4DA/categories', [
-                'headers' => [
-                    'Authorization' => 'Bearer '.$access_token ,
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json'
-                ]
-            ]);
-
-            //store response
-            $categoryContents = $categoryRequest->getBody();
-            $categoryList = json_decode($categoryContents, true);
-            var_dump($categoryList);*/
 
 class purchaseOrderController extends Controller
 {
@@ -46,6 +33,46 @@ class purchaseOrderController extends Controller
 
         $purchaseOrderDetailsWithItems = [];
 
+        //creating the batch call for item categories to populate the DB
+        $itemCategoriesAllLocations = [];
+
+        //setting up batch body for the categories request
+        foreach ($existingLocations as $singleLocation) {
+            $formattedCategoryRequest = array('method' => 'GET',
+                                              'relative_path' => '/v1/'.$singleLocation['squareID'].'/categories',
+                                              'access_token' => 'KI0ethBHis2N76q1jyYung',
+                                              'request_id' => $singleLocation['squareID']
+                                              );
+            array_push($itemCategoriesAllLocations, $formattedCategoryRequest);
+        }
+
+        $categoryRequestBatch = array('requests' => $itemCategoriesAllLocations); 
+
+        //initialize new client
+        $client = new Client();
+
+        $categoriesBatch = $client->request('POST', 'https://connect.squareup.com/v1/batch', [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json'
+                ], 'body' => json_encode($categoryRequestBatch)
+        ]);
+
+        $categoriesList = json_decode($categoriesBatch->getBody(), true);
+
+        //write each category to the database
+        foreach($categoriesList as $categoryList){
+            foreach($categoryList['body'] as $categoryNameAndID){
+                //var_dump($categoryNameAndID);
+                //echo $categoryList['request_id'];
+                
+                $newCategoryInDB = ItemCategory::firstOrNew(['locationID' => $categoryList['request_id'], 'categoryName' => $categoryNameAndID['name']]);
+                $newCategoryInDB -> locationID = $categoryList['request_id'];
+                $newCategoryInDB -> categoryName = $categoryNameAndID['name'];
+                $newCategoryInDB -> categoryID = $categoryNameAndID['id'];
+                $newCategoryInDB -> save();
+            }  
+        }
 
         //get all the items within a purchase order
         foreach($existingPurchaseOrders as $existingPurchaseOrder){
@@ -60,8 +87,16 @@ class purchaseOrderController extends Controller
             //var_dump($existingPurchaseOrder);
             array_push($purchaseOrderDetailsWithItems, $existingPurchaseOrder);
         }      
+
+        //sending the names of the uniquecategoires to the view for the select button
+        $itemCategoryList = json_decode(json_encode(DB::table('item_categories')
+                                ->select('categoryName')
+                                ->distinct()->get()), true);
+
+        //var_dump($itemCategoryList);
+
         //var_dump($purchaseOrderDetailsWithItems);
-        return view('purchaseOrder', ['existingPurchaseOrders' => $purchaseOrderDetailsWithItems, 'existingLocations' => $existingLocations]);
+        return view('purchaseOrder', ['existingPurchaseOrders' => $purchaseOrderDetailsWithItems, 'existingLocations' => $existingLocations, 'categoryList' => $itemCategoryList]);
     }
 
     public function ajaxRoute(){
@@ -86,7 +121,7 @@ class purchaseOrderController extends Controller
                         break;
                 }
             }else{
-                echo 'The action variable is not set in the ajax response';
+                echo 'The action variable is not set in the ajax request';
             }
         }
     }
@@ -110,13 +145,11 @@ function createNewPurchaseOrder(){
     //write to database for new purchase order
 
     $purchaseOrder = new purchaseOrder;
-
     $purchaseOrder->po_name = $po_name;
     $purchaseOrder->po_status = $po_status;
     $purchaseOrder->po_vendor = $po_vendor;
     $purchaseOrder->po_invoice_number = $po_invoice_number;
     $purchaseOrder->po_location = $po_location;
-
     $purchaseOrder->save();
 
     $createdPurchaseOrder = json_encode(array('po_name' => $po_name, 'po_status' => $po_status, 'po_vendor' => $po_vendor, 'po_invoice_number' => $po_invoice_number, 'po_location' => $po_location));
@@ -124,16 +157,15 @@ function createNewPurchaseOrder(){
     exit;
 };
 
-
-
 function addItemToPurchaseOrder(){
+    //retrieve data from POST
     $action = $_POST['action'];
     $selectedPurchaseOrder = $_POST['selectedPurchaseOrder'];
     $itemVariationID = $_POST['itemVariationID'];
     $purchaseOrderID = $_POST['packyakPurchaseOrderID'];
 
+    //set up new instance for purchase order item
     $purchaseOrderItem = new purchaseOrderItem;
-
     $purchaseOrderItem->purchaseOrderName = $selectedPurchaseOrder;
     $purchaseOrderItem->purchaseOrderID = $purchaseOrderID;
     $purchaseOrderItem->purchaseOrderItemVariationID = $itemVariationID;
@@ -228,7 +260,6 @@ function createNewItem($createdItem){
         array_push($newItemArray, array('itemID' => $itemsList['id'], 'locationID' => $existingLocation[0]['squareID'], 'locationName' => $newSquareItemLocation));
     };
 
-    //var_dump($newItemArray);
     //write get request to make sure I can retrieve all the item corectly
     $getNewItemsMade = [];
     $catData = json_encode(array('category_id' => '67c8e187-45af-4795-ba56-985f88051453'));
@@ -245,13 +276,8 @@ function createNewItem($createdItem){
                               'body' => array('category_id' => '67c8e187-45af-4795-ba56-985f88051453')
                               )
                         ));
-
-
-
     $jsonBatchBody = json_encode($batchBody);
 
-
-//PHX 3526BMVFNJZZX
     $itemsBatch = $client->request('POST', 'https://connect.squareup.com/v1/batch', [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -262,23 +288,6 @@ function createNewItem($createdItem){
         $itemsContents = $itemsBatch->getBody();
         $itemsList = json_decode($itemsContents, true);
 
-
-    /*foreach ($newItemArray as $getItem) {
-        $itemsRequest2 = $client->request('GET', 'https://connect.squareup.com/v1/'.$getItem['locationID'].'/items'.'/'.$getItem['itemID'], [
-                'headers' => [
-                    'Authorization' => 'Bearer '.$access_token ,
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json'
-                ]
-        ]);
-
-        $itemsContents = $itemsRequest2->getBody();
-        $itemsList = json_decode($itemsContents, true);
-
-        array_push($getNewItemsMade, $itemsList);
-    }*/
-
     return $itemsList;
     exit;
-
 };

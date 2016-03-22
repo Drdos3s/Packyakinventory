@@ -73,9 +73,13 @@ function deleteItem($itemId) {
     <!-- AdminLTE App -->
     <script src="{{ asset ("/bower_components/admin-lte/dist/js/app.min.js") }}" type="text/javascript"></script>
 
+    <!--select 2 JS 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/js/select2.min.js" type='text/javascript'></script>-->
+
     <script src="{{ asset ("/js/packyakJS") }}" type="text/javascript"></script>
     <!-- Optionally, you can add Slimscroll and FastClick plugins.
           Both of these plugins are recommended to enhance the
           user experience -->
+    </script>
     </body>
 @endsection

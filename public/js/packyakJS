@@ -1,5 +1,4 @@
 $( document ).ready(function() {
-
 	//Setting up search bar
     $('#packyakInventoryDashSearch').on('keyup', function(e) {
 	    if ('' != this.value) {
@@ -264,7 +263,7 @@ $( document ).ready(function() {
 
 	//purchase order create new item and send data for new record and prime for square upload
 	$(".createNewItemModalContent").on("click", ".packyakCreateNewItemButton", function(e) {
-
+		
 		//getting array of locations sold at and starting variations array
 		var action = 'createNewItem';
 		var selectedLocations = new Array();
@@ -348,4 +347,6 @@ $( document ).ready(function() {
 	$(".createNewItemVariationsWrapper").on("click", ".packyakRemoveVariation", function(e) {
 	    $(this).parents('.singleVariationWrapper').remove();
 	});
+
+
 });

@@ -12,7 +12,6 @@
             New Purchase Order
         </button>
     </div>
-
         
     <div class='col-md-12'>
         @foreach($existingPurchaseOrders as $purchaseOrder)
@@ -67,6 +66,7 @@
                 
                 <div class="box-footer">
                     <button type="button" class="btn btn-primary btn-md packyakNewItemButton" data-toggle="modal" data-target="#createItemModal">
+
                         Create New Item
                     </button>
                 </div><!-- /.box-footer-->
@@ -159,11 +159,17 @@
                     <div class="modal-body">
                         <!-- This is where the content of the modal will go -->
                         <form class="form-horizontal newItemForm">
+                            <div class="box-body">
                             <div class="form-group">
                                 <label for="createNewItemCategory" class="col-sm-2 control-label">Category</label>
                                 <div class="col-sm-10">
-                                    <input type="email" class="form-control createNewItemCategory" placeholder="Category">
+                                    <select class="form-control select2 createNewItemCategory" style="width: 100%;">
+                                    @foreach($categoryList as $individualCategory)
+                                        <option>{{ $individualCategory['categoryName'] }}</option>
+                                    @endforeach
+                                    </select>
                                 </div>
+                            </div>
                             </div>
                             <div class="form-group">
                                 <label for="createNewItemName" class="col-sm-2 control-label">Name</label>

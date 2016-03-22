@@ -18,9 +18,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- Theme style -->
         <link href="{{ asset("/bower_components/admin-lte/dist/css/AdminLTE.min.css")}}" rel="stylesheet" type="text/css" />
         <link href="{{ asset("/bower_components/admin-lte/dist/css/skins/skin-green.min.css")}}" rel="stylesheet" type="text/css" />
+        <!-- Select 2 Dropdown 
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/css/select2.min.css" rel="stylesheet" />-->
 
 
         <link href="{!! asset('css/app.css') !!}" media="all" rel="stylesheet" type="text/css" />
+
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
@@ -31,6 +34,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     @yield('body')
 
-    </html>
+</html>
 
     
