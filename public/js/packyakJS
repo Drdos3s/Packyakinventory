@@ -347,6 +347,4 @@ $( document ).ready(function() {
 	$(".createNewItemVariationsWrapper").on("click", ".packyakRemoveVariation", function(e) {
 	    $(this).parents('.singleVariationWrapper').remove();
 	});
-
-
 });

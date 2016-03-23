@@ -205,39 +205,36 @@ function createNewItem($createdItem){
     $variationsListForSquare = [];
     $access_token = 'KI0ethBHis2N76q1jyYung';
     
-
+    //adds each variation to an array that will be added to other data in order to create item
     foreach($newItemVariationsDecoded as $newItemVariation){
-        $formattedVariation = array(//need to make this run through all the variations that are created
-                'name' => $newItemVariation['newVariationName'],
+        $formattedVariation = array(
+                'name' => $newItemVariation['newVariationName']/*,
                 'price_money' => array(
                   'currency_code' => 'USD',
                   'amount' => $newItemVariation['newVariationPrice']
                 ),
                 'track_inventory'=> true,
                 'sku' => $newItemVariation['newVariationSKU'],
-                'inventory_alert_type'=> "LOW_QUANTITY"
+                'inventory_alert_type'=> "LOW_QUANTITY"*/
             );
 
         array_push($variationsListForSquare, $formattedVariation);
     }
 
-    //var_dump($variationsListForSquare);
-
-    //test category id used for testing ->> 67c8e187-45af-4795-ba56-985f88051453
-    $postData = array(
+    /*$postData = array(
         'name' => $newItemName,
         //'category_id' => '67c8e187-45af-4795-ba56-985f88051453',
         'variations' => $variationsListForSquare
-    );
+    );*/
 
     //var_dump($postData);
 
-    $json = json_encode($postData);
+    
 
     $newItemArray = [];
 
     foreach($newItemLocationSoldAt as $newSquareItemLocation){
-        $client = new Client();
+        //get the location info that is needed
         $existingLocation = json_decode( 
                                 json_encode(
                                     DB::table('locations')
@@ -245,8 +242,57 @@ function createNewItem($createdItem){
                                     ->get()
                                 ),true);
 
+        //get the individual category id to be able to place the item
+        $categoryIDForSpecificLocation = json_decode(json_encode(
+                                                        DB::table('item_categories')
+                                                        ->select('categoryID')
+                                                        ->where(['categoryName' => $newItemCategory, 'locationID' => $existingLocation[0]['squareID']])
+                                                        ->get()
+                                                        ), true);
+
+        //var_dump($categoryIDForSpecificLocation);
+
+
+        $postData = array(
+            'name' => $newItemName,
+            'category_id' => $categoryIDForSpecificLocation[0]['categoryID'],
+            'variations' => $variationsListForSquare
+        );
+
+        //$json = json_encode($postData);
+        //echo $json;
+
+        $formattedCreateItemBatchRequest = array('method' => 'POST',
+                                          'relative_path' => '/'.'v1/'.$existingLocation[0]['squareID'].'/items',
+                                          'access_token' => 'KI0ethBHis2N76q1jyYung',
+                                          'body' => $postData
+                                          );
+
+        array_push($newItemArray, $formattedCreateItemBatchRequest);
+    };
+
+
+
+
+
+    $newItemRequestBatch = array('requests' => $newItemArray);
+
+    echo json_encode($newItemRequestBatch);
+    $client = new Client();
+
+
+    $newItemBatch = $client->request('POST', 'https://connect.squareup.com/v1/batch', [
+            'headers' => [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ], 'body' => json_encode($newItemRequestBatch)
+    ]);
+
+        $newItemList = json_decode($newItemBatch->getBody(), true);
+
+        var_dump($newItemList);
         # Creates an item with the input values item.
-        $itemsRequest = $client->request('POST', 'https://connect.squareup.com/v1/'.$existingLocation[0]['squareID'].'/items', [
+        /*$itemsRequest = $client->request('POST', 'https://connect.squareup.com/v1/'.$existingLocation[0]['squareID'].'/items', [
             'headers' => [
                 'Authorization' => 'Bearer '.$access_token ,
                 'Accept' => 'application/json',
@@ -257,11 +303,11 @@ function createNewItem($createdItem){
         $itemsContents = $itemsRequest->getBody();
         $itemsList = json_decode($itemsContents, true);
 
-        array_push($newItemArray, array('itemID' => $itemsList['id'], 'locationID' => $existingLocation[0]['squareID'], 'locationName' => $newSquareItemLocation));
-    };
+        array_push($newItemArray, array('itemID' => $itemsList['id'], 'locationID' => $existingLocation[0]['squareID'], 'locationName' => $newSquareItemLocation));*/
+    
 
     //write get request to make sure I can retrieve all the item corectly
-    $getNewItemsMade = [];
+    /*$getNewItemsMade = [];
     $catData = json_encode(array('category_id' => '67c8e187-45af-4795-ba56-985f88051453'));
 
     $batchBody = array('requests' => array(
@@ -286,8 +332,8 @@ function createNewItem($createdItem){
         ]);
 
         $itemsContents = $itemsBatch->getBody();
-        $itemsList = json_decode($itemsContents, true);
+        $itemsList = json_decode($itemsContents, true);*/
 
-    return $itemsList;
+    return 'working';
     exit;
 };
