@@ -152,7 +152,7 @@ $( document ).ready(function() {
 	        headers: {
 	            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 	        }
-		});
+		})
 
 		$.ajax({
 	        type: "POST",
@@ -166,14 +166,9 @@ $( document ).ready(function() {
 	        	   'po_location': po_location,
 	        	   'po_invoice_number': po_invoice_number
 	    		  },
-	        success: function(data) {
-	        	console.log(data);
+	        success: function(data) {        
 	           $('#myModal').modal('toggle');
-
-	           var responseData = $.parseJSON(data);
-	           
-	           
-
+	           console.log(data);
 	        },
 	        error: function(ts) { console.log(ts.responseText) }
 	    })
@@ -191,8 +186,6 @@ $( document ).ready(function() {
 	            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 	        }
 		});
-
-		
         data =  {'action': action,
         		 'selectedPurchaseOrder': selectedPurchaseOrder,
         		 'itemVariationID': itemVariationID,
@@ -205,7 +198,8 @@ $( document ).ready(function() {
 
 	        data: data,
 	        success: function(data) {
-	        	var responseData = $.parseJSON(data);
+	        	//var responseData = $.parseJSON(data);
+	        	console.log(data);
 	        },
 	        error: function(ts) { console.log(ts.responseText) }
 	    })
@@ -214,8 +208,8 @@ $( document ).ready(function() {
 	//removing item from purchase order
 	$('.packyakRemoveFromPO').click(function(){
 		var action = 'removeItemFromPO';
-		var packyakPurchaseOrderID = $(this).parents('.packyakPOHeader').children().children('.pypoid').html();
-		var itemVariationID = $(this).parents('.packyakPOItemListItem').children('.poitemid').html();
+		var packyakPurchaseOrderID = $(this).parents('.packyakPOHeader').find('.pypoid').html();
+		var itemVariationID = $(this).parents('.packyakPOItemListItem').find('.poitemid').html();
 		var successCancelRow = $(this).parents('.packyakPOItemListItem');
 
 		$.ajaxSetup({
@@ -224,7 +218,6 @@ $( document ).ready(function() {
 	        }
 		});
 
-		
 		if(confirm('Are you sure you want to remove this item?')){
 	        data =  {'action': action,
 	        		 'itemVariationID': itemVariationID,
@@ -237,6 +230,7 @@ $( document ).ready(function() {
 
 		        data: data,
 		        success: function(data) {
+		        	console.log(data);
 		        	successCancelRow.hide();
 		        },
 		        error: function(ts) { console.log(ts.responseText) }

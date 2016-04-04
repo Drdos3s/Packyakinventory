@@ -77,6 +77,7 @@ class purchaseOrderController extends Controller
         $client = new Client();
 
         //retrieve all categories
+        /*UNCOMMENT SO THAT CATEGORIES UPDATES
         $categoriesBatch = $client->request('POST', 'https://connect.squareup.com/v1/batch', [
                 'headers' => [
                     'Accept' => 'application/json',
@@ -95,7 +96,7 @@ class purchaseOrderController extends Controller
                 $newCategoryInDB -> categoryID = $categoryNameAndID['id'];
                 $newCategoryInDB -> save();
             }  
-        }
+        }*/
 
         //get all the items within a purchase order
         foreach($existingPurchaseOrders as $existingPurchaseOrder){
@@ -128,8 +129,13 @@ function createNewPurchaseOrder(){
     $purchaseOrder->po_location = $_POST['po_location'];
     $purchaseOrder->save();
 
-    $createdPurchaseOrder = json_encode(array('po_name' => $po_name, 'po_status' => $po_status, 'po_vendor' => $po_vendor, 'po_invoice_number' => $po_invoice_number, 'po_location' => $po_location));
-    return $createdPurchaseOrder; 
+    
+
+
+    /*BELOW IS RETURN VALUES FOR THE NEW PO THAT SHOULD GET PASSED BACK TO VIEW FOR PROCESSING
+
+    $createdPurchaseOrder = json_encode(array('po_name' => $po_name, 'po_status' => $po_status, 'po_vendor' => $po_vendor, 'po_invoice_number' => $po_invoice_number, 'po_location' => $po_location));*/
+    return 'Create New PO Working'; 
     exit;
 };
 
@@ -145,7 +151,8 @@ function addItemToPurchaseOrder(){
 
     $purchaseOrderItem->save();
 
-    return json_encode(array($action, $selectedPurchaseOrder, $itemVariationID, $purchaseOrderID));
+    /*return json_encode(array($action, $selectedPurchaseOrder, $itemVariationID, $purchaseOrderID));*/
+    return 'Adding Item To PO Working';
     exit;
 };
 
@@ -158,6 +165,8 @@ function removeItemFromPO(){
         ->where('purchaseOrderID', '=', $purchaseOrderID)
         ->where('purchaseOrderItemVariationID','=', $itemVariationID)
         ->delete();
+
+    return 'Removing item from PO working';
     exit;
 };
 
@@ -172,11 +181,12 @@ function createNewItem($createdItem){
     $newItemVariationsDecoded = json_decode(json_encode($newItemVariationsRaw), true);
     $variationsListForSquare = [];
     $newItemArray = [];
+    $newItemInventory = [];
     $access_token = 'KI0ethBHis2N76q1jyYung';
     
     //adds each variation to an array that will be added to other data in order to create item
     foreach($newItemVariationsDecoded as $newItemVariation){
-        $formattedVariation = array(
+        $formattedItemVariation = array(
                 'name' => $newItemVariation['newVariationName'],
                 'price_money' => array(
                   'currency_code' => 'USD',
@@ -187,8 +197,18 @@ function createNewItem($createdItem){
                 'inventory_alert_type'=> "LOW_QUANTITY"
             );
 
+        var_dump($newItemVariation);
+        $adjustmentType = 'RECEIVE_STOCK';
+
+        $formattedInventoryVariation = array(
+                                        'quantity_delta' => $newItemVariation['newVariationInventoryLevel'],
+                                        'adjustment_type' => $adjustmentType,
+                                        'memo' => $newItemVariation['newVariationUnitPrice']
+                                            );
+
         //pushes new variation with properties into an array to be formatted into JSON right before request happens
-        array_push($variationsListForSquare, $formattedVariation);
+        array_push($variationsListForSquare, $formattedItemVariation);
+        array_push($newItemInventory, $formattedInventoryVariation);
     }
 
     foreach($newItemLocationSoldAt as $newSquareItemLocation){
@@ -219,7 +239,8 @@ function createNewItem($createdItem){
         $formattedCreateItemSingleRequest = array('method' => 'POST',
                                           'relative_path' => '/'.'v1/'.$existingLocation[0]['squareID'].'/items',
                                           'access_token' => 'KI0ethBHis2N76q1jyYung',
-                                          'body' => $postData
+                                          'body' => $postData,
+                                          'request_id' => $existingLocation[0]['squareID']
                                           );
 
         array_push($newItemArray, $formattedCreateItemSingleRequest);
@@ -237,7 +258,34 @@ function createNewItem($createdItem){
             ], 'body' => json_encode($newItemRequestFullBatch)
     ]);
 
+    $decodedNewItemBatchResponse = json_decode($newItemBatchResponse->getBody(), true);
+
+    //create new item in DB and also write the unit cost and current inventory level.
+    foreach($decodedNewItemBatchResponse as $decodedItem){
+
+        foreach($decodedItem['body']['variations'] as $decodedItemVariation){
+            /*$createdItemToDB = Item::firstOrNew(['itemVariationID' => $decodedItemVariation['id']]);
+            $createdItemToDB -> squareItemID = $decodedItemVariation['item_id'];
+            $createdItemToDB -> itemName = $decodedItem['name'];
+            $createdItemToDB -> itemCategoryName = $decodedItem['category']['name'];
+            $createdItemToDB -> itemCategoryID = $decodedItem['category']['id'];
+            $createdItemToDB -> itemVariationName = $decodedItemVariation['name'];
+            $createdItemToDB -> itemVariationID = $decodedItemVariation['id'];
+            $createdItemToDB -> itemVariationPrice = $decodedItemVariation['price_money']['amount'];
+            $createdItemToDB -> itemVariationSKU = $decodedItemVariation['sku'];
+
+
+            $createdItemToDB -> locationSoldAt = $decodedItem['request_id'];
+            $createdItemToDB -> itemVariationInventory = $decodedItemVariation['item_id'];
+            $createdItemToDB -> itemVendorToOrderFrom = $decodedItemVariation['item_id'];
+            $createdItemToDB -> itemVariationUnitCost = $decodedItemVariation['item_id'];
+            $createdItemToDB -> itemVariationProfitMargin = $decodedItemVariation['item_id'];*/
+        }
+        
+    }
+
+
     //Time to set up and add to DB new item and update inventory as well as unit price to finish out the request. 
-    return $newItemBatchResponse->getBody();
+    return 'working';
     exit;
 };

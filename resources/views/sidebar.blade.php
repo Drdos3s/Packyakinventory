@@ -32,8 +32,10 @@
             <li class="header">Menu</li>
             <!-- Optionally, you can add icons to the links -->
             <li class="active"><a href="{{ url('/dashboard') }}"><span>Items & Inventory</span></a></li>
-            <li><a href="{{ url('/locations') }}"><span>Locations</span></a></li>
             <li><a href="{{ url('/purchaseOrders') }}"><span>Purchase Orders</span></a></li>
+            <li><a href=#><span>Vendors</span></a></li>
+            <li><a href="{{ url('/locations') }}"><span>Locations</span></a></li>
+            
         </ul><!-- /.sidebar-menu -->
     </section>
     <!-- /.sidebar -->

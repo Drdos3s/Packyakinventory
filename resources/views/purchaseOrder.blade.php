@@ -3,8 +3,6 @@
 @section('content')
 
 <!-- Button trigger modal -->
-
-
 <div class='row'>
     <!-- Modal Button for creating a new purchase order -->
     <div class='col-md-12'>            
@@ -12,41 +10,87 @@
             New Purchase Order
         </button>
     </div>
-        
-    <div class='col-md-12'>
+</div>
+
+<div class='row'>
+    <div class="col-md-12">
+        <div class="pad margin no-print">
+          <div class="callout callout-warning" style="margin-bottom: 0!important;">
+            <h4><i class="fa fa-info"></i> Attention:</h4>
+            This could be a way of notifications in the future with different things happening for things that stack up.
+          </div>
+        </div>
+        <div class="pad margin no-print">
+          <div class="callout callout-info" style="margin-bottom: 0!important;">
+            <h4><i class="fa fa-info"></i> Note:</h4>
+            This page has been enhanced for printing. Click the print button at the bottom of the invoice to test.
+          </div>
+        </div>
+
+
         @foreach($existingPurchaseOrders as $purchaseOrder)
-            <div class="box box-primary packyakPOHeader">
-                <div class="box-header with-border ">
+            <!-- Main content -->
+            <section class="invoice packyakPOHeader">
+              <!-- title row -->
+              <div class="row">
+                <div class="col-xs-12">
+                  <h2 class="page-header">
+                    <i class="fa fa-globe packYakPOName"></i> {{ $purchaseOrder['po_name'] }}
+                    <small class="pull-right packYakPOCreated">Date Created: <?php echo ' '.date('m-d-Y',strtotime($purchaseOrder['created_at']));?></small>
+                  </h2>
+                </div><!-- /.col -->
+              </div>
+              <!-- info row -->
+              <div class="row invoice-info">
+                <div class="col-sm-4 invoice-col">
+                  For
+                  <address class='packYakPOVendor'>
+                    <strong>{{ $purchaseOrder['po_vendor'] }}</strong><br>
+                    <!--should populate these dynamically with vendor address and info. Phone number at the least-->
+                    One Day, Suite 600<br>
+                    This will populate, CA 94107<br>
+                    Phone: (804) 123-5432<br>
+                    Email: info@almasaeedstudio.com
+                  </address>
+                </div><!-- /.col -->
+                <div class="col-sm-4 invoice-col">
+                  To
+                  <address class='packYakPOLocation'>
+                    <strong>{{ $purchaseOrder['po_location'] }}</strong><br>
+                    795 Folsom Ave, Suite 600<br>
+                    San Francisco, CA 94107<br>
+                    Phone: (555) 539-1037<br>
+                    Email: john.doe@example.com
+                  </address>
+                </div><!-- /.col -->
+                <div class="col-sm-4 invoice-col packYakPOStatus">
+                  <b>Status:</b> {{ $purchaseOrder['po_status'] }}<br>
+                  <br>
+                  <b>Invoice #</b> One day<br>
+                  <b>PO # </b><span class='pypoid'><?php echo $purchaseOrder['id'] ?></span><br> 
+                  <b>Payment Due:</b> This will<br>
+                  <b>Account:</b> be another piece of info
+                </div><!-- /.col -->
+              </div><!-- /.row -->
 
-                    <div class="col-sm-3"><h4><strong>Name:  </strong></h4><h5 class="packYakPOName"><?php echo ' '.$purchaseOrder['po_name'] ?></h5></div>
-                    <div class="pypoid hidden"><?php echo $purchaseOrder['id'] ?></div>
-                    <div class="col-sm-2"><h4><strong>Status: </strong></h4><h5 class="packYakPOStatus"><?php echo ' '.$purchaseOrder['po_status'] ?></h5></div>
-                    <div class="col-sm-2"><h4><strong>Vendor: </strong></h4><h5 class="packYakPOVendor"><?php echo ' '.$purchaseOrder['po_vendor'] ?></h5></div>
-                    <div class="col-sm-2"><h4><strong>Location: </strong></h4><h5 class="packYakPOLocation"><?php echo ' '.$purchaseOrder['po_location'] ?></h5></div>
-                    <div class="col-sm-2"><h4><strong>Created: </strong></h4><h5 class="packYakPOCreated"><?php echo ' '.date('m-d-Y',strtotime($purchaseOrder['created_at']));?></h5></div>
-                    <div class="box-tools pull-right">
-                        <i class="fa fa-pencil packyackPOEdit"></i>
-                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
-                    </div>
-                </div>
-
-                <?php //var_dump($places); ?>
-                <div class="box-body">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Category </th>
-                                <th>Item </th>
-                                <th>Variation </th>
-                                <th>Current Inventory</th>
-                                <th>Order Quantity</th>
-                                <th>Unit Cost </th>
-                                <th>Total</th>
-                                <th>Delete</th>                                
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($purchaseOrder['po_items'] as $item)
+              <!-- Table row -->
+              <div class="row">
+                <div class="col-xs-12 table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>Category </th>
+                        <th>Item </th>
+                        <th>Variation </th>
+                        <th>Current Inventory</th>
+                        <th>Order Quantity</th>
+                        <th>Unit Cost </th>
+                        <th>Total</th>
+                        <th>Delete</th> 
+                      </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($purchaseOrder['po_items'] as $item)
                             <tr class='packyakPOItemListItem'>
                                 <td class=" poitemid hidden">{{ $item['itemVariationID'] }}</td>
                                 <td><h5>{{ $item['itemCategoryName'] }}</h5></td>
@@ -54,25 +98,89 @@
                                 <td><h5>{{ $item['itemVariationName'] }}</h5></td>
                                 <td><h5>{{ $item['itemVariationInventory'] }}</h5></td>
                                 <td class='packyakOrderQuantityText'><?php echo Form::input('number','orderQuantity', 0, array('class' => 'packyakOrderQuantityInput', 'type' => 'number', 'min' => '0', 'step' => '1')); ?></td>
-                                <td><h5>{{ $item['itemVariationUnitCost'] }}</h5></td>
+                                <td><h5>${{ $item['itemVariationUnitCost']/100 }}</h5></td>
                                 <td><h5>0</h5></td>
                                 <td><i class="fa fa-times-circle fa-2 btn btn-default packyakRemoveFromPO"></i></td>
                             </tr>
-                            @endforeach
-                            <?php //var_dump($purchaseOrder['po_items']); ?>
-                        </tbody>
-                    </table>
-                </div><!-- /.box-body -->
-                
-                <div class="box-footer">
-                    <button type="button" class="btn btn-primary btn-md packyakNewItemButton" data-toggle="modal" data-target="#createItemModal">
+                        @endforeach
+                    </tbody>
+                  </table>
+                </div><!-- /.col -->
+              </div><!-- /.row -->
 
-                        Create New Item
-                    </button>
-                </div><!-- /.box-footer-->
-                
-            </div><!-- /.box -->
+              <div class="row">
+                <!-- accepted payments column -->
+                <div class="col-xs-6">
+                  <!--<p class="lead">Payment Methods:</p>
+                  <img src="../../dist/img/credit/visa.png" alt="Visa">
+                  <img src="../../dist/img/credit/mastercard.png" alt="Mastercard">
+                  <img src="../../dist/img/credit/american-express.png" alt="American Express">
+                  <img src="../../dist/img/credit/paypal2.png" alt="Paypal">
+                  <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
+                    This is in the PENDING phase which means items can still be added to this purchase order. 
+                  </p>-->
+                </div><!-- /.col -->
+                <div class="col-xs-6">
+                  <p class="lead">Status: {{ $purchaseOrder['po_status'] }}</p>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <tr>
+                        <th style="width:50%">Subtotal:</th>
+                        <td>$250.30</td>
+                      </tr>
+                      <tr>
+                        <th>Tax (9.3%)</th>
+                        <td>$10.34</td>
+                      </tr>
+                      <tr>
+                        <th>Shipping:</th>
+                        <td>$5.80</td>
+                      </tr>
+                      <tr>
+                        <th>Total:</th>
+                        <td>$265.24</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div><!-- /.col -->
+              </div><!-- /.row -->
+
+              <!-- this row will not appear when printing -->
+              <div class="row no-print">
+                <div class="col-xs-12">
+                  <a href="invoice-print.html" target="_blank" class="btn btn-info"><i class="fa fa-print"></i> Print</a>
+                  <button class="btn btn-success pull-right">Confirm</button>
+                  <button class="btn btn-primary" style="margin-right: 5px;"><i class="fa fa-download"></i> Generate PDF</button>
+                  <button class="btn btn-info pull-right packyackPOEdit" style="margin-right: 5px;"><i class="fa fa-pencil"></i> Edit</button>
+                  <button type="button" class="btn bg-maroon pull-right packyakNewItemButton" style="margin-right: 5px;" data-toggle="modal" data-target="#createItemModal">Create New Item</button>
+                </div>
+              </div>
+            </section><!-- /.content -->
         @endforeach
+        <div class="clearfix"></div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="row">     
+    <div class='col-md-12'>
         <?php //var_dump($existingLocations);?>
         <!-- Modal for create and edit PO-->
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
