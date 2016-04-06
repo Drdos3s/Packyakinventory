@@ -25,7 +25,10 @@ class purchaseOrderController extends Controller
             if (isset($_POST['action'])) {
                 switch ($_POST['action']) {
                     case 'createPO':
-                        return createNewPurchaseOrder();
+                        return createOrEditNewPurchaseOrder();
+                        break;
+                    case 'updatePO':
+                        return createOrEditNewPurchaseOrder();
                         break;
                     case 'addToPO':
                         return addItemToPurchaseOrder();
@@ -118,25 +121,37 @@ class purchaseOrderController extends Controller
     }
 }
 
-function createNewPurchaseOrder(){
+function createOrEditNewPurchaseOrder(){
     //retriving variables from modal form
     $action = $_POST['action'];
-    $purchaseOrder = new purchaseOrder;
-    $purchaseOrder->po_name = $_POST['po_name'];
-    $purchaseOrder->po_status = $_POST['po_status'];
-    $purchaseOrder->po_vendor = $_POST['po_vendor'];
-    $purchaseOrder->po_invoice_number = $_POST['po_invoice_number'];
-    $purchaseOrder->po_location = $_POST['po_location'];
-    $purchaseOrder->save();
+    switch ($action) {
+        case 'createPO':
+            $purchaseOrder = new purchaseOrder;
+            $purchaseOrder->po_name = $_POST['po_name'];
+            $purchaseOrder->po_status = $_POST['po_status'];
+            $purchaseOrder->po_vendor = $_POST['po_vendor'];
+            $purchaseOrder->po_invoice_number = $_POST['po_invoice_number'];
+            $purchaseOrder->po_location = $_POST['po_location'];
+            $purchaseOrder->save();
+            return 'Create Purchase Order Working';
+            break;
+        case 'updatePO': 
+            $po_id_number = $_POST['po_id_number'];
+            $po_name = $_POST['po_name'];
+            $po_status = $_POST['po_status'];
+            $po_vendor = $_POST['po_vendor'];
+            $po_invoice_number = $_POST['po_invoice_number'];
+            $po_location = $_POST['po_location'];
 
-    
+            purchaseOrder::where('id', $po_id_number)
+                                ->update(['po_name' => $po_name,
+                                        'po_status' => $po_status,
+                                        'po_invoice_number' => $po_invoice_number,
+                                        'po_location' => $po_location]);
 
-
-    /*BELOW IS RETURN VALUES FOR THE NEW PO THAT SHOULD GET PASSED BACK TO VIEW FOR PROCESSING
-
-    $createdPurchaseOrder = json_encode(array('po_name' => $po_name, 'po_status' => $po_status, 'po_vendor' => $po_vendor, 'po_invoice_number' => $po_invoice_number, 'po_location' => $po_location));*/
-    return 'Create New PO Working'; 
-    exit;
+            return 'Update Purchase Order Is working';
+            break;
+    }
 };
 
 function addItemToPurchaseOrder(){
@@ -206,6 +221,8 @@ function createNewItem($createdItem){
                                         'memo' => $newItemVariation['newVariationUnitPrice']
                                             );
 
+        echo '-------------------';
+        var_dump($formattedInventoryVariation);
         //pushes new variation with properties into an array to be formatted into JSON right before request happens
         array_push($variationsListForSquare, $formattedItemVariation);
         array_push($newItemInventory, $formattedInventoryVariation);
@@ -260,10 +277,36 @@ function createNewItem($createdItem){
 
     $decodedNewItemBatchResponse = json_decode($newItemBatchResponse->getBody(), true);
 
+    echo '------------------------';
+    var_dump($decodedNewItemBatchResponse);
     //create new item in DB and also write the unit cost and current inventory level.
     foreach($decodedNewItemBatchResponse as $decodedItem){
 
         foreach($decodedItem['body']['variations'] as $decodedItemVariation){
+
+            var_dump($decodedItemVariation);
+            echo 'NEW DECODED ITEM VARIATION ******************************************'.$decodedItemVariation['name'];
+            
+            $newItemInventoryFullBatch = array('requests' => $newItemInventory);
+
+
+            $client = new Client();
+    
+            //send the batch request with JSON for each item created per location with variations
+            $inventoryRequest = $client->request('POST', 'https://connect.squareup.com/v1/'.$location['squareID'].'/inventory', [
+                'headers' => [
+                    'Authorization' => 'Bearer '.$access_token ,
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json'
+                ]
+            ]);
+
+            //store response
+            $inventoryContents = $inventoryRequest->getBody();
+            $inventoryList = json_decode($inventoryContents, true);
+            //var_dump($inventoryList);
+
+            $decodedNewItemBatchResponse = json_decode($newItemBatchResponse->getBody(), true);
             /*$createdItemToDB = Item::firstOrNew(['itemVariationID' => $decodedItemVariation['id']]);
             $createdItemToDB -> squareItemID = $decodedItemVariation['item_id'];
             $createdItemToDB -> itemName = $decodedItem['name'];
@@ -286,6 +329,6 @@ function createNewItem($createdItem){
 
 
     //Time to set up and add to DB new item and update inventory as well as unit price to finish out the request. 
-    return 'working';
+    return 'Create a New Item Working';
     exit;
 };

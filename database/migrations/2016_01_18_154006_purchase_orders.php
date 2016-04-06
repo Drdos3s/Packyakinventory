@@ -20,6 +20,10 @@ class PurchaseOrders extends Migration
             $table->string('po_invoice_number');
             $table->string('po_vendor');
             $table->string('po_location');
+            $table->integer('po_subtotal');
+            $table->integer('po_tax_rate');
+            $table->integer('po_shipping_cost');
+            $table->integer('po_total_cost');
             $table->timestamps();
         });
 

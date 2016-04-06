@@ -138,16 +138,27 @@ $( document ).ready(function() {
 	//Changing the title of the modal so not to use 2 of them
 	$('.packyakNewPOButton').click(function() {
 		$('#myModal').find('.modal-title').html('New Purchase Order');
+		$('.packYakPOCreateButtonLabel').html('Create');
+		$('.packyakPOButton').removeClass('packyakPurchaseOrderUpdate');
+		$('#myModal').find("input[type=email], select").val("");
+		$('#myModal').find('.pypoidModal').html('');
 	});
 
-
-	$('.packyakPurchaseOrderCreateButton').click(function() {
+	//Create/edit a new purchase order
+	$('.packYakPOButton').click(function() {
+		var po_id_number = $('#myModal').find('.pypoidModal').html();
 		var po_name = $('#newPurchaseOrderTitle').val();//
 		var po_status = $('#purchaseOrderStatusSelect').val();//
 		var po_vendor = $('#purchaseOrderVendorSelect').val();//
 		var po_location = $('#purchaseOrderLocationSelect').val();//
 		var po_invoice_number = $('#purchaseOrderInvoiceNumber').val();//
-		var action = 'createPO';
+
+		if($('#myModal').find('.pypoidModal').html() == ''){
+			var action = 'createPO';
+		}else{
+			var action = 'updatePO';
+		}
+		
     	$.ajaxSetup({
 	        headers: {
 	            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -160,6 +171,7 @@ $( document ).ready(function() {
 
 	        data: {
 	        		'action': action,
+	        		'po_id_number': po_id_number,
 	        		'po_name': po_name,
 	        	   'po_status': po_status,
 	        	   'po_vendor': po_vendor,
@@ -172,6 +184,29 @@ $( document ).ready(function() {
 	        },
 	        error: function(ts) { console.log(ts.responseText) }
 	    })
+	});
+
+	//editing purchase order details
+	$('.packyackPOEdit').click(function(){
+		$('#myModal').modal('toggle');
+		$('#myModal').find('.modal-title').html('Edit Purchase Order');
+		$('#myModal').find('.packYakPOCreateButtonLabel').html('Save');
+		$('.packyakPOButton').addClass('packyakPurchaseOrderUpdate');
+		var pypoid = $(this).parents('.packyakPOHeader').find('.pypoid').html();
+
+		$('#myModal').find('.pypoidModal').html(pypoid);
+
+		//filling fields with PO details 
+		var selectedStatus = $(this).parents('.packyakPOHeader').find('.packYakPOStatus').text();
+		var selectedVendor = $(this).parents('.packyakPOHeader').find('.packYakPOVendor').text();
+		var selectedLocation = $(this).parents('.packyakPOHeader').find('.packYakPOLocation').text();
+
+
+		$('#newPurchaseOrderTitle').val($(this).parents('.packyakPOHeader').find('.packYakPOName').text());
+		//--Invoice Number not yet showing on the main status-- $('#purchaseOrderInvoiceNumber').val($(this).parents('.packyakPOHeader').find('.packYakPOInvoice').text());
+		$("#purchaseOrderLocationSelect").val(selectedLocation);
+		$("#purchaseOrderVendorSelect").val(selectedVendor);
+		$("#purchaseOrderStatusSelect").val(selectedStatus);
 	});
 
 	//adding an item to a purchase order
@@ -238,22 +273,7 @@ $( document ).ready(function() {
 		}
 	});
 
-	//editing purchase order details
-	$('.packyackPOEdit').click(function(){
-		$('#myModal').modal('toggle');
-		$('#myModal').find('.modal-title').html('Edit Purchase Order');
-		var selectedStatus = $(this).parents('.packyakPOHeader').find('.packYakPOStatus').text();
-		var selectedVendor = $(this).parents('.packyakPOHeader').find('.packYakPOVendor').text();
-		var selectedLocation = $(this).parents('.packyakPOHeader').find('.packYakPOLocation').text();
 
-		console.log($(this).parents('.packyakPOHeader').find('.packYakPOName').text());
-
-		$('#newPurchaseOrderTitle').val($(this).parents('.packyakPOHeader').find('.packYakPOName').text());
-		//--Invoice Number not yet showing on the main status-- $('#purchaseOrderInvoiceNumber').val($(this).parents('.packyakPOHeader').find('.packYakPOInvoice').text());
-		$("#purchaseOrderLocationSelect option[value='selectedLocation']").val(selectedLocation);
-		$("#purchaseOrderVendorSelect option[value='selectedVendor']").val(selectedVendor);
-		$("#purchaseOrderStatusSelect option[value='selectedStatus']").val(selectedStatus);
-	});
 
 	//purchase order create new item and send data for new record and prime for square upload
 	$(".createNewItemModalContent").on("click", ".packyakCreateNewItemButton", function(e) {

@@ -35,7 +35,7 @@
               <div class="row">
                 <div class="col-xs-12">
                   <h2 class="page-header">
-                    <i class="fa fa-globe packYakPOName"></i> {{ $purchaseOrder['po_name'] }}
+                    <i class="fa fa-globe"></i><span class='packYakPOName'>{{ $purchaseOrder['po_name'] }}</span>
                     <small class="pull-right packYakPOCreated">Date Created: <?php echo ' '.date('m-d-Y',strtotime($purchaseOrder['created_at']));?></small>
                   </h2>
                 </div><!-- /.col -->
@@ -44,8 +44,8 @@
               <div class="row invoice-info">
                 <div class="col-sm-4 invoice-col">
                   For
-                  <address class='packYakPOVendor'>
-                    <strong>{{ $purchaseOrder['po_vendor'] }}</strong><br>
+                  <address>
+                    <strong><span class='packYakPOVendor'>{{ $purchaseOrder['po_vendor'] }}</span></strong><br>
                     <!--should populate these dynamically with vendor address and info. Phone number at the least-->
                     One Day, Suite 600<br>
                     This will populate, CA 94107<br>
@@ -55,16 +55,16 @@
                 </div><!-- /.col -->
                 <div class="col-sm-4 invoice-col">
                   To
-                  <address class='packYakPOLocation'>
-                    <strong>{{ $purchaseOrder['po_location'] }}</strong><br>
+                  <address>
+                    <strong><span class='packYakPOLocation'>{{ $purchaseOrder['po_location'] }}</span></strong><br>
                     795 Folsom Ave, Suite 600<br>
                     San Francisco, CA 94107<br>
                     Phone: (555) 539-1037<br>
                     Email: john.doe@example.com
                   </address>
                 </div><!-- /.col -->
-                <div class="col-sm-4 invoice-col packYakPOStatus">
-                  <b>Status:</b> {{ $purchaseOrder['po_status'] }}<br>
+                <div class="col-sm-4 invoice-col">
+                  <b>Status:</b> <span class='packYakPOStatus'>{{ $purchaseOrder['po_status'] }}</span><br>
                   <br>
                   <b>Invoice #</b> One day<br>
                   <b>PO # </b><span class='pypoid'><?php echo $purchaseOrder['id'] ?></span><br> 
@@ -189,6 +189,7 @@
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title" id="myModalLabel">New Purchase Order</h4>
+                        <span class='pypoidModal hidden'></span>
                     </div>
                     <div class="modal-body">
                         <!-- This is where the content of the modal will go -->
@@ -244,7 +245,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary packyakPurchaseOrderCreateButton">Create</button>
+                                <button type="button" class="btn btn-primary packYakPOButton"><span class='packYakPOCreateButtonLabel'>Create</span></button>
                             </div>
 
                             {{ csrf_field() }}
