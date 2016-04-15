@@ -10,6 +10,7 @@ use GuzzleHttp\Client;
 use App\purchaseOrder;
 use App\purchaseOrderItem;
 use App\ItemCategory;
+use App\Item;
 
 use DB;
 use Auth;
@@ -192,11 +193,11 @@ function createNewItem($createdItem){
     $newItemVariationsRaw       = $createdItem->newItemVariations;
     $newItemLocationSoldAt      = $createdItem->newItemLocationSoldAt;
 
+
     
     $newItemVariationsDecoded = json_decode(json_encode($newItemVariationsRaw), true);
     $variationsListForSquare = [];
     $newItemArray = [];
-    $newItemInventory = [];
     $access_token = 'KI0ethBHis2N76q1jyYung';
     
     //adds each variation to an array that will be added to other data in order to create item
@@ -212,20 +213,11 @@ function createNewItem($createdItem){
                 'inventory_alert_type'=> "LOW_QUANTITY"
             );
 
-        var_dump($newItemVariation);
+        
         $adjustmentType = 'RECEIVE_STOCK';
 
-        $formattedInventoryVariation = array(
-                                        'quantity_delta' => $newItemVariation['newVariationInventoryLevel'],
-                                        'adjustment_type' => $adjustmentType,
-                                        'memo' => $newItemVariation['newVariationUnitPrice']
-                                            );
-
-        echo '-------------------';
-        var_dump($formattedInventoryVariation);
         //pushes new variation with properties into an array to be formatted into JSON right before request happens
         array_push($variationsListForSquare, $formattedItemVariation);
-        array_push($newItemInventory, $formattedInventoryVariation);
     }
 
     foreach($newItemLocationSoldAt as $newSquareItemLocation){
@@ -277,58 +269,51 @@ function createNewItem($createdItem){
 
     $decodedNewItemBatchResponse = json_decode($newItemBatchResponse->getBody(), true);
 
-    echo '------------------------';
-    var_dump($decodedNewItemBatchResponse);
     //create new item in DB and also write the unit cost and current inventory level.
     foreach($decodedNewItemBatchResponse as $decodedItem){
-
+        
+        //echo 'NEW DECODED ITEM ---------------------------------';
+        //var_dump($decodedItem);
         foreach($decodedItem['body']['variations'] as $decodedItemVariation){
 
-            var_dump($decodedItemVariation);
-            echo 'NEW DECODED ITEM VARIATION ******************************************'.$decodedItemVariation['name'];
             
-            $newItemInventoryFullBatch = array('requests' => $newItemInventory);
+            //echo 'NEW DECODED ITEM VARIATION ******************************************';
+            //var_dump($decodedItemVariation);
+            
+            $locationCityName = json_decode(json_encode(DB::table('locations')
+                                    ->select('locationCity')
+                                    ->where('squareID', '=', $decodedItem['request_id'])
+                                    ->get()),true);
 
+            
 
-            $client = new Client();
-    
-            //send the batch request with JSON for each item created per location with variations
-            $inventoryRequest = $client->request('POST', 'https://connect.squareup.com/v1/'.$location['squareID'].'/inventory', [
-                'headers' => [
-                    'Authorization' => 'Bearer '.$access_token ,
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json'
-                ]
-            ]);
-
-            //store response
-            $inventoryContents = $inventoryRequest->getBody();
-            $inventoryList = json_decode($inventoryContents, true);
-            //var_dump($inventoryList);
-
-            $decodedNewItemBatchResponse = json_decode($newItemBatchResponse->getBody(), true);
-            /*$createdItemToDB = Item::firstOrNew(['itemVariationID' => $decodedItemVariation['id']]);
+            $createdItemToDB = Item::firstOrNew(['itemVariationID' => $decodedItemVariation['id']]);
             $createdItemToDB -> squareItemID = $decodedItemVariation['item_id'];
-            $createdItemToDB -> itemName = $decodedItem['name'];
-            $createdItemToDB -> itemCategoryName = $decodedItem['category']['name'];
-            $createdItemToDB -> itemCategoryID = $decodedItem['category']['id'];
+            $createdItemToDB -> itemName = $decodedItem['body']['name'];
+            $createdItemToDB -> itemCategoryName = $decodedItem['body']['category']['name'];
+            $createdItemToDB -> itemCategoryID = $decodedItem['body']['category']['id'];
             $createdItemToDB -> itemVariationName = $decodedItemVariation['name'];
             $createdItemToDB -> itemVariationID = $decodedItemVariation['id'];
             $createdItemToDB -> itemVariationPrice = $decodedItemVariation['price_money']['amount'];
             $createdItemToDB -> itemVariationSKU = $decodedItemVariation['sku'];
+            $createdItemToDB -> locationSoldAt = $locationCityName[0]['locationCity'];
 
-
-            $createdItemToDB -> locationSoldAt = $decodedItem['request_id'];
-            $createdItemToDB -> itemVariationInventory = $decodedItemVariation['item_id'];
-            $createdItemToDB -> itemVendorToOrderFrom = $decodedItemVariation['item_id'];
-            $createdItemToDB -> itemVariationUnitCost = $decodedItemVariation['item_id'];
-            $createdItemToDB -> itemVariationProfitMargin = $decodedItemVariation['item_id'];*/
+            $createdItemToDB -> save();
         }
-        
     }
 
+    $sendingItemToView = json_decode(json_encode(DB::table('inventoryList')->where('itemName', '=', $newItemName)->get()),true);
 
     //Time to set up and add to DB new item and update inventory as well as unit price to finish out the request. 
-    return 'Create a New Item Working';
+    return $sendingItemToView;
+
+
+    /*var = (query your database for the match_id and pull the info)
+    if var is empty/none/len==0/etc (so match isnt already in your database):
+    ---> call API, pull data, insert into database
+    else if var contains data and is not empty (so the match already in it)
+    ---> use that data, save yourself the API call*/
+
+
     exit;
 };

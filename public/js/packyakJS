@@ -38,7 +38,6 @@ $( document ).ready(function() {
 		$(this).siblings('.packyakInventory').removeClass('hidden');
 		$(this).siblings('.packyakUnitPriceText').addClass('hidden');
 		$(this).siblings('.packyakUnitPrice').removeClass('hidden');
-
 	});
 
 	//submit function that uses ajax request to update inventory for square and unit price
@@ -288,11 +287,10 @@ $( document ).ready(function() {
 			var newItemVariation = {
 				newVariationName: $(this).find('.createNewItemVariation').val(),
 				newVariationSKU: $(this).find('.createNewItemSku').val(),
-				newVariationInventoryLevel: $(this).find('.createNewItemInventoryLevel').val(),
+				//newVariationInventoryLevel: $(this).find('.createNewItemInventoryLevel').val(),
 				newVariationInventoryAlert: $(this).find('.createNewItemInventoryAlert').val(),
 				newVariationPrice: $(this).find('.createNewItemPrice').val()*100,
-				newVariationUnitPrice: $(this).find('.createNewItemUnitCost').val()*100
-				//should eventually add the option for variable pricing
+				//newVariationUnitPrice: $(this).find('.createNewItemUnitCost').val()*100
 			};	
 			//push the variation to the variations array
 			newItemVariationsList.push(newItemVariation);
@@ -326,8 +324,36 @@ $( document ).ready(function() {
 	        data: {'action': action, 'data': jsonNewItemObject},
 	        success: function(data) {
 	        	console.log(data);
-	        	$('#createItemModal').modal('toggle');
-	        	$('.newItemForm').find("input[type=text], textarea").val("");
+	        	$('.newItemForm').hide();
+	        	$('.newItemInventoryAndInfoForm').removeClass('hidden');
+	        	$('.packyakNewItemInventoryAndInfoButton').removeClass('hidden');
+	        	$('.packyakCreateNewItemButton').addClass('hidden');
+
+	        	for(i=0; i<data.length; i++){
+	        		console.log(data[i]['locationSoldAt']);
+
+					/*var newItemInventoryAndInfo = $('<div class="singleNewItemInventoryAndInfoWrapper">' + '<span>' + data[i]['locationSoldAt'] + '</span'> + 
+								'<label for="createNewItemInventoryLevel" class="col-sm-2 control-label">'+ data[i]['itemVariationName'] +'</label>'+
+                                '<div class="col-sm-2">'+
+                                    '<input type="number" class="form-control createNewItemInventoryLevel" placeholder="Current" min="0", step="1">'+
+                                '</div>'+
+                                '<label for="createNewItemUnitCost" class="col-sm-2 control-label">Unit Cost</label>'+
+                                '<div class="col-sm-2">'+
+									'<input type="number" class="form-control createNewItemUnitCost" placeholder="Unit Cost" min=".00", step=".01">'+                               
+								'</div></div>')*/
+
+	        		$('.newItemInventoryAndInfoWrapper').append('<div class="singleNewItemInventoryAndInfoWrapper col-sm-12">' + '<span>' + data[i]['locationSoldAt'] + '</span>' + 
+								'<label for="createNewItemInventoryLevel" class="col-sm-2 control-label">'+ data[i]['itemVariationName'] +'</label>'+
+                                '<div class="col-sm-2">'+
+                                    '<input type="number" class="form-control createNewItemInventoryLevel" placeholder="Current" min="0", step="1">'+
+                                '</div>'+
+                                '<label for="createNewItemUnitCost" class="col-sm-2 control-label">Unit Cost</label>'+
+                                '<div class="col-sm-2">'+
+									'<input type="number" class="form-control createNewItemUnitCost" placeholder="Unit Cost" min=".00", step=".01">'+                               
+								'</div></div>');
+	        	};
+
+	        	console.log(data.length);
 	        	
 	        },
 	        error: function(ts) { console.log(ts.responseText) }
@@ -346,13 +372,11 @@ $( document ).ready(function() {
 		                                '</div>' +
 		                                '<label for="createNewItemInventoryLine" class="col-sm-2 col-sm-offset-1 control-label">Inventory</label>' +
 		                                '<div class="col-sm-8 input-group createNewItemInventoryLine">' +   
-		                                    '<div class="col-sm-4"><input type="number" class="form-control createNewItemInventoryLevel" placeholder="Current" min="0", step="1"></div>' +
 		                                    '<div class="col-sm-4"><input type="number" class="form-control createNewItemInventoryAlert" placeholder="Alert At" min="0", step="1"></div>' +
 		                                '</div>' +
 		                                '<label for="createNewItemPriceCost" class="col-sm-2 col-sm-offset-1 control-label">Price/Cost</label>' +
 		                                '<div class="col-sm-8 input-group createNewItemPriceCost">' +   
 		                                    '<div class="col-sm-4"><input type="number" class="form-control createNewItemPrice" placeholder="Price" min=".00", step=".01"></div>' +
-		                                    '<div class="col-sm-4"><input type="number" class="form-control createNewItemUnitCost" placeholder="Unit Cost" min=".00", step=".01"></div>' +
 		                                '</div></div>');
 		$(newVariationStringHtml).appendTo('.createNewItemVariationsWrapper');
 	});

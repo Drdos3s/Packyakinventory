@@ -302,26 +302,27 @@
                                         </span>
                                     </div>
 
-                                    <label for="createNewItemInventoryLine" class="col-sm-2 col-sm-offset-1 control-label">Inventory</label>
+                                    <label for="createNewItemInventoryLine" class="col-sm-2 col-sm-offset-1 control-label">Alert</label>
                                     <div class="col-sm-8 input-group createNewItemInventoryLine">   
-                                        <div class="col-sm-4">
+                                        <!--<div class="col-sm-4">
                                             <input type="number" class="form-control createNewItemInventoryLevel" placeholder='Current' min="0", step='1'>
                                         </div>
-
+                                        <div class="col-sm-4">
+                                            <input type="number" class="form-control createNewItemUnitCost" placeholder='Unit Cost' min=".00", step='.01'>
+                                        </div>
+                                        -->
                                         <div class="col-sm-4">
                                             <input type="number" class="form-control createNewItemInventoryAlert" placeholder='Alert At' min="0", step='1'>
                                         </div>
                                     </div>
 
-                                    <label for="createNewItemPriceCost" class="col-sm-2 col-sm-offset-1 control-label">Price/Cost</label>
+                                    <label for="createNewItemPriceCost" class="col-sm-2 col-sm-offset-1 control-label">Price</label>
                                     <div class="col-sm-8 input-group createNewItemPriceCost">   
                                         <div class="col-sm-4">
                                             <input type="number" class="form-control createNewItemPrice" placeholder='Price' min=".00", step='.01'>
                                         </div>
 
-                                        <div class="col-sm-4">
-                                            <input type="number" class="form-control createNewItemUnitCost" placeholder='Unit Cost' min=".00", step='.01'>
-                                        </div>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -348,11 +349,23 @@
                             </div> -->
                             {{ csrf_field() }}
                         </form>
+
+                        <form class="form-horizontal newItemInventoryAndInfoForm hidden">
+                          <div class="box-body">
+                              <div class="form-group">
+                                <div class="form-group newItemInventoryAndInfoWrapper">
+
+                                </div>
+                              </div>
+                          </div>
+                          {{ csrf_field() }}
+                        </form>
                         <!-- ___________________END OF MODAL FORM FOR CREATE NEW ITEM______________________ -->
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-primary packyakCreateNewItemButton">Create</button>
+                        <button type="button" class="btn btn-primary packyakNewItemInventoryAndInfoButton hidden">Finish</button>
                     </div>
                 </div>
             </div>
