@@ -346,10 +346,11 @@ $( document ).ready(function() {
 									'<input type="number" class="form-control createNewItemUnitCost" placeholder="Unit Cost" min=".00", step=".01">'+                               
 								'</div></div>')*/
 
-	        		$('.newItemInventoryAndInfoWrapper').append('<div class="singleNewItemInventoryAndInfoWrapper col-sm-12">' + '<div class="col-sm-3 inventoryLocationSoldAt">' + data[i]['locationSoldAt'] + '</div>' + 
-								'<label for="createNewItemInventoryLevel" class="col-sm-3 control-label inventoryVariationName">'+ data[i]['itemVariationName'] +'</label>'+
+	        		$('.newItemInventoryAndInfoWrapper').append('<div class="singleNewItemInventoryAndInfoWrapper col-sm-12">' + 
+								'<div class="col-sm-3 inventoryVariationName"><strong>'+ data[i]['itemVariationName'] +'</strong></div>'+
+								'<div class="col-sm-3 inventoryLocationSoldAt">' + data[i]['locationSoldAt'] + '</div>' +
                                 '<div class="col-sm-3">'+
-                                    '<input type="number" class="form-control createNewItemInventoryLevel" placeholder="Current" min="0", step="1">'+
+                                    '<input type="number" class="form-control createNewItemInventoryLevel" placeholder="0" min="0", step="1">'+
                                 '</div>'+
                                 '<div class="col-sm-3">'+
 									'<input type="number" class="form-control createNewItemUnitCost" placeholder="Cost" min=".00", step=".01">'+                               

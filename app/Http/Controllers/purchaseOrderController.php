@@ -323,7 +323,7 @@ function updateNewItemInventory($inventoryData) {
     $variationInventoryUpdateForSquare = [];
 
 
-    var_dump($inventoryData);
+    //var_dump($inventoryData);
 
     foreach($inventoryData['inventoryInfo'] as $inventoryUpdate){
 
@@ -366,14 +366,25 @@ function updateNewItemInventory($inventoryData) {
 
     var_dump($decodedInventoryUpdateBatchResponse);
 
+
+
     foreach($decodedInventoryUpdateBatchResponse as $decodedInventoryAndInfoUpdate){
         
-        //echo 'NEW DECODED ITEM ---------------------------------';
-        //var_dump($decodedItem);
-        foreach($decodedInventoryAndInfoUpdate as $decodedVariation){
+        echo 'NEW DECODED ITEM ---------------------------------';
+        var_dump($decodedInventoryAndInfoUpdate);
+            $inProgressVariationPrice = DB::table('inventoryList')->where('itemVariationID', $decodedInventoryAndInfoUpdate['body']['variation_id'])->value('itemVariationPrice')/100;
 
-            
-        }
+            //setting profit margin variable for DB
+            $variationProfitMargin = intval($inProgressVariationPrice) - intval($decodedInventoryAndInfoUpdate['request_id']);
+            echo 'this is the profit margin: '.$variationProfitMargin;
+
+            Item::where('itemVariationID', $decodedInventoryAndInfoUpdate['body']['variation_id'])
+                                ->update(['itemVariationUnitCost' => intval($decodedInventoryAndInfoUpdate['request_id']),
+                                        'itemVariationInventory' => $decodedInventoryAndInfoUpdate['body']['quantity_on_hand'],
+                                        'itemVariationProfitMargin' => $variationProfitMargin]);
+
+            echo 'We got to the bottom of the query';
+            echo 'Check for this ID in DB: '.$decodedInventoryAndInfoUpdate['body']['variation_id'];
     }
 
     return 'Update inventory is now working';
