@@ -43,6 +43,11 @@ class purchaseOrderController extends Controller
                         $decodedItemData = json_decode($data);
                         return createNewItem($decodedItemData);
                         break;
+                    case 'updateNewItemInventory':
+                        //retrieve new item object and decode into PHP readable 
+                        $decodedInventoryData = json_decode($_POST['data']);
+                        return updateNewItemInventory($decodedInventoryData);
+                        break;
                 }
             }else{
                 echo 'The action variable is not set in the ajax request';
@@ -213,9 +218,6 @@ function createNewItem($createdItem){
                 'inventory_alert_type'=> "LOW_QUANTITY"
             );
 
-        
-        $adjustmentType = 'RECEIVE_STOCK';
-
         //pushes new variation with properties into an array to be formatted into JSON right before request happens
         array_push($variationsListForSquare, $formattedItemVariation);
     }
@@ -306,14 +308,73 @@ function createNewItem($createdItem){
 
     //Time to set up and add to DB new item and update inventory as well as unit price to finish out the request. 
     return $sendingItemToView;
-
-
     /*var = (query your database for the match_id and pull the info)
     if var is empty/none/len==0/etc (so match isnt already in your database):
     ---> call API, pull data, insert into database
     else if var contains data and is not empty (so the match already in it)
     ---> use that data, save yourself the API call*/
-
-
     exit;
+};
+
+function updateNewItemInventory($inventoryData) {
+
+    $inventoryData = json_decode(json_encode($inventoryData), true);
+
+    $variationInventoryUpdateForSquare = [];
+
+
+    var_dump($inventoryData);
+
+    foreach($inventoryData['inventoryInfo'] as $inventoryUpdate){
+
+        
+        $variationLocationID = json_decode(json_encode(DB::table('locations')
+                                    ->select('squareID')
+                                    ->where('locationCity', '=', $inventoryUpdate['inventoryLocationSoldAt'])
+                                    ->get()), true);
+        
+
+        //set up general data for each item to once again be converted to json
+        $postData = array(
+            'quantity_delta' => $inventoryUpdate['newVariationInventoryLevel'],
+            'adjustment_type' => 'RECEIVE_STOCK'
+        );
+
+        //running through and creating each request for the batch in order to create items
+        $formattedUpdateInventorySingleRequest = array('method' => 'POST',
+                                  'relative_path' => '/'.'v1/'.$variationLocationID[0]['squareID'].'/inventory/'.$inventoryUpdate['newVariationID'],
+                                  'access_token' => 'KI0ethBHis2N76q1jyYung',
+                                  'body' => $postData,
+                                  'request_id' => $inventoryUpdate['newVariationUnitPrice']
+                                  );
+
+        array_push($variationInventoryUpdateForSquare , $formattedUpdateInventorySingleRequest);
+    };
+
+    $inventoryUpdateRequestFullBatch = array('requests' => $variationInventoryUpdateForSquare);
+
+    $client = new Client();
+    //send the batch request with JSON for each item created per location with variations
+    $inventoryUpdateBatchResponse = $client->request('POST', 'https://connect.squareup.com/v1/batch', [
+            'headers' => [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ], 'body' => json_encode($inventoryUpdateRequestFullBatch)
+    ]);
+
+    $decodedInventoryUpdateBatchResponse = json_decode($inventoryUpdateBatchResponse->getBody(), true);
+
+    var_dump($decodedInventoryUpdateBatchResponse);
+
+    foreach($decodedInventoryUpdateBatchResponse as $decodedInventoryAndInfoUpdate){
+        
+        //echo 'NEW DECODED ITEM ---------------------------------';
+        //var_dump($decodedItem);
+        foreach($decodedInventoryAndInfoUpdate as $decodedVariation){
+
+            
+        }
+    }
+
+    return 'Update inventory is now working';
 };

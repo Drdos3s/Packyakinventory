@@ -272,7 +272,12 @@ $( document ).ready(function() {
 		}
 	});
 
+	var createdItemResponseData;
 
+	//function to call inside ajax callback 
+	function set_createdItemResponseData(createdItemInfo){
+	    createdItemResponseData = createdItemInfo;
+	}
 
 	//purchase order create new item and send data for new record and prime for square upload
 	$(".createNewItemModalContent").on("click", ".packyakCreateNewItemButton", function(e) {
@@ -287,10 +292,8 @@ $( document ).ready(function() {
 			var newItemVariation = {
 				newVariationName: $(this).find('.createNewItemVariation').val(),
 				newVariationSKU: $(this).find('.createNewItemSku').val(),
-				//newVariationInventoryLevel: $(this).find('.createNewItemInventoryLevel').val(),
 				newVariationInventoryAlert: $(this).find('.createNewItemInventoryAlert').val(),
 				newVariationPrice: $(this).find('.createNewItemPrice').val()*100,
-				//newVariationUnitPrice: $(this).find('.createNewItemUnitCost').val()*100
 			};	
 			//push the variation to the variations array
 			newItemVariationsList.push(newItemVariation);
@@ -328,6 +331,7 @@ $( document ).ready(function() {
 	        	$('.newItemInventoryAndInfoForm').removeClass('hidden');
 	        	$('.packyakNewItemInventoryAndInfoButton').removeClass('hidden');
 	        	$('.packyakCreateNewItemButton').addClass('hidden');
+	        	set_createdItemResponseData(data);//setting the data to be passed along
 
 	        	for(i=0; i<data.length; i++){
 	        		console.log(data[i]['locationSoldAt']);
@@ -342,14 +346,13 @@ $( document ).ready(function() {
 									'<input type="number" class="form-control createNewItemUnitCost" placeholder="Unit Cost" min=".00", step=".01">'+                               
 								'</div></div>')*/
 
-	        		$('.newItemInventoryAndInfoWrapper').append('<div class="singleNewItemInventoryAndInfoWrapper col-sm-12">' + '<span>' + data[i]['locationSoldAt'] + '</span>' + 
-								'<label for="createNewItemInventoryLevel" class="col-sm-2 control-label">'+ data[i]['itemVariationName'] +'</label>'+
-                                '<div class="col-sm-2">'+
+	        		$('.newItemInventoryAndInfoWrapper').append('<div class="singleNewItemInventoryAndInfoWrapper col-sm-12">' + '<div class="col-sm-3 inventoryLocationSoldAt">' + data[i]['locationSoldAt'] + '</div>' + 
+								'<label for="createNewItemInventoryLevel" class="col-sm-3 control-label inventoryVariationName">'+ data[i]['itemVariationName'] +'</label>'+
+                                '<div class="col-sm-3">'+
                                     '<input type="number" class="form-control createNewItemInventoryLevel" placeholder="Current" min="0", step="1">'+
                                 '</div>'+
-                                '<label for="createNewItemUnitCost" class="col-sm-2 control-label">Unit Cost</label>'+
-                                '<div class="col-sm-2">'+
-									'<input type="number" class="form-control createNewItemUnitCost" placeholder="Unit Cost" min=".00", step=".01">'+                               
+                                '<div class="col-sm-3">'+
+									'<input type="number" class="form-control createNewItemUnitCost" placeholder="Cost" min=".00", step=".01">'+                               
 								'</div></div>');
 	        	};
 
@@ -358,6 +361,57 @@ $( document ).ready(function() {
 	        },
 	        error: function(ts) { console.log(ts.responseText) }
 	    })
+	});
+	
+
+	//this will be grabbing the inventory and unit cost and finishing out the create item process
+	$(".createNewItemModalContent").on("click", ".packyakNewItemInventoryAndInfoButton", function(e) {
+		//setting ajax header for csrf
+		$.ajaxSetup({
+	        headers: {
+	            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+	        }
+		});
+
+		//setting vars of information
+		var action = 'updateNewItemInventory';
+		var newItemInventoryAndInfoList = [];
+		var itemCounter = 0;
+
+
+		//setting up data
+		$('.singleNewItemInventoryAndInfoWrapper').each(function(){
+			var newItemInventoryAndInfo = {
+				inventoryVariationName: $(this).find('.inventoryVariationName').text(),
+				inventoryLocationSoldAt: $(this).find('.inventoryLocationSoldAt').text(),
+				newVariationInventoryLevel: $(this).find('.createNewItemInventoryLevel').val(),
+				newVariationUnitPrice: $(this).find('.createNewItemUnitCost').val()*100,
+				newVariationID: createdItemResponseData[itemCounter]['itemVariationID'] //<-- this information should match with the corresponding item
+			};	
+			
+			console.log(newItemInventoryAndInfo);
+
+			//add another index to the counter for next item
+			itemCounter++;
+			//push the variation to the variations array
+			newItemInventoryAndInfoList.push(newItemInventoryAndInfo);
+		});
+
+		newInventoryAndInfoObject = {inventoryInfo: newItemInventoryAndInfoList};
+
+		var jsonNewInventoryAndInfoObject = JSON.stringify( newInventoryAndInfoObject ); 
+		//sending data to server
+		$.ajax({
+		        type: "POST",
+		        url: './purchaseOrders',
+
+		        data: {'action': action, 'data': jsonNewInventoryAndInfoObject},
+		        success: function(data) {
+		        	console.log('Updated inventory is working and back to JS');
+		        	console.log(data);
+		        },
+		        error: function(ts) { console.log(ts.responseText) }
+		    })
 	});
 
 	//create new variation within the form itself
@@ -380,6 +434,8 @@ $( document ).ready(function() {
 		                                '</div></div>');
 		$(newVariationStringHtml).appendTo('.createNewItemVariationsWrapper');
 	});
+
+
 
 	//remove variation from create item form
 	$(".createNewItemVariationsWrapper").on("click", ".packyakRemoveVariation", function(e) {
