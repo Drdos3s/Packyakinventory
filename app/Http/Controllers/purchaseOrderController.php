@@ -322,33 +322,55 @@ function updateNewItemInventory($inventoryData) {
 
     $variationInventoryUpdateForSquare = [];
 
-
+    //echo 'Data coming into method';
     //var_dump($inventoryData);
 
     foreach($inventoryData['inventoryInfo'] as $inventoryUpdate){
+        echo 'New Inventory Update';
+        var_dump($inventoryUpdate);
 
-        
+        //update DB record 
+
+            $inProgressVariationPrice = DB::table('inventoryList')->where('itemVariationID', $inventoryUpdate['newVariationID'])->value('itemVariationPrice');
+
+            //setting profit margin variable for DB
+            $variationProfitMargin = intval($inProgressVariationPrice) - intval($inventoryUpdate['newVariationUnitPrice']);
+            echo 'this is the profit margin: '.$variationProfitMargin;
+
+            Item::where('itemVariationID', $inventoryUpdate['newVariationID'])
+                                ->update(['itemVariationUnitCost' => intval($inventoryUpdate['newVariationUnitPrice']),
+                                        'itemVariationInventory' => $inventoryUpdate['newVariationInventoryLevel'],
+                                        'itemVariationProfitMargin' => $variationProfitMargin]);
+
+            echo 'We got to the bottom of the query';
+            echo 'Check for this ID in DB: '.$inventoryUpdate['newVariationID'];
+
+
         $variationLocationID = json_decode(json_encode(DB::table('locations')
                                     ->select('squareID')
                                     ->where('locationCity', '=', $inventoryUpdate['inventoryLocationSoldAt'])
                                     ->get()), true);
         
 
+        $quantityDelta = $inventoryUpdate['newVariationInventoryLevel'];
         //set up general data for each item to once again be converted to json
         $postData = array(
-            'quantity_delta' => $inventoryUpdate['newVariationInventoryLevel'],
+            'quantity_delta' => intval($quantityDelta),
             'adjustment_type' => 'RECEIVE_STOCK'
         );
 
-        //running through and creating each request for the batch in order to create items
-        $formattedUpdateInventorySingleRequest = array('method' => 'POST',
+        //var_dump($postData);
+        if($quantityDelta != 0 || $quantityDelta != ''){
+            //running through and creating each request for the batch in order to create items
+            $formattedUpdateInventorySingleRequest = array('method' => 'POST',
                                   'relative_path' => '/'.'v1/'.$variationLocationID[0]['squareID'].'/inventory/'.$inventoryUpdate['newVariationID'],
                                   'access_token' => 'KI0ethBHis2N76q1jyYung',
                                   'body' => $postData,
                                   'request_id' => $inventoryUpdate['newVariationUnitPrice']
                                   );
 
-        array_push($variationInventoryUpdateForSquare , $formattedUpdateInventorySingleRequest);
+            array_push($variationInventoryUpdateForSquare , $formattedUpdateInventorySingleRequest);
+        };  
     };
 
     $inventoryUpdateRequestFullBatch = array('requests' => $variationInventoryUpdateForSquare);
@@ -365,27 +387,6 @@ function updateNewItemInventory($inventoryData) {
     $decodedInventoryUpdateBatchResponse = json_decode($inventoryUpdateBatchResponse->getBody(), true);
 
     var_dump($decodedInventoryUpdateBatchResponse);
-
-
-
-    foreach($decodedInventoryUpdateBatchResponse as $decodedInventoryAndInfoUpdate){
-        
-        echo 'NEW DECODED ITEM ---------------------------------';
-        var_dump($decodedInventoryAndInfoUpdate);
-            $inProgressVariationPrice = DB::table('inventoryList')->where('itemVariationID', $decodedInventoryAndInfoUpdate['body']['variation_id'])->value('itemVariationPrice')/100;
-
-            //setting profit margin variable for DB
-            $variationProfitMargin = intval($inProgressVariationPrice) - intval($decodedInventoryAndInfoUpdate['request_id']);
-            echo 'this is the profit margin: '.$variationProfitMargin;
-
-            Item::where('itemVariationID', $decodedInventoryAndInfoUpdate['body']['variation_id'])
-                                ->update(['itemVariationUnitCost' => intval($decodedInventoryAndInfoUpdate['request_id']),
-                                        'itemVariationInventory' => $decodedInventoryAndInfoUpdate['body']['quantity_on_hand'],
-                                        'itemVariationProfitMargin' => $variationProfitMargin]);
-
-            echo 'We got to the bottom of the query';
-            echo 'Check for this ID in DB: '.$decodedInventoryAndInfoUpdate['body']['variation_id'];
-    }
 
     return 'Update inventory is now working';
 };

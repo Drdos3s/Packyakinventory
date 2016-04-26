@@ -181,7 +181,7 @@ class mainItemFeedController extends Controller {
 
     function index() {
         if (Auth::check()){//The user is logged in
-            return $this->sendDataToFeedView(); 
+            return $this->createLocations(); 
         }else{
             return redirect('/auth/register');
         }
