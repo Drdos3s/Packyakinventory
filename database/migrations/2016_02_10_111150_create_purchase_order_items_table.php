@@ -17,7 +17,9 @@ class CreatePurchaseOrderItemsTable extends Migration
             $table->char('purchaseOrderName', 255);
             $table->char('purchaseOrderID', 255);
             $table->char('purchaseOrderItemVariationID', 255);
-            $table->integer('quantityToOrder');
+            $table->integer('quantityToOrder')->default(0);
+            $table->integer('itemUnitCost');//integer value
+            $table->integer('lineItemTotal')->default(0);
             $table->timestamps();
         });
     }

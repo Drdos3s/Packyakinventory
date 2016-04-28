@@ -214,6 +214,7 @@ $( document ).ready(function() {
 		var selectedPurchaseOrder = $(this).html();
 		var itemVariationID = $(this).parents('.packYakItemFeedRow').find('.packyakInventoryItemID').html();
 		var packyakPurchaseOrderID = $(this).siblings('.packyakPurchaseOrderID').html();
+		var itemUnitCost = $(this).parents('.packYakItemFeedRow').find('.packyakUnitPrice').html();
 
 		$.ajaxSetup({
 	        headers: {
@@ -223,7 +224,8 @@ $( document ).ready(function() {
         data =  {'action': action,
         		 'selectedPurchaseOrder': selectedPurchaseOrder,
         		 'itemVariationID': itemVariationID,
-        		 'packyakPurchaseOrderID': packyakPurchaseOrderID
+        		 'packyakPurchaseOrderID': packyakPurchaseOrderID,
+        		 'itemUnitCost': itemUnitCost
     			};
 
        		$.ajax({
@@ -442,4 +444,31 @@ $( document ).ready(function() {
 	$(".createNewItemVariationsWrapper").on("click", ".packyakRemoveVariation", function(e) {
 	    $(this).parents('.singleVariationWrapper').remove();
 	});
+
+	$('.packyakUpdateOrderButton').click(function(){
+		var action = 'updateQuantityToOrder';
+		var poItemID = $(this).parents('.packyakPOItemListItem').find('.poitemid').text();
+		var purchaseOrderID = $(this).parents('.packyakPOHeader').find('.pypoid').html();
+		var quantityToOrder = $(this).parents('.packyakPOItemListItem').find('.packyakOrderQuantityInput').val();
+
+		$.ajaxSetup({
+	        headers: {
+	            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+	        }
+		});
+
+		$.ajax({
+		        type: "POST",
+		        url: './purchaseOrders',
+
+		        data: {'action': action, 'purchaseOrderID': purchaseOrderID, 'poItemID': poItemID, 'quantityToOrder': quantityToOrder},
+		        success: function(data) {
+		        	console.log('Updated quantity to order is working and back to JS');
+		        	
+		        },
+		        error: function(ts) { console.log(ts.responseText) }
+		    })
+
+	});
+
 });
