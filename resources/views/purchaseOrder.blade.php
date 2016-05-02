@@ -30,7 +30,7 @@
 
         @foreach($existingPurchaseOrders as $purchaseOrder)
             <!-- Main content -->
-            <?php var_dump($purchaseOrder);?>
+            <?php //var_dump($purchaseOrder);?>
             <section class="invoice packyakPOHeader">
               <!-- title row -->
               <div class="row">
@@ -101,10 +101,10 @@
                                 <td><h5>{{ $item['itemName'] }}</h5></td>
                                 <td><h5>{{ $item['itemVariationName'] }}</h5></td>
                                 <td><h5>{{ $item['itemVariationInventory'] }}</h5></td>
-                                <td><h5>{{ $item['quantityToOrder'] }}</h5></td>
+                                <td class='packyakQuantityToOrder'><h5>{{ $item['quantityToOrder'] }}</h5></td>
                                 <td class='packyakOrderQuantityText'><?php echo Form::input('number','orderQuantity', 0, array('class' => 'packyakOrderQuantityInput', 'type' => 'number', 'min' => '0', 'step' => '1')); ?></td>
                                 <td><h5>${{ $item['itemVariationUnitCost']/100 }}</h5></td>
-                                <td><h5>$<?php echo $item['quantityToOrder']*$item['itemVariationUnitCost']/100?></h5></td>
+                                <td class='packyakLineItemCost'><h5>$<?php echo $item['quantityToOrder']*$item['itemVariationUnitCost']/100?></h5></td>
                                 <td class='packyakUpdateOrderButton'><i class="fa fa-check-circle-o fa-2 btn btn-default"></i></td>
                                 <td><i class="fa fa-times-circle fa-2 btn btn-default packyakRemoveFromPO"></i></td>
                             </tr>
@@ -132,19 +132,19 @@
                     <table class="table">
                       <tr>
                         <th style="width:50%">Subtotal:</th>
-                        <td>${{ $purchaseOrder['po_subtotal']/100 }}</td>
+                        <td class='packyakPOSubtotal'>${{ $purchaseOrder['po_subtotal']/100 }}</td>
                       </tr>
                       <tr>
                         <th>Tax</th>
-                        <td>{{ $purchaseOrder['po_tax_rate']*100 }}%</td>
+                        <td class='packyakPOTaxRate'>{{ $purchaseOrder['po_tax_rate']*100 }}%</td>
                       </tr>
                       <tr>
                         <th>Shipping:</th>
-                        <td>--</td>
+                        <td class='packyakPOShippingCost'>--</td>
                       </tr>
                       <tr>
                         <th>Total:</th>
-                        <td>${{ number_format($purchaseOrder['po_total_cost']/100, 2, '.', ' ') }}</td>
+                        <td class='packyakPOTotalCost'>${{ number_format($purchaseOrder['po_total_cost']/100, 2, '.', ' ') }}</td>
                       </tr>
                     </table>
                   </div>

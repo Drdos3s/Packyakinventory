@@ -266,7 +266,9 @@ $( document ).ready(function() {
 
 		        data: data,
 		        success: function(data) {
-		        	console.log(data);
+		        	updatedPurchaseOrder = JSON.parse(data);
+		        	successCancelRow.parents('.packyakPOHeader').find('.packyakPOSubtotal').html('$'+(updatedPurchaseOrder.po_subtotal/100).toFixed(2));
+		        	successCancelRow.parents('.packyakPOHeader').find('.packyakPOTotalCost').html('$'+ (updatedPurchaseOrder.po_total_cost/100).toFixed(2));
 		        	successCancelRow.hide();
 		        },
 		        error: function(ts) { console.log(ts.responseText) }
@@ -450,7 +452,7 @@ $( document ).ready(function() {
 		var poItemID = $(this).parents('.packyakPOItemListItem').find('.poitemid').text();
 		var purchaseOrderID = $(this).parents('.packyakPOHeader').find('.pypoid').html();
 		var quantityToOrder = $(this).parents('.packyakPOItemListItem').find('.packyakOrderQuantityInput').val();
-
+		var thatRow = $(this).parents('.packyakPOItemListItem');
 		$.ajaxSetup({
 	        headers: {
 	            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -463,7 +465,14 @@ $( document ).ready(function() {
 
 		        data: {'action': action, 'purchaseOrderID': purchaseOrderID, 'poItemID': poItemID, 'quantityToOrder': quantityToOrder},
 		        success: function(data) {
-		        	console.log('Updated quantity to order is working and back to JS');
+		        	quantityUpdatedItem = JSON.parse(data);
+		        	console.log(quantityUpdatedItem);
+		        	console.log(thatRow);
+		        	thatRow.parents('.packyakPOHeader').find('.packyakPOSubtotal').html('$'+(quantityUpdatedItem.purchaseOrder.po_subtotal/100).toFixed(2));
+		        	thatRow.parents('.packyakPOHeader').find('.packyakPOTotalCost').html('$'+ (quantityUpdatedItem.purchaseOrder.po_total_cost/100).toFixed(2));
+		        	thatRow.find('.packyakQuantityToOrder').html('<h5>' + quantityUpdatedItem.item.quantityToOrder + '</h5>');
+		        	thatRow.find('.packyakOrderQuantityInput').val(0);
+		        	thatRow.find('.packyakLineItemCost').html('<h5>$' + quantityUpdatedItem.item.lineItemTotal/100 + '</h5>');
 		        	
 		        },
 		        error: function(ts) { console.log(ts.responseText) }

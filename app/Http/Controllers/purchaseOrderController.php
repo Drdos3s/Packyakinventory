@@ -35,7 +35,7 @@ class purchaseOrderController extends Controller
                         return addItemToPurchaseOrder($_POST['selectedPurchaseOrder'], $_POST['packyakPurchaseOrderID'], $_POST['itemVariationID'], $_POST['itemUnitCost']);
                         break;
                     case 'removeItemFromPO':
-                        return removeItemFromPO();
+                        return removeItemFromPO($_POST['itemVariationID'], $_POST['packyakPurchaseOrderID']);
                         break;
                     case 'createNewItem':
                         //retrieve new item object and decode into PHP readable 
@@ -181,10 +181,7 @@ function addItemToPurchaseOrder($poName, $poOrderID, $poVarID, $varUnitCost){
     exit;
 };
 
-function removeItemFromPO(){
-    $action = $_POST['action'];
-    $itemVariationID = $_POST['itemVariationID'];
-    $purchaseOrderID = $_POST['packyakPurchaseOrderID'];
+function removeItemFromPO($itemVariationID, $purchaseOrderID){
 
     DB::table('purchase_order_items')
         ->where('purchaseOrderID', '=', $purchaseOrderID)
@@ -192,7 +189,10 @@ function removeItemFromPO(){
         ->delete();
 
     updatePurchaseOrderPrices($purchaseOrderID);
-    return 'Removing item from PO working';
+
+    $updatedPOInfo = json_encode(DB::table('purchase_orders')->where('id', $purchaseOrderID)->first());
+
+    return $updatedPOInfo;
     exit;
 };
 
@@ -401,28 +401,27 @@ function updateQuantityToOrder($itemVariationID, $purchaseOrderID, $quantityToOr
     $itemCost = DB::table('purchase_order_items')->where('purchaseOrderItemVariationID', $itemVariationID)->value('itemUnitCost');
 
 
-    //update quantity in database
+    //update quantity of the line item in database
     purchaseOrderItem::where('purchaseOrderID', $purchaseOrderID)
                         ->where('purchaseOrderItemVariationID', $itemVariationID)
                                 ->update(['quantityToOrder' => $quantityToOrder,
                                             'lineItemTotal' => $quantityToOrder*$itemCost]);
-
+    //update the PO details
     updatePurchaseOrderPrices($purchaseOrderID);
+
+    $itemAndPOReturnInfo = ['item' => DB::table('purchase_order_items')->where('purchaseOrderItemVariationID', $itemVariationID)->first(), 'purchaseOrder' => DB::table('purchase_orders')->where('id', $purchaseOrderID)->first()];
+
+    return json_encode($itemAndPOReturnInfo);
 };
 
 function updatePurchaseOrderPrices($purchaseOrderID){
     $purchaseOrderSubtotal = DB::table('purchase_order_items')->where('purchaseOrderID', $purchaseOrderID)->sum('lineItemTotal');
 
-    echo 'purchaseOrderSubtotal: '.$purchaseOrderSubtotal;
-
     $purchaseOrderTaxRate = 0.083; //<-THis should be removed and not hardcoded in the future
     $purchaseOrderTotal =0;
     $purchaseOrderTotal = $purchaseOrderSubtotal + ($purchaseOrderTaxRate*$purchaseOrderSubtotal);
-    echo 'purchaseOrderTotal: '.$purchaseOrderTotal;
     //update purchase order with new totals and numbers
     purchaseOrder::where('id', $purchaseOrderID)
                     ->update(['po_subtotal' => $purchaseOrderSubtotal,
                             'po_total_cost' => $purchaseOrderTotal]);
-
-    echo 'The po should now be properly updated to reflect totals';
-}
+};

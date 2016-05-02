@@ -22,17 +22,10 @@ class PurchaseOrders extends Migration
             $table->string('po_location');
             $table->integer('po_subtotal')->default(0);
             $table->double('po_tax_rate',5,3)->default(0.083);
-            $table->double('po_shipping_cost',15,3)->default(0.00);
+            $table->double('po_shipping_cost')->default(0.00);
             $table->double('po_total_cost',15,2)->default(0.00);
             $table->timestamps();
         });
-
-        //Create table for purchase order items
-        /*Schema::create('purchase_order_items', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('related_po_id');
-            $table->string('square_variation_id');
-        });*/
     }
 
     /**

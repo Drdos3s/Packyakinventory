@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Request;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Psr7;
 use DB;
 use Schema;
 use App\Item;
@@ -31,6 +32,7 @@ class mainItemFeedController extends Controller {
             $client = new Client();
             $locationsQuery = DB::select('select * from locations');
             $locations = json_decode(json_encode($locationsQuery),true);
+            
 
         foreach($locations as $location){
             $inventoryRequest = $client->request('GET', 'https://connect.squareup.com/v1/'.$location['squareID'].'/inventory', [
@@ -43,14 +45,50 @@ class mainItemFeedController extends Controller {
 
             //store response
             $inventoryContents = $inventoryRequest->getBody();
+            $responseHeaders = $inventoryRequest->getHeaders();
+            //var_dump($responseHeaders);
+
             $inventoryList = json_decode($inventoryContents, true);
-            //var_dump($inventoryList);
+            //echo $location['squareID'].": ".count($inventoryList).' ';
+            //echo 'Response header: '.$responseHeaders['Link'][0].' ';
+
+
 
             foreach ($inventoryList as $itemInv) {
                 DB::table('inventoryList')
                     ->where('itemVariationID', $itemInv['variation_id'])
                     ->update(['itemVariationInventory' => $itemInv['quantity_on_hand']]);
             }
+
+            while($inventoryRequest->hasHeader('Link')):
+
+                $parsedHeader = Psr7\parse_header($inventoryRequest->getHeader('Link'));
+
+                if ($parsedHeader[0]['rel'] == 'next') {
+                  # Extract the next batch URL from the header.
+                  # Pagination headers have the following format:
+                  # <https://connect.squareup.com/v1/MERCHANT_ID/payments?batch_token=BATCH_TOKEN>;rel='next'
+                  # This line extracts the URL from the angle brackets surrounding it.
+                    $requestPath = explode('>', explode('<', $parsedHeader[0][0])[1])[0];
+
+                    $inventoryRequest = $client->request('GET', $requestPath, [
+                        'headers' => [
+                            'Authorization' => 'Bearer '.$access_token ,
+                            'Accept' => 'application/json',
+                            'Content-Type' => 'application/json'
+                        ]
+                    ]);
+                    $inventoryContents = $inventoryRequest->getBody();
+
+                     $inventoryList = json_decode($inventoryContents, true);
+
+                    foreach ($inventoryList as $itemInv) {
+                        DB::table('inventoryList')
+                            ->where('itemVariationID', $itemInv['variation_id'])
+                            ->update(['itemVariationInventory' => $itemInv['quantity_on_hand']]);
+                    };
+                };
+            endwhile;
         }
             //DEN -> 1H5A5ZGP2T4DA
             //PHX -> 3526BMVFNJZZX
