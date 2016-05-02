@@ -59,6 +59,14 @@ class purchaseOrderController extends Controller
     }
 
     public function index(){
+        if (Auth::check()){//The user is logged in
+            return $this->populatePurchaseOrderPage(); 
+        }else{
+            return redirect('/auth/register');
+        }
+    }
+
+    public function populatePurchaseOrderPage() {
         //creating the array for item categories to populate the DB
         $itemCategoriesAllLocations = [];
         //purchase order array
