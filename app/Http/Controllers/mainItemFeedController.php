@@ -221,7 +221,7 @@ class mainItemFeedController extends Controller {
         if (Auth::check()){//The user is logged in
             return $this->createLocations(); 
         }else{
-            return redirect('/auth/register');
+            return redirect('/auth/login');
         }
     }
 

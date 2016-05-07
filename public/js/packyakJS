@@ -141,6 +141,8 @@ $( document ).ready(function() {
 		$('.packyakPOButton').removeClass('packyakPurchaseOrderUpdate');
 		$('#myModal').find("input[type=email], select").val("");
 		$('#myModal').find('.pypoidModal').html('');
+		$('.packYakDeletePOButton').addClass("hidden");
+
 	});
 
 	//Create/edit a new purchase order
@@ -190,6 +192,7 @@ $( document ).ready(function() {
 		$('#myModal').modal('toggle');
 		$('#myModal').find('.modal-title').html('Edit Purchase Order');
 		$('#myModal').find('.packYakPOCreateButtonLabel').html('Save');
+		$('.packYakDeletePOButton').removeClass('hidden');
 		$('.packyakPOButton').addClass('packyakPurchaseOrderUpdate');
 		var pypoid = $(this).parents('.packyakPOHeader').find('.pypoid').html();
 
@@ -276,6 +279,47 @@ $( document ).ready(function() {
 		}
 	});
 
+	//deleting a purchase order
+	$('.packYakDeletePOButton').click(function(){
+		if(confirm('Are you sure you want to DELETE this purchase order?')){
+			var action = 'deletePO';
+			var po_id_number = $('#myModal').find('.pypoidModal').html();
+
+			$.ajaxSetup({
+		        headers: {
+		            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+		        }
+			});
+
+	        data =  {'action': action,
+			 'packyakPurchaseOrderID': po_id_number
+			};
+
+		    $.ajax({
+		        type: "POST",
+		        url: './purchaseOrders',
+
+		        data: data,
+		        success: function(poid) {
+		        	console.log(poid);
+		        	$('.packyakPOHeader').each(function(){
+		        		if($(this).find('.pypoid').html() == poid.toString()){
+		        			    $(this).animate({
+							        opacity: '0'
+							    }, 400, function(){
+							            $(this).remove();
+							        });
+							    
+		        		}
+		        	});
+
+		        },
+		        error: function(ts) { console.log(ts.responseText) }
+		    })
+		}
+
+	});
+
 	var createdItemResponseData;
 
 	//function to call inside ajax callback 
@@ -339,16 +383,6 @@ $( document ).ready(function() {
 
 	        	for(i=0; i<data.length; i++){
 	        		console.log(data[i]['locationSoldAt']);
-
-					/*var newItemInventoryAndInfo = $('<div class="singleNewItemInventoryAndInfoWrapper">' + '<span>' + data[i]['locationSoldAt'] + '</span'> + 
-								'<label for="createNewItemInventoryLevel" class="col-sm-2 control-label">'+ data[i]['itemVariationName'] +'</label>'+
-                                '<div class="col-sm-2">'+
-                                    '<input type="number" class="form-control createNewItemInventoryLevel" placeholder="Current" min="0", step="1">'+
-                                '</div>'+
-                                '<label for="createNewItemUnitCost" class="col-sm-2 control-label">Unit Cost</label>'+
-                                '<div class="col-sm-2">'+
-									'<input type="number" class="form-control createNewItemUnitCost" placeholder="Unit Cost" min=".00", step=".01">'+                               
-								'</div></div>')*/
 
 	        		$('.newItemInventoryAndInfoWrapper').append('<div class="singleNewItemInventoryAndInfoWrapper col-sm-12">' + 
 								'<div class="col-sm-3 inventoryVariationName"><strong>'+ data[i]['itemVariationName'] +'</strong></div>'+
@@ -414,6 +448,7 @@ $( document ).ready(function() {
 		        success: function(data) {
 		        	console.log('Updated inventory is working and back to JS');
 		        	console.log(data);
+		        	$('#myModal').modal('toggle');
 		        },
 		        error: function(ts) { console.log(ts.responseText) }
 		    })

@@ -7,8 +7,8 @@ use App\Http\Controllers\Controller;
 
 use Request;
 use GuzzleHttp\Client;
-use App\purchaseOrder;
-use App\purchaseOrderItem;
+use App\PurchaseOrder;
+use App\PurchaseOrderItem;
 use App\ItemCategory;
 use App\Item;
 
@@ -36,6 +36,9 @@ class purchaseOrderController extends Controller
                         break;
                     case 'removeItemFromPO':
                         return removeItemFromPO($_POST['itemVariationID'], $_POST['packyakPurchaseOrderID']);
+                        break;
+                    case 'deletePO':
+                        return deletePurchaseOrder($_POST['packyakPurchaseOrderID']);
                         break;
                     case 'createNewItem':
                         //retrieve new item object and decode into PHP readable 
@@ -74,7 +77,9 @@ class purchaseOrderController extends Controller
 
         $existingPurchaseOrders = json_decode(
                                     json_encode(
-                                        DB::table('purchase_orders')->get()
+                                        DB::table('purchase_orders')
+                                            ->whereNotIn('po_status', ['Deleted', 'Closed'])
+                                            ->get()
                                     ),true);
         //getting all locations to dynamically populate locations lists used for create items and create purchase orders
          $existingLocations = json_decode( 
@@ -143,7 +148,7 @@ function createOrEditNewPurchaseOrder(){
     $action = $_POST['action'];
     switch ($action) {
         case 'createPO':
-            $purchaseOrder = new purchaseOrder;
+            $purchaseOrder = new PurchaseOrder;
             $purchaseOrder->po_name = $_POST['po_name'];
             $purchaseOrder->po_status = $_POST['po_status'];
             $purchaseOrder->po_vendor = $_POST['po_vendor'];
@@ -160,7 +165,7 @@ function createOrEditNewPurchaseOrder(){
             $po_invoice_number = $_POST['po_invoice_number'];
             $po_location = $_POST['po_location'];
 
-            purchaseOrder::where('id', $po_id_number)
+            PurchaseOrder::where('id', $po_id_number)
                                 ->update(['po_name' => $po_name,
                                         'po_status' => $po_status,
                                         'po_invoice_number' => $po_invoice_number,
@@ -176,7 +181,7 @@ function addItemToPurchaseOrder($poName, $poOrderID, $poVarID, $varUnitCost){
     
     $varUnitCost = substr($varUnitCost, 1);
     //set up new instance for purchase order item
-    $purchaseOrderItem = new purchaseOrderItem;
+    $purchaseOrderItem = new PurchaseOrderItem;
     $purchaseOrderItem->purchaseOrderName = $poName;
     $purchaseOrderItem->purchaseOrderID = $poOrderID;
     $purchaseOrderItem->purchaseOrderItemVariationID = $poVarID;
@@ -203,6 +208,13 @@ function removeItemFromPO($itemVariationID, $purchaseOrderID){
     return $updatedPOInfo;
     exit;
 };
+
+function deletePurchaseOrder($POID){
+    PurchaseOrder::where('id', $POID)
+                            ->update(['po_status' => 'Deleted']);
+    return $POID; 
+};
+    
 
 function createNewItem($createdItem){
     //setting variables from the post data from ajax call

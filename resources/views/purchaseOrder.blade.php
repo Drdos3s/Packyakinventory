@@ -250,6 +250,7 @@
                                 </div>       
                             </div>
                             <div class="modal-footer">
+                                <button type="button" class="btn btn-warning packYakDeletePOButton hidden" data-dismiss="modal"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                                 <button type="button" class="btn btn-primary packYakPOButton"><span class='packYakPOCreateButtonLabel'>Create</span></button>
                             </div>

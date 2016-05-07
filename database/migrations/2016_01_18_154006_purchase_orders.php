@@ -16,7 +16,7 @@ class PurchaseOrders extends Migration
         Schema::create('purchase_orders', function (Blueprint $table) {
             $table->increments('id');
             $table->string('po_name');
-            $table->string('po_status');
+            $table->string('po_status')->default('Pending');
             $table->string('po_invoice_number');
             $table->string('po_vendor');
             $table->string('po_location');
