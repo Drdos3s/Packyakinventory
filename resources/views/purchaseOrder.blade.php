@@ -13,7 +13,7 @@
 </div>
 
 <div class='row'>
-    <div class="col-md-12">
+    <div class="col-md-12 purchaseOrderNotificationsWrapper">
         <div class="pad margin no-print">
           <div class="callout callout-warning" style="margin-bottom: 0!important;">
             <h4><i class="fa fa-info"></i> Attention:</h4>
@@ -26,7 +26,11 @@
             This page has been enhanced for printing. Click the print button at the bottom of the invoice to test.
           </div>
         </div>
+    </div>
+</div>
 
+<div class='row'>
+    <div class="col-md-12 purchaseOrdersWrapper">
 
         @foreach($existingPurchaseOrders as $purchaseOrder)
             <!-- Main content -->

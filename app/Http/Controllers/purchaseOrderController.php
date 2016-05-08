@@ -65,7 +65,7 @@ class purchaseOrderController extends Controller
         if (Auth::check()){//The user is logged in
             return $this->populatePurchaseOrderPage(); 
         }else{
-            return redirect('/auth/register');
+            return redirect('/auth/login');
         }
     }
 
@@ -155,7 +155,7 @@ function createOrEditNewPurchaseOrder(){
             $purchaseOrder->po_invoice_number = $_POST['po_invoice_number'];
             $purchaseOrder->po_location = $_POST['po_location'];
             $purchaseOrder->save();
-            return 'Create Purchase Order Working';
+            return json_encode($purchaseOrder);
             break;
         case 'updatePO': 
             $po_id_number = $_POST['po_id_number'];

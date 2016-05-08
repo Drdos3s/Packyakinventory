@@ -182,6 +182,25 @@ $( document ).ready(function() {
 	        success: function(data) {        
 	           $('#myModal').modal('toggle');
 	           console.log(data);
+	           newPurchaseOrderParsed = JSON.parse(data);
+	           console.log(newPurchaseOrderParsed.action);
+
+
+	           var newPurchaseOrderStringHtml =  $('<section class="invoice packyakPOHeader">' + newPurchaseOrderParsed.po_name +
+											            '<div class="row no-print">' +
+										                 '<div class="col-xs-12">' +
+										                   '<a href="invoice-print.html" target="_blank" class="btn btn-info"><i class="fa fa-print"></i> Print</a>' +
+										                   '<button class="btn btn-success pull-right">Confirm</button>' +
+										                   '<button class="btn btn-primary" style="margin-right: 5px;"><i class="fa fa-download"></i> Generate PDF</button>' +
+										                   '<button class="btn btn-info pull-right packyackPOEdit" style="margin-right: 5px;"><i class="fa fa-pencil"></i> Edit</button>' +
+										                   '<button type="button" class="btn bg-maroon pull-right packyakNewItemButton" style="margin-right: 5px;" data-toggle="modal" data-target="#createItemModal">Create New Item</button>' +
+										                 '</div>' +
+										               '</div>' +
+												'</section>');
+				$('.purchaseOrdersWrapper').prepend( newPurchaseOrderStringHtml );
+
+
+
 	        },
 	        error: function(ts) { console.log(ts.responseText) }
 	    })
