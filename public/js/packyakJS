@@ -142,6 +142,7 @@ $( document ).ready(function() {
 		$('#myModal').find("input[type=email], select").val("");
 		$('#myModal').find('.pypoidModal').html('');
 		$('.packYakDeletePOButton').addClass("hidden");
+		$('#myModal').find('#purchaseOrderShippingCost').val("");
 
 	});
 
@@ -153,6 +154,7 @@ $( document ).ready(function() {
 		var po_vendor = $('#purchaseOrderVendorSelect').val();//
 		var po_location = $('#purchaseOrderLocationSelect').val();//
 		var po_invoice_number = $('#purchaseOrderInvoiceNumber').val();//
+		var po_shipping_cost = $('#purchaseOrderShippingCost').val()*100;
 
 		if($('#myModal').find('.pypoidModal').html() == ''){
 			var action = 'createPO';
@@ -177,19 +179,19 @@ $( document ).ready(function() {
 	        	   'po_status': po_status,
 	        	   'po_vendor': po_vendor,
 	        	   'po_location': po_location,
-	        	   'po_invoice_number': po_invoice_number
+	        	   'po_invoice_number': po_invoice_number,
+	        	   'po_shipping_cost' : po_shipping_cost
 	    		  },
 	        success: function(data) {        
 	           $('#myModal').modal('toggle');
-	           console.log(data);
+	           //console.log(data);
 	           newPurchaseOrderParsed = JSON.parse(data);
-	           console.log(newPurchaseOrderParsed.action);
-
-
-	           var newPurchaseOrderStringHtml =  $('<section class="invoice packyakPOHeader">' + newPurchaseOrderParsed.po_name +
+	           switch(newPurchaseOrderParsed.action){
+	           		case 'createPO':
+	           			var newPurchaseOrderStringHtml =  $('<section class="invoice packyakPOHeader">Please refresh to see details for: ' + newPurchaseOrderParsed.po_name +
 											            '<div class="row no-print">' +
 										                 '<div class="col-xs-12">' +
-										                   '<a href="invoice-print.html" target="_blank" class="btn btn-info"><i class="fa fa-print"></i> Print</a>' +
+									                   '<a href="invoice-print.html" target="_blank" class="btn btn-info"><i class="fa fa-print"></i> Print</a>' +
 										                   '<button class="btn btn-success pull-right">Confirm</button>' +
 										                   '<button class="btn btn-primary" style="margin-right: 5px;"><i class="fa fa-download"></i> Generate PDF</button>' +
 										                   '<button class="btn btn-info pull-right packyackPOEdit" style="margin-right: 5px;"><i class="fa fa-pencil"></i> Edit</button>' +
@@ -197,7 +199,25 @@ $( document ).ready(function() {
 										                 '</div>' +
 										               '</div>' +
 												'</section>');
-				$('.purchaseOrdersWrapper').prepend( newPurchaseOrderStringHtml );
+						$('.purchaseOrdersWrapper').prepend( newPurchaseOrderStringHtml );
+						break;
+					case 'updatePO':
+						$('.packyakPOHeader').each(function(){
+							if($(this).find('.pypoid').text() == newPurchaseOrderParsed['purchaseOrder']['id']){
+								$(this).find('.packYakPOName').html(newPurchaseOrderParsed.purchaseOrder.po_name);
+								$(this).find('.packYakPOVendor').html(newPurchaseOrderParsed.purchaseOrder.po_vendor);
+								$(this).find('.packYakPOLocation').html(newPurchaseOrderParsed.purchaseOrder.po_location);
+								$(this).find('.lead').html('Status: '+newPurchaseOrderParsed.purchaseOrder.po_status);
+								$(this).find('.packyakPOShippingCost').html('$' + newPurchaseOrderParsed.purchaseOrder.po_shipping_cost/100);
+								$(this).find('.packyakPOTotalCost').html('$'+newPurchaseOrderParsed.purchaseOrder.po_total_cost/100);
+							};
+						});
+						break;
+						
+						
+	           }
+
+	           
 
 
 
@@ -221,13 +241,15 @@ $( document ).ready(function() {
 		var selectedStatus = $(this).parents('.packyakPOHeader').find('.packYakPOStatus').text();
 		var selectedVendor = $(this).parents('.packyakPOHeader').find('.packYakPOVendor').text();
 		var selectedLocation = $(this).parents('.packyakPOHeader').find('.packYakPOLocation').text();
-
+		var selectedShippingCost = $(this).parents('.packyakPOHeader').find('.packyakPOShippingCost').text();
 
 		$('#newPurchaseOrderTitle').val($(this).parents('.packyakPOHeader').find('.packYakPOName').text());
 		//--Invoice Number not yet showing on the main status-- $('#purchaseOrderInvoiceNumber').val($(this).parents('.packyakPOHeader').find('.packYakPOInvoice').text());
 		$("#purchaseOrderLocationSelect").val(selectedLocation);
 		$("#purchaseOrderVendorSelect").val(selectedVendor);
 		$("#purchaseOrderStatusSelect").val(selectedStatus);
+		$("#purchaseOrderShippingCost").val(selectedShippingCost.replace("$", ""));
+
 	});
 
 	//adding an item to a purchase order

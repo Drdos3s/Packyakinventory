@@ -26,10 +26,10 @@ class purchaseOrderController extends Controller
             if (isset($_POST['action'])) {
                 switch ($_POST['action']) {
                     case 'createPO':
-                        return createOrEditNewPurchaseOrder();
+                        return createOrEditNewPurchaseOrder($_POST['action'] ,$_POST['po_name'], $_POST['po_status'], $_POST['po_vendor'], $_POST['po_invoice_number'], $_POST['po_location'], $_POST['po_shipping_cost'] );
                         break;
                     case 'updatePO':
-                        return createOrEditNewPurchaseOrder();
+                        return createOrEditNewPurchaseOrder($_POST['action'] ,$_POST['po_name'], $_POST['po_status'], $_POST['po_vendor'], $_POST['po_invoice_number'], $_POST['po_location'], $_POST['po_shipping_cost'] );
                         break;
                     case 'addToPO':
                         return addItemToPurchaseOrder($_POST['selectedPurchaseOrder'], $_POST['packyakPurchaseOrderID'], $_POST['itemVariationID'], $_POST['itemUnitCost']);
@@ -143,42 +143,44 @@ class purchaseOrderController extends Controller
     }
 }
 
-function createOrEditNewPurchaseOrder(){
+function createOrEditNewPurchaseOrder($action, $po_name, $po_status, $po_vendor, $po_invoice_number, $po_location, $po_shipping_cost){
     //retriving variables from modal form
-    $action = $_POST['action'];
     switch ($action) {
         case 'createPO':
             $purchaseOrder = new PurchaseOrder;
-            $purchaseOrder->po_name = $_POST['po_name'];
-            $purchaseOrder->po_status = $_POST['po_status'];
-            $purchaseOrder->po_vendor = $_POST['po_vendor'];
-            $purchaseOrder->po_invoice_number = $_POST['po_invoice_number'];
-            $purchaseOrder->po_location = $_POST['po_location'];
+            $purchaseOrder->po_name = $po_name;
+            if(!empty($po_status)){
+                $purchaseOrder->po_status = $po_status;
+            };
+            $purchaseOrder->po_vendor = $po_vendor;
+            $purchaseOrder->po_invoice_number = $po_invoice_number;
+            $purchaseOrder->po_location = $po_location;
+            $purchaseOrder->po_shipping_cost = $po_shipping_cost;
+            $purchaseOrder->po_total_cost = $po_shipping_cost;
             $purchaseOrder->save();
-            return json_encode($purchaseOrder);
+
+            return json_encode(['action' => $action, 'purchaseOrder' => $purchaseOrder]);
             break;
         case 'updatePO': 
             $po_id_number = $_POST['po_id_number'];
-            $po_name = $_POST['po_name'];
-            $po_status = $_POST['po_status'];
-            $po_vendor = $_POST['po_vendor'];
-            $po_invoice_number = $_POST['po_invoice_number'];
-            $po_location = $_POST['po_location'];
 
             PurchaseOrder::where('id', $po_id_number)
                                 ->update(['po_name' => $po_name,
                                         'po_status' => $po_status,
                                         'po_invoice_number' => $po_invoice_number,
-                                        'po_location' => $po_location]);
+                                        'po_location' => $po_location,
+                                        'po_shipping_cost' => $po_shipping_cost]);
 
-            return 'Update Purchase Order Is working';
+            updatePurchaseOrderPrices($po_id_number);
+
+            $updatedPurchaseOrder = DB::table('purchase_orders')->where('id', $po_id_number)->first();
+            return json_encode(['action' => $action, 'purchaseOrder' => $updatedPurchaseOrder]);
             break;
     }
 };
 
 function addItemToPurchaseOrder($poName, $poOrderID, $poVarID, $varUnitCost){
     //retrieve data from POST
-    
     $varUnitCost = substr($varUnitCost, 1);
     //set up new instance for purchase order item
     $purchaseOrderItem = new PurchaseOrderItem;
@@ -437,9 +439,11 @@ function updateQuantityToOrder($itemVariationID, $purchaseOrderID, $quantityToOr
 function updatePurchaseOrderPrices($purchaseOrderID){
     $purchaseOrderSubtotal = DB::table('purchase_order_items')->where('purchaseOrderID', $purchaseOrderID)->sum('lineItemTotal');
 
-    $purchaseOrderTaxRate = 0.083; //<-THis should be removed and not hardcoded in the future
-    $purchaseOrderTotal =0;
-    $purchaseOrderTotal = $purchaseOrderSubtotal + ($purchaseOrderTaxRate*$purchaseOrderSubtotal);
+    $purchaseOrderShippingCost = DB::table('purchase_orders')->where('id', $purchaseOrderID)->value('po_shipping_cost');
+
+    $purchaseOrderTaxRate = 0.00; //<-THis should be removed and not hardcoded in the future
+    $purchaseOrderTotal = 0;
+    $purchaseOrderTotal = $purchaseOrderSubtotal + $purchaseOrderShippingCost + ($purchaseOrderTaxRate*$purchaseOrderSubtotal);
     //update purchase order with new totals and numbers
     purchaseOrder::where('id', $purchaseOrderID)
                     ->update(['po_subtotal' => $purchaseOrderSubtotal,

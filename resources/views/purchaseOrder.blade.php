@@ -140,15 +140,15 @@
                       </tr>
                       <tr>
                         <th>Tax</th>
-                        <td class='packyakPOTaxRate'>{{ $purchaseOrder['po_tax_rate']*100 }}%</td>
+                        <td class='packyakPOTaxRate'><!--{{ $purchaseOrder['po_tax_rate']*100 }}-->0.0%</td>
                       </tr>
                       <tr>
                         <th>Shipping:</th>
-                        <td class='packyakPOShippingCost'>--</td>
+                        <td class='packyakPOShippingCost'>${{ number_format($purchaseOrder['po_shipping_cost']/100, 2, '.', ',') }}</td>
                       </tr>
                       <tr>
                         <th>Total:</th>
-                        <td class='packyakPOTotalCost'>${{ number_format($purchaseOrder['po_total_cost']/100, 2, '.', ' ') }}</td>
+                        <td class='packyakPOTotalCost'>${{ number_format($purchaseOrder['po_total_cost']/100, 2, '.', ',') }}</td>
                       </tr>
                     </table>
                   </div>
@@ -211,9 +211,14 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="inputPassword3" class="col-sm-2 control-label">Invoice #</label>
-                                <div class="col-sm-6">
+                                <label for="purchaseOrderInvoiceNumber" class="col-sm-2 control-label">Invoice #</label>
+                                <div class="col-sm-3">
                                   <input class="form-control" id="purchaseOrderInvoiceNumber" placeholder="(Optional)">
+                                </div>
+
+                                <label for="purchaseOrderShippingCost" class="col-sm-2 control-label">Shipping</label>
+                                <div class="col-sm-3">
+                                  <input class="form-control" id="purchaseOrderShippingCost" placeholder="Cost" min=".00" step=".01" name="currency" type="number" value="0.00">
                                 </div>
                             </div>
 
