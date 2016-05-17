@@ -34,6 +34,9 @@ class purchaseOrderController extends Controller
                     case 'addToPO':
                         return addItemToPurchaseOrder($_POST['selectedPurchaseOrder'], $_POST['packyakPurchaseOrderID'], $_POST['itemVariationID'], $_POST['itemUnitCost']);
                         break;
+                    case 'completePO':
+                        return completePO_UpdateSquare($_POST['po_id_number']);
+                        break;
                     case 'removeItemFromPO':
                         return removeItemFromPO($_POST['itemVariationID'], $_POST['packyakPurchaseOrderID']);
                         break;
@@ -164,6 +167,8 @@ function createOrEditNewPurchaseOrder($action, $po_name, $po_status, $po_vendor,
         case 'updatePO': 
             $po_id_number = $_POST['po_id_number'];
 
+
+
             PurchaseOrder::where('id', $po_id_number)
                                 ->update(['po_name' => $po_name,
                                         'po_status' => $po_status,
@@ -191,9 +196,59 @@ function addItemToPurchaseOrder($poName, $poOrderID, $poVarID, $varUnitCost){
 
     $purchaseOrderItem->save();
 
-    /*return json_encode(array($action, $selectedPurchaseOrder, $itemVariationID, $purchaseOrderID));*/
     return 'Adding Item To PO Working';
     exit;
+};
+
+function completePO_UpdateSquare($po_id_number){
+
+    //chunk the results from DB in 30 in order to make the batch request work for large PO's
+    DB::table('purchase_order_items')->where('purchaseOrderID', $po_id_number)->chunk(30, function($items) {
+
+        $variationInventoryUpdateForSquare = [];
+
+        foreach ($items as $item) {
+            $citySoldAt = DB::table('inventoryList')->where('itemVariationID', $item -> purchaseOrderItemVariationID)->value('locationSoldAt');
+
+            $locationID = DB::table('locations')->where('locationCity', $citySoldAt)->value('squareID');
+            $quantityToOrder = $item -> quantityToOrder;
+            //set up JSON post data
+            $postData = array(
+                'quantity_delta' => intval($quantityToOrder),
+                'adjustment_type' => 'RECEIVE_STOCK'
+            );
+
+            if($quantityToOrder != 0 && $quantityToOrder != ''){
+                //running through and creating each request for the batch in order to create items
+                $formattedUpdateInventorySingleRequest = array('method' => 'POST',
+                                      'relative_path' => '/'.'v1/'.$locationID.'/inventory/'.$item -> purchaseOrderItemVariationID,
+                                      'access_token' => 'KI0ethBHis2N76q1jyYung',
+                                      'body' => $postData
+                                      );
+
+                array_push($variationInventoryUpdateForSquare , $formattedUpdateInventorySingleRequest);
+            };
+        };
+
+        $inventoryUpdateRequestFullBatch = array('requests' => $variationInventoryUpdateForSquare);
+
+        $client = new Client();
+        //send the batch request with JSON for each item variation that should be updated
+        $inventoryUpdateBatchResponse = $client->request('POST', 'https://connect.squareup.com/v1/batch', [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json'
+                ], 'body' => json_encode($inventoryUpdateRequestFullBatch)
+        ]);
+
+        $decodedInventoryUpdateBatchResponse = json_decode($inventoryUpdateBatchResponse->getBody(), true);
+    });
+
+    //update purchase order status
+    purchaseOrder::where('id', $po_id_number)
+                                ->update(['po_status' => 'Completed']);
+
+    return json_encode(['action' => 'completePO', 'purchaseOrderID' => $po_id_number]);
 };
 
 function removeItemFromPO($itemVariationID, $purchaseOrderID){
@@ -354,7 +409,7 @@ function updateNewItemInventory($inventoryData) {
 
     foreach($inventoryData['inventoryInfo'] as $inventoryUpdate){
         echo 'New Inventory Update';
-        var_dump($inventoryUpdate);
+        //var_dump($inventoryUpdate);
 
         //update DB record 
 
@@ -413,7 +468,7 @@ function updateNewItemInventory($inventoryData) {
 
     $decodedInventoryUpdateBatchResponse = json_decode($inventoryUpdateBatchResponse->getBody(), true);
 
-    var_dump($decodedInventoryUpdateBatchResponse);
+    //var_dump($decodedInventoryUpdateBatchResponse);
 
     return 'Update inventory is now working';
 };

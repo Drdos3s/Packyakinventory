@@ -68,7 +68,6 @@ $( document ).ready(function() {
 	    		var continueWithSelection = confirm('New inventory amount or unit price is lower than current levels. Continue?');
 		    	if(continueWithSelection == true){
 		    		var quantityDelta = newInventoryLevel - oldInventoryLevel;
-		    		console.log(quantityDelta);
 			    	$.ajax({
 				        type: "POST",
 				        url: './dashboard',
@@ -80,7 +79,6 @@ $( document ).ready(function() {
 				        success: function(data) {
 				        	//switching classes back to normal
 						var responseData = $.parseJSON(data)
-			            console.log(data);
 			        	thatRowInventoryTextbox.addClass('hidden');
 		           		thatRowInventory.html(responseData.itemVariationInventory);
 		           		thatRowInventory.removeClass('hidden');
@@ -88,8 +86,6 @@ $( document ).ready(function() {
 		           		thatRowUnitPriceTextbox.addClass('hidden');
 		           		thatRowUnitPrice.html(responseData.itemVariationUnitPrice);
 		           		thatRowUnitPrice.removeClass('hidden');
-				           	console.log('this is the upper function');
-
 				        }
 				    })
 		    	}else{
@@ -97,7 +93,6 @@ $( document ).ready(function() {
 		    	}	
 		    }else{	
 		    	var quantityDelta = newInventoryLevel - oldInventoryLevel;
-		    	console.log(quantityDelta);
 		    	$.ajax({
 			        type: "POST",
 			        url: './dashboard',
@@ -112,7 +107,6 @@ $( document ).ready(function() {
 			            var responseData = $.parseJSON(data);
 						var rawUnitCost = parseInt(responseData.itemVariationUnitPrice, 10)/100;
 						var formattedUnitCost = '$' + rawUnitCost.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
-			            console.log(data);
 			        	thatRowInventoryTextbox.addClass('hidden');
 		           		thatRowInventory.html(responseData.itemVariationInventory);
 		           		thatRowInventory.removeClass('hidden');
@@ -120,10 +114,6 @@ $( document ).ready(function() {
 		           		thatRowUnitPriceTextbox.addClass('hidden');
 		           		thatRowUnitPrice.html(formattedUnitCost);
 		           		thatRowUnitPrice.removeClass('hidden');
-
-
-			           
-			           console.log('Inventory updated');
 			        },
 			        error: function(ts) { console.log(ts.responseText) }
 			    })
@@ -161,6 +151,12 @@ $( document ).ready(function() {
 		}else{
 			var action = 'updatePO';
 		}
+
+		//Check to see if the PO status is completed
+		if(po_status == 'Completed'){
+			alert('You are marking this purchase order as COMPLETED. Inventory will be updated and send to square. Proceed?');
+			action = 'completePO';
+		}
 		
     	$.ajaxSetup({
 	        headers: {
@@ -184,8 +180,8 @@ $( document ).ready(function() {
 	    		  },
 	        success: function(data) {        
 	           $('#myModal').modal('toggle');
-	           //console.log(data);
 	           newPurchaseOrderParsed = JSON.parse(data);
+	           console.log(newPurchaseOrderParsed); 
 	           switch(newPurchaseOrderParsed.action){
 	           		case 'createPO':
 	           			var newPurchaseOrderStringHtml =  $('<section class="invoice packyakPOHeader">Please refresh to see details for: ' + newPurchaseOrderParsed.po_name +
@@ -208,19 +204,21 @@ $( document ).ready(function() {
 								$(this).find('.packYakPOVendor').html(newPurchaseOrderParsed.purchaseOrder.po_vendor);
 								$(this).find('.packYakPOLocation').html(newPurchaseOrderParsed.purchaseOrder.po_location);
 								$(this).find('.lead').html('Status: '+newPurchaseOrderParsed.purchaseOrder.po_status);
+								$(this).find('.packYakPOStatus').html(newPurchaseOrderParsed.purchaseOrder.po_status);
+								$(this).find('.packYakPOInvoiceNum').html(newPurchaseOrderParsed.purchaseOrder.po_invoice_number);
 								$(this).find('.packyakPOShippingCost').html('$' + newPurchaseOrderParsed.purchaseOrder.po_shipping_cost/100);
 								$(this).find('.packyakPOTotalCost').html('$'+newPurchaseOrderParsed.purchaseOrder.po_total_cost/100);
 							};
 						});
 						break;
-						
-						
+					case 'completePO':
+						$('.packyakPOHeader').each(function(){
+							if($(this).find('.pypoid').text() == newPurchaseOrderParsed['purchaseOrderID']){
+								$(this).find('.lead').html('Status: Completed - Updated Successfully');
+							};
+						});
+						break;		
 	           }
-
-	           
-
-
-
 	        },
 	        error: function(ts) { console.log(ts.responseText) }
 	    })
@@ -279,7 +277,6 @@ $( document ).ready(function() {
 	        data: data,
 	        success: function(data) {
 	        	//var responseData = $.parseJSON(data);
-	        	console.log(data);
 	        },
 	        error: function(ts) { console.log(ts.responseText) }
 	    })
@@ -342,7 +339,6 @@ $( document ).ready(function() {
 
 		        data: data,
 		        success: function(poid) {
-		        	console.log(poid);
 		        	$('.packyakPOHeader').each(function(){
 		        		if($(this).find('.pypoid').html() == poid.toString()){
 		        			    $(this).animate({
@@ -415,7 +411,6 @@ $( document ).ready(function() {
 
 	        data: {'action': action, 'data': jsonNewItemObject},
 	        success: function(data) {
-	        	console.log(data);
 	        	$('.newItemForm').hide();
 	        	$('.newItemInventoryAndInfoForm').removeClass('hidden');
 	        	$('.packyakNewItemInventoryAndInfoButton').removeClass('hidden');
@@ -423,8 +418,6 @@ $( document ).ready(function() {
 	        	set_createdItemResponseData(data);//setting the data to be passed along
 
 	        	for(i=0; i<data.length; i++){
-	        		console.log(data[i]['locationSoldAt']);
-
 	        		$('.newItemInventoryAndInfoWrapper').append('<div class="singleNewItemInventoryAndInfoWrapper col-sm-12">' + 
 								'<div class="col-sm-3 inventoryVariationName"><strong>'+ data[i]['itemVariationName'] +'</strong></div>'+
 								'<div class="col-sm-3 inventoryLocationSoldAt">' + data[i]['locationSoldAt'] + '</div>' +
@@ -435,9 +428,6 @@ $( document ).ready(function() {
 									'<input type="number" class="form-control createNewItemUnitCost" placeholder="Cost" min=".00", step=".01">'+                               
 								'</div></div>');
 	        	};
-
-	        	console.log(data.length);
-	        	
 	        },
 	        error: function(ts) { console.log(ts.responseText) }
 	    })
@@ -468,9 +458,6 @@ $( document ).ready(function() {
 				newVariationUnitPrice: $(this).find('.createNewItemUnitCost').val()*100,
 				newVariationID: createdItemResponseData[itemCounter]['itemVariationID'] //<-- this information should match with the corresponding item
 			};	
-			
-			console.log(newItemInventoryAndInfo);
-
 			//add another index to the counter for next item
 			itemCounter++;
 			//push the variation to the variations array
@@ -487,9 +474,7 @@ $( document ).ready(function() {
 
 		        data: {'action': action, 'data': jsonNewInventoryAndInfoObject},
 		        success: function(data) {
-		        	console.log('Updated inventory is working and back to JS');
-		        	console.log(data);
-		        	$('#myModal').modal('toggle');
+		        	$('#createItemModal').modal('toggle');
 		        },
 		        error: function(ts) { console.log(ts.responseText) }
 		    })
@@ -542,8 +527,6 @@ $( document ).ready(function() {
 		        data: {'action': action, 'purchaseOrderID': purchaseOrderID, 'poItemID': poItemID, 'quantityToOrder': quantityToOrder},
 		        success: function(data) {
 		        	quantityUpdatedItem = JSON.parse(data);
-		        	console.log(quantityUpdatedItem);
-		        	console.log(thatRow);
 		        	thatRow.parents('.packyakPOHeader').find('.packyakPOSubtotal').html('$'+(quantityUpdatedItem.purchaseOrder.po_subtotal/100).toFixed(2));
 		        	thatRow.parents('.packyakPOHeader').find('.packyakPOTotalCost').html('$'+ (quantityUpdatedItem.purchaseOrder.po_total_cost/100).toFixed(2));
 		        	thatRow.find('.packyakQuantityToOrder').html('<h5>' + quantityUpdatedItem.item.quantityToOrder + '</h5>');

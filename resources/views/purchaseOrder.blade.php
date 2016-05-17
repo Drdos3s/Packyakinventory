@@ -12,7 +12,7 @@
     </div>
 </div>
 
-<div class='row'>
+<!--div class='row'>
     <div class="col-md-12 purchaseOrderNotificationsWrapper">
         <div class="pad margin no-print">
           <div class="callout callout-warning" style="margin-bottom: 0!important;">
@@ -27,7 +27,7 @@
           </div>
         </div>
     </div>
-</div>
+</div>-->
 
 <div class='row'>
     <div class="col-md-12 purchaseOrdersWrapper">
@@ -48,18 +48,17 @@
               <!-- info row -->
               <div class="row invoice-info">
                 <div class="col-sm-4 invoice-col">
-                  For
+                  FROM:
                   <address>
-                    <strong><span class='packYakPOVendor'>{{ $purchaseOrder['po_vendor'] }}</span></strong><br>
-                    <!--should populate these dynamically with vendor address and info. Phone number at the least-->
+                    <!--<strong><span class='packYakPOVendor'>{{ $purchaseOrder['po_vendor'] }}</span></strong><br>
                     One Day, Suite 600<br>
                     This will populate, CA 94107<br>
                     Phone: (804) 123-5432<br>
-                    Email: info@almasaeedstudio.com
+                    Email: info@almasaeedstudio.com-->
                   </address>
                 </div><!-- /.col -->
                 <div class="col-sm-4 invoice-col">
-                  To
+                  TO:
                   <address>
                     <strong><span class='packYakPOLocation'>{{ $purchaseOrder['po_location'] }}</span></strong><br>
                     795 Folsom Ave, Suite 600<br>
@@ -71,7 +70,7 @@
                 <div class="col-sm-4 invoice-col">
                   <b>Status:</b> <span class='packYakPOStatus'>{{ $purchaseOrder['po_status'] }}</span><br>
                   <br>
-                  <b>Invoice #</b> One day<br>
+                  <b>Invoice #</b> <span class='packYakPOInvoiceNum'>{{ $purchaseOrder['po_invoice_number'] }}</span><br>
                   <b>PO # </b><span class='pypoid'><?php echo $purchaseOrder['id'] ?></span><br> 
                   <b>Payment Due:</b> This will<br>
                   <b>Account:</b> be another piece of info
