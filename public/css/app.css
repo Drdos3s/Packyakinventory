@@ -29,6 +29,28 @@
 .packyakInventoryTextInput {
   max-width: 70px; }
 
+
+/*PO Top border colors based on status*/
+.POpending{
+  border-top:15px solid #00c0ef;
+  border-radius: 10px 10px 3px 3px;
+}
+
+.POrecieved{
+  border-top:15px solid #00a65a;
+  border-radius: 10px 10px 3px 3px;
+}
+
+.POcomplete{
+  border-top:15px solid #f39c12;
+  border-radius: 10px 10px 3px 3px;
+}
+
+.packyakPOHeader{
+  margin-left:0px;
+}
+
+
 /******** PURCHASE ORDER ********/
 .singleVariationWrapper {
   border-top: 1px solid #F4F4F4;
@@ -45,3 +67,4 @@
     padding-right: 0px; }
 
 /*# sourceMappingURL=app.css.map */
+

@@ -154,7 +154,7 @@ $( document ).ready(function() {
 
 		//Check to see if the PO status is completed
 		if(po_status == 'Completed'){
-			alert('You are marking this purchase order as COMPLETED. Inventory will be updated and send to square. Proceed?');
+			confirm('You are marking this purchase order as COMPLETED. Inventory will be updated and send to square. Proceed?');
 			action = 'completePO';
 		}
 		
@@ -250,6 +250,54 @@ $( document ).ready(function() {
 
 	});
 
+	//ajax to get all pending purchase orders in chronological order
+	$('#packyakPurchaseOrderList').click(function(){
+		if($('.packyakAddItemToPOWrapper').is(":visible") != true){
+			var action = 'getPendingPO';
+			var thisRowAddToPOList = $(this).siblings('.packyakAddItemToPOWrapper');
+			$(thisRowAddToPOList).empty();
+
+			$.ajaxSetup({
+		        headers: {
+		            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+		        }
+			});
+	        data =  {'action': action};
+
+	       	$.ajax({
+		        type: "POST",
+		        url: './purchaseOrders',
+
+		        data: data,
+		        success: function(data) {
+		        	var responseData = $.parseJSON(data);
+		        	console.log(responseData);
+		        	console.log(responseData.length);
+		        	/*for(i=0; i<responseData.length; i++){
+		        		$(thisRowAddToPOList).append('<li><a class="packyakPurchaseOrderListItem">' + responseData[i]['po_name'] + '</a><div class="packyakPurchaseOrderID hidden">' + responseData[i]['id'] + '</div></li>');
+		        		console.log('winning');
+		        	}f*/
+		        	for(i=0; i<responseData.length; i++){
+		        		console.log();
+		        		$(thisRowAddToPOList).append('<li><a class="packyakPurchaseOrderListItem">' + responseData[i]['po_name'] + '</a><div class="packyakPurchaseOrderID hidden">' + responseData[i]['id'] + '</div></li>');
+		        	}
+		        	/*$.each(responseData, function(){
+		        		
+
+		        	});*/
+		        	
+	                
+		        	
+		        	console.log(responseData);
+		        },
+		        error: function(ts) { console.log(ts.responseText) }
+		    })
+	       }else{
+	       	console.log('it is already visible and just needs to close');
+	       }
+	});
+
+
 	//adding an item to a purchase order
 	$('.packyakPurchaseOrderListItem').click(function(){
 		var action = 'addToPO';
@@ -276,7 +324,7 @@ $( document ).ready(function() {
 
 	        data: data,
 	        success: function(data) {
-	        	//var responseData = $.parseJSON(data);
+	        	//vresponseData = $.parseJSON(data);
 	        },
 	        error: function(ts) { console.log(ts.responseText) }
 	    })

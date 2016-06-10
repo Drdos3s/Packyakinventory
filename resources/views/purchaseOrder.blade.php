@@ -31,21 +31,37 @@
 
 <div class='row'>
     <div class="col-md-12 purchaseOrdersWrapper">
-
+      
         @foreach($existingPurchaseOrders as $purchaseOrder)
-            <!-- Main content -->
-            <?php //var_dump($purchaseOrder);?>
-            <section class="invoice packyakPOHeader">
+            <?php //var_dump($purchaseOrder)?>
+            @if ($purchaseOrder['po_status'] == 'Pending')
+               <section class="invoice packyakPOHeader box POpending">
+            @elseif ($purchaseOrder['po_status'] == 'Recieved')
+               <section class="invoice packyakPOHeader box POrecieved">
+            @elseif ($purchaseOrder['po_status'] == 'Completed')
+                <section class="invoice packyakPOHeader box POcomplete">
+            @else
+                <section class="invoice packyakPOHeader">
+            @endif
               <!-- title row -->
               <div class="row">
                 <div class="col-xs-12">
-                  <h2 class="page-header">
+                  <div class="page-header">
                     <i class="fa fa-globe"></i><span class='packYakPOName'>{{ $purchaseOrder['po_name'] }}</span>
-                    <small class="pull-right packYakPOCreated">Date Created: <?php echo ' '.date('m-d-Y',strtotime($purchaseOrder['created_at']));?></small>
-                  </h2>
+                    <div class="box-tools pull-right">
+                      <small class='packYakPOHeaderLocation'>For: {{ $purchaseOrder['po_location'] }} | </small>
+                      <small class='packYakPOHeaderStatus'>Status: {{ $purchaseOrder['po_status'] }} | </small>
+                      <small class="packYakPOCreated">Date Created: <?php echo ' '.date('m-d-Y',strtotime($purchaseOrder['created_at']));?> | </small>
+                      <button class="btn btn-box-tool" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                      </button>
+                    </div>
+                  </div>
+                  
                 </div><!-- /.col -->
               </div>
               <!-- info row -->
+              <div class="box-body">
               <div class="row invoice-info">
                 <div class="col-sm-4 invoice-col">
                   FROM:
@@ -163,6 +179,7 @@
                   <button class="btn btn-info pull-right packyackPOEdit" style="margin-right: 5px;"><i class="fa fa-pencil"></i> Edit</button>
                   <button type="button" class="btn bg-maroon pull-right packyakNewItemButton" style="margin-right: 5px;" data-toggle="modal" data-target="#createItemModal">Create New Item</button>
                 </div>
+              </div>
               </div>
             </section><!-- /.content -->
         @endforeach

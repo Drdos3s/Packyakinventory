@@ -51,14 +51,8 @@
                                 <td class='packyakPurchaseOrderMenuButton'>
                                     <div class="dropdown">
                                         <i class="fa fa-chevron-circle-down fa-2 btn btn-default dropdown-toggle" type="button" id="packyakPurchaseOrderList" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></i>
-                                        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="packyakPurchaseOrderList">
-                                        @foreach($dashboardDataFinal['purchaseOrders'] as $pendingPO)
-                                            <li>
-                                                <a class="packyakPurchaseOrderListItem">{{ $pendingPO['po_name'] }}</a>
-                                                <div class="packyakPurchaseOrderID hidden">{{ $pendingPO['id'] }}</div>
-                                            </li>
-                                        @endforeach
-                                      </ul>
+                                        <ul class="dropdown-menu dropdown-menu-right packyakAddItemToPOWrapper" aria-labelledby="packyakPurchaseOrderList">
+                                        </ul>
                                     </div>        
                                 </td>
                                 <td class='packyakSubmitButton'><i class="fa fa-check-circle-o fa-2 btn btn-default"></i></td>

@@ -31,6 +31,9 @@ class purchaseOrderController extends Controller
                     case 'updatePO':
                         return createOrEditNewPurchaseOrder($_POST['action'] ,$_POST['po_name'], $_POST['po_status'], $_POST['po_vendor'], $_POST['po_invoice_number'], $_POST['po_location'], $_POST['po_shipping_cost'] );
                         break;
+                    case 'getPendingPO':
+                        return getPendingPurchaseOrder();
+                        break;
                     case 'addToPO':
                         return addItemToPurchaseOrder($_POST['selectedPurchaseOrder'], $_POST['packyakPurchaseOrderID'], $_POST['itemVariationID'], $_POST['itemUnitCost']);
                         break;
@@ -82,6 +85,7 @@ class purchaseOrderController extends Controller
                                     json_encode(
                                         DB::table('purchase_orders')
                                             ->whereNotIn('po_status', ['Deleted', 'Closed'])
+                                            ->orderBy('created_at', 'desc')
                                             ->get()
                                     ),true);
         //getting all locations to dynamically populate locations lists used for create items and create purchase orders
@@ -182,6 +186,11 @@ function createOrEditNewPurchaseOrder($action, $po_name, $po_status, $po_vendor,
             return json_encode(['action' => $action, 'purchaseOrder' => $updatedPurchaseOrder]);
             break;
     }
+};
+
+function getPendingPurchaseOrder(){
+    $allPendingPO = DB::table('purchase_orders')->where('po_status', '=', 'pending')->orderBy('created_at', 'desc')->get();
+    return json_encode($allPendingPO);
 };
 
 function addItemToPurchaseOrder($poName, $poOrderID, $poVarID, $varUnitCost){
