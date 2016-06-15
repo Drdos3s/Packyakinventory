@@ -50,7 +50,7 @@
                                 <td>{{ $row['itemVariationSKU'] }}</td>                                
                                 <td class='packyakPurchaseOrderMenuButton'>
                                     <div class="dropdown">
-                                        <i class="fa fa-chevron-circle-down fa-2 btn btn-default dropdown-toggle" type="button" id="packyakPurchaseOrderList" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></i>
+                                        <i class="fa fa-chevron-circle-down fa-2 btn btn-default dropdown-toggle packyakPurchaseOrderList" type="button" id="packyakPurchaseOrderList" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></i>
                                         <ul class="dropdown-menu dropdown-menu-right packyakAddItemToPOWrapper" aria-labelledby="packyakPurchaseOrderList">
                                         </ul>
                                     </div>        
