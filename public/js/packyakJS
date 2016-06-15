@@ -253,7 +253,6 @@ $( document ).ready(function() {
 	//ajax to get all pending purchase orders in chronological order
 	$('.packyakPurchaseOrderList').on('click', function(){
 		if($('.packyakAddItemToPOWrapper').is(":visible") != true){
-			console.log('working after is visible')
 			var action = 'getPendingPO';
 			var thisRowAddToPOList = $(this).siblings('.packyakAddItemToPOWrapper');
 			thisRowAddToPOList.empty();
@@ -262,6 +261,8 @@ $( document ).ready(function() {
 		            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 		        }
 			});
+
+			//set data
 	        data =  {'action': action};
 
 	       	$.ajax({
@@ -272,22 +273,21 @@ $( document ).ready(function() {
 		        success: function(data) {
 		        	var responseData = $.parseJSON(data);
 
+		        	//append the pending purchase orders to view
 		        	for(i=0; i<responseData.length; i++){
-		        		console.log(responseData);
 		        		$(thisRowAddToPOList).append('<li><a class="packyakPurchaseOrderListItem">' + responseData[i]['po_name'] + '</a><div class="packyakPurchaseOrderID hidden">' + responseData[i]['id'] + '</div></li>');
 		        	};
 		        },
 		        error: function(ts) { console.log(ts.responseText) }
 		    })
 	       }else{
-	       	$(this).siblings('.packyakAddItemToPOWrapper').empty();
+	       		$(this).siblings('.packyakAddItemToPOWrapper').empty();
 	       }
 	});
 
 
 	//adding an item to a purchase order
 	$('.packyakAddItemToPOWrapper').on('click', '.packyakPurchaseOrderListItem', function(){
-		console.log('we should be firing here');
 		var action = 'addToPO';
 		var selectedPurchaseOrder = $(this).html();
 		var itemVariationID = $(this).parents('.packYakItemFeedRow').find('.packyakInventoryItemID').html();
