@@ -46,6 +46,12 @@
   border-radius: 10px 10px 3px 3px;
 }
 
+.POconfirmed{
+  border-top:15px solid #605ca8;
+  border-radius: 10px 10px 3px 3px;
+}
+
+
 .packyakPOHeader{
   margin-left:0px;
 }

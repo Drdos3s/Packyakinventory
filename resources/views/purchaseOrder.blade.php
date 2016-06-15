@@ -36,6 +36,8 @@
             <?php //var_dump($purchaseOrder)?>
             @if ($purchaseOrder['po_status'] == 'Pending')
                <section class="invoice packyakPOHeader box POpending">
+            @elseif ($purchaseOrder['po_status'] == 'Confirmed')
+               <section class="invoice packyakPOHeader box POconfirmed">
             @elseif ($purchaseOrder['po_status'] == 'Recieved')
                <section class="invoice packyakPOHeader box POrecieved">
             @elseif ($purchaseOrder['po_status'] == 'Completed')
