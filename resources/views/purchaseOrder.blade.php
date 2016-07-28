@@ -101,6 +101,7 @@
                   <table class="table table-striped">
                     <thead>
                       <tr>
+                        <th>Location</th>
                         <th>Category </th>
                         <th>Item </th>
                         <th>Variation </th>
@@ -118,13 +119,15 @@
                         <?php //var_dump($item);?>
                             <tr class='packyakPOItemListItem'>
                                 <td class=" poitemid hidden">{{ $item['itemVariationID'] }}</td>
+                                <td><h5>{{ $item['locationSoldAt'] }}</h5></td>
                                 <td><h5>{{ $item['itemCategoryName'] }}</h5></td>
                                 <td><h5>{{ $item['itemName'] }}</h5></td>
                                 <td><h5>{{ $item['itemVariationName'] }}</h5></td>
                                 <td><h5>{{ $item['itemVariationInventory'] }}</h5></td>
                                 <td class='packyakQuantityToOrder'><h5>{{ $item['quantityToOrder'] }}</h5></td>
                                 <td class='packyakOrderQuantityText'><?php echo Form::input('number','orderQuantity', 0, array('class' => 'packyakOrderQuantityInput', 'type' => 'number', 'min' => '0', 'step' => '1')); ?></td>
-                                <td><h5>${{ $item['itemVariationUnitCost']/100 }}</h5></td>
+                                <td class='packyakUnitPrice'><h5>${{ $item['itemVariationUnitCost']/100 }}</h5></td>
+                                <td class='packyakUnitPriceText hidden'>$<?php echo Form::input('number','currency', number_format($item['itemVariationUnitCost']/100, 2, '.', ' '), array('class' => 'packyakUnitPriceTextInput', 'min' => '.00', 'step' => '.01')); ?></td>
                                 <td class='packyakLineItemCost'><h5>$<?php echo $item['quantityToOrder']*$item['itemVariationUnitCost']/100?></h5></td>
                                 <td class='packyakUpdateOrderButton'><i class="fa fa-check-circle-o fa-2 btn btn-default"></i></td>
                                 <td><i class="fa fa-times-circle fa-2 btn btn-default packyakRemoveFromPO"></i></td>

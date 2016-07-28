@@ -545,10 +545,19 @@ $( document ).ready(function() {
 	});
 
 	$('.packyakUpdateOrderButton').click(function(){
+		var unitCost;
+		if($(this).siblings('.packyakUnitPriceText').is(':visible')){
+			unitCost = $(this).parents('.packyakPOItemListItem').find('.packyakUnitPriceTextInput').val();
+		}else{
+			rawTextUnitCost = $(this).parents('.packyakPOItemListItem').find('.packyakUnitPrice').text();
+			unitCost = Number(rawTextUnitCost.replace(/[^0-9\.]+/g,""));
+			console.log(unitCost);
+		}
 		var action = 'updateQuantityToOrder';
 		var poItemID = $(this).parents('.packyakPOItemListItem').find('.poitemid').text();
 		var purchaseOrderID = $(this).parents('.packyakPOHeader').find('.pypoid').html();
 		var quantityToOrder = $(this).parents('.packyakPOItemListItem').find('.packyakOrderQuantityInput').val();
+		
 		var thatRow = $(this).parents('.packyakPOItemListItem');
 		$.ajaxSetup({
 	        headers: {
@@ -560,12 +569,17 @@ $( document ).ready(function() {
 		        type: "POST",
 		        url: './purchaseOrders',
 
-		        data: {'action': action, 'purchaseOrderID': purchaseOrderID, 'poItemID': poItemID, 'quantityToOrder': quantityToOrder},
+		        data: {'action': action, 'purchaseOrderID': purchaseOrderID, 'poItemID': poItemID, 'quantityToOrder': quantityToOrder,'unitCost': unitCost},
 		        success: function(data) {
 		        	quantityUpdatedItem = JSON.parse(data);
+		        	var rawUnitCost = quantityUpdatedItem.item.itemUnitCost/100;
+		        	var formattedUnitCost = '$' + rawUnitCost.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
 		        	thatRow.parents('.packyakPOHeader').find('.packyakPOSubtotal').html('$'+(quantityUpdatedItem.purchaseOrder.po_subtotal/100).toFixed(2));
 		        	thatRow.parents('.packyakPOHeader').find('.packyakPOTotalCost').html('$'+ (quantityUpdatedItem.purchaseOrder.po_total_cost/100).toFixed(2));
 		        	thatRow.find('.packyakQuantityToOrder').html('<h5>' + quantityUpdatedItem.item.quantityToOrder + '</h5>');
+		        	thatRow.find('.packyakUnitPriceText').addClass('hidden');
+		        	thatRow.find('.packyakUnitPrice').removeClass('hidden');
+		        	thatRow.find('.packyakUnitPrice').html('<h5>' + formattedUnitCost + '</h5>');
 		        	thatRow.find('.packyakOrderQuantityInput').val(0);
 		        	thatRow.find('.packyakLineItemCost').html('<h5>$' + quantityUpdatedItem.item.lineItemTotal/100 + '</h5>');
 		        	

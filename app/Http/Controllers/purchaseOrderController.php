@@ -58,6 +58,10 @@ class purchaseOrderController extends Controller
                         return updateNewItemInventory($decodedInventoryData);
                         break;
                     case 'updateQuantityToOrder':
+                        $integerUnitCost = $_POST['unitCost']*100;
+
+                        updateItemUnitPrice($_POST['poItemID'], $integerUnitCost);
+
                         return updateQuantityToOrder($_POST['poItemID'], $_POST['purchaseOrderID'], $_POST['quantityToOrder']);
                         break;
                 }
@@ -500,6 +504,15 @@ function updateQuantityToOrder($itemVariationID, $purchaseOrderID, $quantityToOr
     return json_encode($itemAndPOReturnInfo);
 };
 
+function updateItemUnitPrice($itemVariationID, $unitCost) {
+    item::where('itemVariationID', $itemVariationID)
+        ->update(['itemVariationUnitCost' => $unitCost]);
+
+    purchaseOrderItem::where('purchaseOrderItemVariationID', $itemVariationID)
+                                ->update(['itemUnitCost' => $unitCost]);
+
+}
+
 function updatePurchaseOrderPrices($purchaseOrderID){
     $purchaseOrderSubtotal = DB::table('purchase_order_items')->where('purchaseOrderID', $purchaseOrderID)->sum('lineItemTotal');
 
@@ -513,3 +526,4 @@ function updatePurchaseOrderPrices($purchaseOrderID){
                     ->update(['po_subtotal' => $purchaseOrderSubtotal,
                             'po_total_cost' => $purchaseOrderTotal]);
 };
+
