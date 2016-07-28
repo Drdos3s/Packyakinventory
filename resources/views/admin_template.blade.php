@@ -1,7 +1,7 @@
 @extends('master_template')
 
 @section('body')
-<body class="skin-green">
+<body class="skin-green sidebar-collapse sidebar-mini">
 
     <div class="wrapper">
 
