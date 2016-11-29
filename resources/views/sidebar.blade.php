@@ -31,10 +31,10 @@
         <ul class="sidebar-menu">
             <li class="header">Menu</li>
             <!-- Optionally, you can add icons to the links -->
-            <li class="active"><a href="{{ url('/dashboard') }}"><i class="fa fa-th-list" aria-hidden="true"></i><span>Items & Inventory</span></a></li>
-            <li><a href="{{ url('/purchaseOrders') }}"><i class="fa fa-leaf" aria-hidden="true"></i></i><span>Purchase Orders</span></a></li>
-            <li><a href=#><i class="fa fa-briefcase" aria-hidden="true"></i><span>Vendors</span></a></li>
-            <li><a href="{{ url('/locations') }}"><i class="fa fa-map-marker" aria-hidden="true"></i><span>Locations</span></a></li>
+            <li class="{{ Request::is('dashboard')? 'active': '' }}"><a href="{{ url('/dashboard') }}"><i class="fa fa-sitemap" aria-hidden="true"></i><span>Items & Inventory</span></a></li>
+            <li class="{{ Request::is('purchaseOrders')? 'active': '' }}"><a href="{{ url('/purchaseOrders') }}"><i class="fa fa-leaf" aria-hidden="true"></i></i><span>Purchase Orders</span></a></li>
+            <li class="{{ Request::is('vendors')? 'active': '' }}"><a href="{{ url('/vendors') }}""><i class="fa fa-briefcase" aria-hidden="true"></i><span>Vendors</span></a></li>
+            <li class="{{ Request::is('locations')? 'active': '' }}"><a href="{{ url('/locations') }}"><i class="fa fa-map-marker" aria-hidden="true"></i><span>Locations</span></a></li>
             
         </ul><!-- /.sidebar-menu -->
     </section>
