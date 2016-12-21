@@ -17,15 +17,15 @@ Route::get('/', function() {
 });
 
 //Main dashboard--->
-Route::get('/dashboard', function () {
-    return view('admin_template');
-});
-
 Route::get('/dashboard', 'mainItemFeedController@index');
 
+//Retrieve item data
+Route::get('/dashboard/retrieve', 'mainItemFeedController@createAndUpdateItems');
 
 Route::post('/dashboard', 'mainItemFeedController@setupAndSendInventoryUpdate');
 //Route::post('/dashboard', 'mainItemFeedController@setupAndSendUnitPriceUpdate');
+
+Route::post('/dashboard/deleteVariation', 'mainItemFeedController@deleteItemVariation');
 
 
 
@@ -38,6 +38,14 @@ Route::get('/locations', function () {
 });
 
 Route::get('/locations', 'locationsPageController@index');
+
+//Vendor Page routes--->
+Route::get('/vendors', function () {
+    return view('admin_template');
+});
+
+Route::get('/vendors', 'vendorPageController@index');
+Route::post('/vendors/create', 'vendorPageController@create');
 
 //Purchase order routes--->
 Route::get('/purchaseOrders', function () {

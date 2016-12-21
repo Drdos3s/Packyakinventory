@@ -21,6 +21,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- Select 2 Dropdown 
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/css/select2.min.css" rel="stylesheet" />-->
 
+        <!-- DataTables -->
+        <link rel="stylesheet" href="{{ asset('/bower_components/admin-lte/plugins/datatables/dataTables.bootstrap.css')}}">
+
 
         <link href="{!! asset('css/app.css') !!}" media="all" rel="stylesheet" type="text/css" />
 

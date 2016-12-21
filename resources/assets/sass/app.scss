@@ -18,6 +18,16 @@
 	background-color: #ECF0F5;
 	color: #333;
 }
+.panel{
+	.itemOptionButtons{
+	  	list-style-type: none;
+	  	margin-bottom: 0px;
+	  	li{
+	  		display: inline-block;
+	  	}
+	}
+}
+
 
 /*Change, add to order, and cancel icon button styling*/
 .fa-check-circle-o{
@@ -34,6 +44,11 @@
 
 .updateSuccess{
 	background-color: #00A65A;
+	color: #FFFFFF; 
+}
+
+.updateFailure{
+	background-color: #DD4C3A;
 	color: #FFFFFF; 
 }
 

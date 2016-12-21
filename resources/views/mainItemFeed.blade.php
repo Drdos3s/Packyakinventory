@@ -1,23 +1,59 @@
 @extends('admin_template')
 
 @section('content')
-
-
-    <div class='row'>
-        <div class='col-md-12'>
-            <!-- Box -->
-
-            
-            <div class="box box-primary">
-                <div class="box-header with-border">
-                    <h3 class="box-title"><?php echo 'Last inventory update was at '.date('h:i A'); ?></h3>
-                    <div class="box-tools pull-right">
-                        <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
-                    </div>
+<div class="row">
+    <!--
+        *
+        **** START FILTER BOX ****
+        *
+    -->
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Filters</h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
+                </div>
+            </div>
+            <div class="box-body"> 
+                <div class="locationsContainer">
+                    @foreach($locations as $location)
+                        <div class="selectLocation">
+                            <input type="checkbox" class="locationCheckbox" data-locationID="{{ $location['squareID'] }}">
+                            <span>{{ $location['locationCity'] }}</span>
+                        </div>
+                    @endforeach
+                    <button type="button" class="btn btn-primary searchLocationsButton col-sm-2">Get Items</button>
                 </div>
 
-                <div class="box-body">
-                    <table id='packyakInventoryDashTable' class="table">
+                <div class="col-sm-12 input-group searchContainer">
+                  <span class="input-group-addon" id="basic-addon1"><i class="fa fa-search"></i></span>
+                  <input type="text" id="packyakInventoryDashSearch" class="form-control" placeholder="Search Items" aria-describedby="basic-addon1">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--
+        *
+        **** END FILTER BOX ***
+    -->
+
+    <div class="col-xs-12">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Items</h3>
+            </div>
+            <div class="box-body"> 
+                <!--Starting warning-->
+                <div class="callout callout-info noItemCallout">
+                    <h4><i class="icon fa fa-warning"></i> No items are selected at this time!</h4>
+                    Start by selecting a location or searching for an item.
+                </div>
+                <!--loading spinner-->
+                <div id="loadingImage" class="col-sm-2 col-sm-offset-5 hidden">
+                  <i class="fa fa-cog fa-spin fa-3x fa-fw margin-bottom"></i>
+                </div>
+                    <table id="packyakInventoryDashTable" class="table hidden">
                         <thead>
                             <tr>
                                 <th>Location</th>
@@ -31,47 +67,38 @@
                                 <th>SKU</th>
                             </tr>
                         </thead>
-                        <tbody>
-                        <?php //var_dump($dashboardDataFinal); ?>
-                            @foreach($dashboardDataFinal['items'] as $row)
-                            <tr class='packYakItemFeedRow'>
-                                <td class='packyakLocationSold'>{{ $row['locationSoldAt'] }}</td>
-                                <td>{{ $row['itemCategoryName'] }}</td>
-                                <td>{{ $row['itemName'] }}</td>
-                                <td>{{ $row['itemVariationName'] }}</td>
-                                
-                                <td class='packyakInventory'>{{ $row['itemVariationInventory'] }}</td>
-                                <td class='packyakInventoryText hidden'><?php echo Form::input('number','newInventoryLevel', $row['itemVariationInventory'], array('class' => 'packyakInventoryTextInput', 'type' => 'number', 'min' => '-5', 'step' => '1')); ?></td>
-                                
-                                <td><?php echo '$'.number_format($row['itemVariationPrice']/100, 2, '.', ' '); ?></td>
-                                <td class='packyakUnitPrice'><?php echo '$'.number_format($row['itemVariationUnitCost']/100, 2, '.', ' '); ?></td>
-                                <td class='packyakUnitPriceText hidden'>$<?php echo Form::input('number','currency', number_format($row['itemVariationUnitCost']/100, 2, '.', ' '), array('class' => 'packyakUnitPriceTextInput', 'min' => '.00', 'step' => '.01')); ?></td>
-                                <td class='packyakProfitMargin'><?php echo '$'.number_format(($row['itemVariationPrice']-$row['itemVariationUnitCost'])/100, 2, '.', ' '); ?></td>
-                                <td>{{ $row['itemVariationSKU'] }}</td>                                
-                                <td class='packyakPurchaseOrderMenuButton'>
-                                    <div class="dropdown">
-                                        <i class="fa fa-chevron-circle-down fa-2 btn btn-default dropdown-toggle packyakPurchaseOrderList" type="button" id="packyakPurchaseOrderList" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></i>
-                                        <ul class="dropdown-menu dropdown-menu-right packyakAddItemToPOWrapper" aria-labelledby="packyakPurchaseOrderList">
-                                        </ul>
-                                    </div>        
-                                </td>
-                                <td class='packyakSubmitButton'><i class="fa fa-check-circle-o fa-2 btn btn-default"></i></td>
-                                <td class='packyakCancel'><i class="fa fa-times-circle fa-2 btn btn-default"></i></td>
-                                {{ csrf_field() }}
-                                <td class='packyakInventoryItemID hidden'>{{ $row['itemVariationID'] }}</td>
-                            </tr>
-                            @endforeach
+                        <tbody id="itemTableBody">
+                            {{ csrf_field() }}
                         </tbody>
                     </table>
+                </div>
+            </div>
 
-                </div><!-- /.box-body -->
-                
-                <div class="box-footer">
-
-                </div><!-- /.box-footer-->
-                
-            </div><!-- /.box -->
-        </div><!-- /.col -->
+        </div>
     </div>
+
+    <!--Start Delete Item Modal-->
+    <div class="modal modal-danger" id="deleteItemModal" data-controls-modal="#deleteItemModal" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span></button>
+                <h4 class="modal-title">Danger Modal</h4>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this variation in both here AND Square?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline deleteItemConfirmButton"><span class="innerText">Delete Variation</span><i class="fa fa-cog fa-spin fa-fw hidden deleteItemSpinner"></i></button>
+
+            </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+      <!-- /.modal-dialog -->
+    </div>
+
 
 @endsection

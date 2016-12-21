@@ -29,32 +29,6 @@
             <!-- Main content -->
             <section class="content">
                 <!-- Your Page Content Here -->
-                
-<?php
-
-
-#Deletes the Malted Milkshake item.
-function deleteItem($itemId) {
-  $access_token = 'KI0ethBHis2N76q1jyYung';
-  $connectHost = 'https://connect.squareup.com';
-  $requestHeaders = array (
-    'Authorization' => 'Bearer ' . $access_token,
-    'Accept' => 'application/json',
-    'Content-Type' => 'application/json'
-  );
-
-
-  $response = Unirest\Request::delete($connectHost . '/v1/me/items/' . $itemId, $requestHeaders);
-  if ($response->code == 200) {
-    error_log('Successfully deleted item');
-    return $response->body;
-  } else {
-    error_log('Item deletion failed');
-    return NULL;
-  }
-}
-//deleteItem('e9407738-314a-4b22-950a-a6ba95331f2e');
-?> 
                 @yield('content')
             </section><!-- /.content -->
         </div><!-- /.content-wrapper -->
@@ -80,6 +54,13 @@ function deleteItem($itemId) {
     <!-- Optionally, you can add Slimscroll and FastClick plugins.
           Both of these plugins are recommended to enhance the
           user experience -->
-    </script>
+<!-- DataTables -->
+<script src="{{ asset ('/bower_components/admin-lte/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset ('/bower_components/admin-lte/plugins/datatables/dataTables.bootstrap.min.js') }}"></script>
+
+<!-- InputMask -->
+<script src="{{ asset ('/bower_components/admin-lte/plugins/input-mask/jquery.inputmask.js') }}"></script>
+<script src="{{ asset ('/bower_components/admin-lte/plugins/input-mask/jquery.inputmask.phone.extensions.js') }}"></script>
+          
     </body>
 @endsection

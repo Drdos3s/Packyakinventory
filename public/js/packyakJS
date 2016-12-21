@@ -22,26 +22,50 @@ $( document ).ready(function() {
     	$('#packyakInventoryDashSearch').val('').keyup();
     });
 
-	//Clicking on inventory and unit price number changes to textfield and if hit cancel, shows original inventory level
-	$(".packyakUnitPrice").click(function() {
+	//Clicking on inventory and unit price number changes to textfield 
+	$("#packyakInventoryDashTable").on('click', '.packyakUnitPrice', function() {
 		$(this).addClass("hidden");
 		$(this).next().removeClass("hidden");
 	});
 
-	$( ".packyakInventory" ).click(function() {
+	$('#packyakInventoryDashTable').on('click', ".packyakInventory",function() {
+		console.log('Working and detecting click');
   		$(this).addClass("hidden");
   		$(this).next().removeClass("hidden");
 	});
 
-	$( ".packyakCancel" ).click(function() {
+	//if hit cancel, shows original inventory level
+
+	$('#packyakInventoryDashTable').on('click', '.packyakCancel', function() {
 		$(this).siblings('.packyakInventoryText').addClass('hidden');
 		$(this).siblings('.packyakInventory').removeClass('hidden');
 		$(this).siblings('.packyakUnitPriceText').addClass('hidden');
 		$(this).siblings('.packyakUnitPrice').removeClass('hidden');
 	});
 
+	//delete Item from DB and square
+	$('#packyakInventoryDashTable').on('click', '.packyakDeleteItem', function() {
+		var variationID = $(this).siblings('.packyakInventoryItemID').html();
+		$('#deleteItemModal').modal('toggle');
+
+		//adds variation ID to the button to be retrieved on confirmation
+		$('.deleteItemConfirmButton').attr('data-varID', variationID);
+	});
+
+	//Second step in delete variation
+	$('#deleteItemModal').on('click', '.deleteItemConfirmButton', function() {
+		$('.innerText').addClass('hidden');
+		$('.deleteItemConfirmButton').addClass('disabled');
+		$('.deleteItemSpinner').removeClass('hidden');
+		
+		varID = $(this).data('varid');
+		console.log('made it to function');
+		deleteItemVariation(varID);
+	
+	});
+
 	//submit function that uses ajax request to update inventory for square and unit price
-	$('.packyakSubmitButton').click(function() {
+	$('#packyakInventoryDashTable').on('click','.packyakSubmitButton',function() {
     	var newInventoryLevel = $(this).siblings('.packyakInventoryText').children().val();
     	var oldInventoryLevel = $(this).siblings('.packyakInventory').html();
     	var itemLocation = $(this).siblings('.packyakLocationSold').html();
@@ -54,12 +78,6 @@ $( document ).ready(function() {
     	var thatRowInventory = $(this).siblings('.packyakInventory');
     	var thatRowUnitPriceTextbox = $(this).siblings('.packyakUnitPriceText');
     	var thatRowUnitPrice = $(this).siblings('.packyakUnitPrice');
-
-    	$.ajaxSetup({
-	        headers: {
-	            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-	        }
-		});
 
     	if($(this).siblings('.packyakInventoryText').is(':visible') || $(this).siblings('.packyakUnitPriceText').is(':visible')){
 			if(updatedUnitPrice == oldUnitPrice && newInventoryLevel == oldInventoryLevel){
@@ -115,7 +133,10 @@ $( document ).ready(function() {
 		           		thatRowUnitPrice.html(formattedUnitCost);
 		           		thatRowUnitPrice.removeClass('hidden');
 			        },
-			        error: function(ts) { console.log(ts.responseText) }
+			        error: function(ts) { 
+			        	//console.log(ts.responseText) 
+			        	thatRowInventory.parent().addClass('updateFailure');
+			        }
 			    })
 		    }
 		}else{
@@ -251,7 +272,8 @@ $( document ).ready(function() {
 	});
 
 	//ajax to get all pending purchase orders in chronological order
-	$('.packyakPurchaseOrderList').on('click', function(){
+	$("#packyakInventoryDashTable").on('click','.packyakPurchaseOrderList', function(){
+		console.log('here');
 		if($('.packyakAddItemToPOWrapper').is(":visible") != true){
 			var action = 'getPendingPO';
 			var thisRowAddToPOList = $(this).siblings('.packyakAddItemToPOWrapper');
@@ -287,7 +309,8 @@ $( document ).ready(function() {
 
 
 	//adding an item to a purchase order
-	$('.packyakAddItemToPOWrapper').on('click', '.packyakPurchaseOrderListItem', function(){
+	$("#packyakInventoryDashTable").on('click', '.packyakPurchaseOrderListItem', function(){
+		console.log('working again');
 		var action = 'addToPO';
 		var selectedPurchaseOrder = $(this).html();
 		var itemVariationID = $(this).parents('.packYakItemFeedRow').find('.packyakInventoryItemID').html();
@@ -589,4 +612,172 @@ $( document ).ready(function() {
 
 	});
 
+	/*
+    |--------------------------------------------------------------------------
+    | Vendor Page JS Section
+    |--------------------------------------------------------------------------
+    */
+
+    $('#vendorsTable').DataTable({
+		"iDisplayLength": 50,
+    });
+
+    $(":input").inputmask();
+
+    $('.createVendorModalButton').on('click', function(){
+    	var companyName = $(this).parents('#createVendorModal').find('#createVendorCompanyName').val();
+    	var contactName = $(this).parents('#createVendorModal').find('#createVendorContactName').val();
+    	var phoneNumber = $(this).parents('#createVendorModal').find('#createVendorPhoneNumber').val();
+    	var address = $(this).parents('#createVendorModal').find('#createVendorAddressName').val();
+    	var city = $(this).parents('#createVendorModal').find('#createVendorCityName').val();
+    	var state = $(this).parents('#createVendorModal').find('#createVendorStateName').val();
+    	var zipCode = $(this).parents('#createVendorModal').find('#createVendorZipName').val();
+
+    	console.log(companyName);
+    	console.log(contactName);
+    	console.log(phoneNumber);
+    	console.log(address);
+    	console.log(city);
+    	console.log(state);
+    	console.log(zipCode);
+    });	
+
+    /*
+    |--------------------------------------------------------------------------
+    | Use filters to search for items
+    |--------------------------------------------------------------------------
+    */
+    $(".searchLocationsButton").click(function() {
+    		//check to see if there are any checks
+    		if($('.locationCheckbox:checked').length > 0){
+    			var checkedLocations = [];
+
+		    	//get all the checked boxes and add the square ID to array for processing
+		    	$.each($('.locationCheckbox:checked'), function(){
+		    		checkedLocations.push($(this).attr("data-locationID"))
+		    	});
+	    		console.log(checkedLocations);
+	    		retrieveItemData(checkedLocations);
+
+    		}else{
+    			//no checkboxes are checked
+				$(".noItemCallout").show();
+				$("#packyakInventoryDashTable").addClass('hidden');
+				$("#itemTableBody").empty();
+    		}
+
+	});
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Get Item Data and delete variation form square and database
+| @Param -> item variation to delete
+|--------------------------------------------------------------------------
+*/
+function deleteItemVariation(varID){
+	$.ajax({
+        type: "POST",
+        url: '/dashboard/deleteVariation',
+
+        data: {'variation': varID},
+        success: function(data) {
+        	//Reset the modal
+        	console.log(data);
+        	$('#deleteItemModal').modal('toggle');
+			$('.innerText').removeClass('hidden');
+			$('.deleteItemConfirmButton').removeClass('disabled');
+			$('.deleteItemSpinner').addClass('hidden');
+
+			//hide the row
+			$( "tr:contains('"+varID+"')" ).addClass("hidden");
+        	
+
+        },
+        error: function(ts) { 
+        	console.log(ts.responseText);
+        	$("#loadingImage").addClass('hidden');
+        	$('#deleteItemModal').modal('toggle');
+        	
+        }
+    })
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Get the item data dynamically from on page interaction
+| @Param -> locations to search retrieve
+|--------------------------------------------------------------------------
+*/
+function retrieveItemData(locations){
+	var htmlString = [];
+
+	$("#loadingImage").removeClass('hidden');
+	$(".noItemCallout").hide();
+	
+	$.ajax({
+        type: "GET",
+        url: '/dashboard/retrieve',
+
+        data: {'locations': locations},
+        success: function(data) {
+        	$("#loadingImage").addClass('hidden');
+        	$("#packyakInventoryDashTable").removeClass('hidden');
+        	//console.log(data);
+        	//Start to display data
+        	for(i=0; i < data.length; i++){
+        		for(j=0; j < data[i].length; j++){
+        			//console.log(data[i][j].itemName);
+
+        			htmlString.push(
+        			'<tr class="packYakItemFeedRow">' +
+                        '<td class="packyakLocationSold">' + data[i][j].locationSoldAt + '</td>' +
+                        '<td>'+data[i][j].itemCategoryName+'</td>'+
+                        '<td>'+data[i][j].itemName+'</td>'+
+                        '<td>'+data[i][j].itemVariationName+'</td>'+
+                        '<td class="packyakInventory">' +data[i][j].itemVariationInventory+ '</td>' +
+                        '<td class="packyakInventoryText hidden"><input class="packyakInventoryTextInput" type="number" min="-5" step="1" name="newInventoryLevel" value="'+data[i][j].itemVariationInventory+'"></td>'+
+                        '<td>$'+(data[i][j].itemVariationPrice/100).toFixed(2)+'</td>'+
+                        '<td class="packyakUnitPrice">$'+(data[i][j].itemVariationUnitCost/100).toFixed(2)+'</td>'+
+                        '<td class="packyakUnitPriceText hidden">$<input class="packyakUnitPriceTextInput" min=".00" step=".01" name="currency" type="number" value="'+(data[i][j].itemVariationUnitCost/100).toFixed(2)+'"></td>' +
+                        '<td>$'+((data[i][j].itemVariationPrice-data[i][j].itemVariationUnitCost)/100).toFixed(2)+'</td>'+
+                        '<td>'+data[i][j].itemVariationSKU+'</td>'+                           
+                        '<td class="packyakPurchaseOrderMenuButton">'+
+                            '<div class="dropdown">'+
+                                '<i class="fa fa-chevron-circle-down fa-2 btn btn-default dropdown-toggle packyakPurchaseOrderList" type="button" id="packyakPurchaseOrderList" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></i>'+
+                                '<ul class="dropdown-menu dropdown-menu-right packyakAddItemToPOWrapper" aria-labelledby="packyakPurchaseOrderList">'+
+                                '</ul>'+
+                            '</div>'+       
+                        '</td>'+
+                        '<td class="packyakSubmitButton"><i class="fa fa-check-circle-o fa-2 btn btn-default"></i></td>'+
+                        '<td class="packyakCancel"><i class="fa fa-times-circle fa-2 btn btn-default"></i></td>'+
+                        '<td class="packyakDeleteItem"><i class="fa fa-trash-o fa-2 btn btn-default"></i></td>'+
+                        '<td class="packyakInventoryItemID hidden">'+data[i][j].itemVariationID+'</td>'+
+                    '</tr>');
+        		}
+        	}
+
+        	//add the elements to DOM
+        	document.getElementById("itemTableBody").innerHTML = htmlString.join("");
+        },
+        error: function(ts) { 
+
+        	$("#loadingImage").addClass('hidden');
+        }
+    })
+	return 'winning';
+}
+
+/*
+|--------------------------------------------------------------------------
+| Set global ajax headers for ajax requests using csrf token
+|--------------------------------------------------------------------------
+*/
+$.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
 });

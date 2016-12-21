@@ -15,18 +15,6 @@
                 <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
             </div>
         </div>
-
-        <!-- search form (Optional) -->
-        <form action="#" method="get" class="sidebar-form">
-            <div class="input-group">
-                <input type="text" id="packyakInventoryDashSearch" class="form-control" placeholder="Search..."/>
-                <span class="input-group-btn">
-                  <div class="btn btn-flat packyakCancelSearch"><i class="fa fa-times"></i></div>
-                </span>
-            </div>
-        </form>
-        <!-- /.search form -->
-
         <!-- Sidebar Menu -->
         <ul class="sidebar-menu">
             <li class="header">Menu</li>
