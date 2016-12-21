@@ -283,13 +283,16 @@ class mainItemFeedController extends Controller {
     function deleteItemVariation(Request $request){
         $access_token = 'KI0ethBHis2N76q1jyYung';
         $client = new Client();
-
+        
+        //echo $request -> variation;
+        
         //get the item
         $item = DB::table('inventoryList')->where('itemVariationID', $request -> variation)->first();
-        var_dump($item);
-
+        //var_dump($item);
+        
         $itemLocationID = DB::table('locations')->where('locationCity', $item -> locationSoldAt)->value('squareID');
-        echo $itemLocationID;
+        //echo $itemLocationID;
+        
 
         $itemID = $item -> squareItemID;
         //echo $itemID;
@@ -319,10 +322,6 @@ class mainItemFeedController extends Controller {
                             ]
                 ]);
             }
-
-            echo 'Item should be totally deleted';
-            /*$responseBodyAsString = json_decode($response->getBody()->getContents(), true);
-            var_dump($responseBodyAsString);*/
         }
 
     }
