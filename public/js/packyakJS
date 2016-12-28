@@ -23,7 +23,7 @@ $( document ).ready(function() {
     });
 
 	//Clicking on inventory and unit price number changes to textfield 
-	$("#packyakInventoryDashTable").on('click', '.packyakUnitPrice', function() {
+	$(document).on('click', '.packyakUnitPrice', function() {
 		$(this).addClass("hidden");
 		$(this).next().removeClass("hidden");
 	});
