@@ -51,7 +51,7 @@
                   <div class="page-header">
                     <i class="fa fa-globe"></i><span class='packYakPOName'>{{ $purchaseOrder['po_name'] }}</span>
                     <div class="box-tools pull-right">
-                      <small class='packYakPOHeaderLocation'>For: {{ $purchaseOrder['po_location'] }} | </small>
+                      For:<small class='packYakPOHeaderLocation'>{{ $purchaseOrder['po_location'] }} | </small>
                       <small class='packYakPOHeaderStatus'>Status: {{ $purchaseOrder['po_status'] }} | </small>
                       <small class="packYakPOCreated">Date Created: <?php echo ' '.date('m-d-Y',strtotime($purchaseOrder['created_at']));?> | </small>
                       <button class="btn btn-box-tool" data-widget="collapse">
@@ -119,10 +119,11 @@
                         <?php //var_dump($item);?>
                             <tr class='packyakPOItemListItem'>
                                 <td class=" poitemid hidden">{{ $item['itemVariationID'] }}</td>
-                                <td><h5>{{ $item['locationSoldAt'] }}</h5></td>
+                                <td class=" poitemSKU hidden">{{ $item['itemVariationSKU'] }}</td>
+                                <td class="packyakLocationSoldAt"><h5>{{ $item['locationSoldAt'] }}</h5></td>
                                 <td><h5>{{ $item['itemCategoryName'] }}</h5></td>
-                                <td><h5>{{ $item['itemName'] }}</h5></td>
-                                <td><h5>{{ $item['itemVariationName'] }}</h5></td>
+                                <td class="packyakItemName"><h5>{{ $item['itemName'] }}</h5></td>
+                                <td class="packyakVariationName"><h5>{{ $item['itemVariationName'] }}</h5></td>
                                 <td><h5>{{ $item['itemVariationInventory'] }}</h5></td>
                                 <td class='packyakQuantityToOrder'><h5>{{ $item['quantityToOrder'] }}</h5></td>
                                 <td class='packyakOrderQuantityText'><?php echo Form::input('number','orderQuantity', 0, array('class' => 'packyakOrderQuantityInput', 'type' => 'number', 'min' => '0', 'step' => '1')); ?></td>
@@ -139,16 +140,7 @@
               </div><!-- /.row -->
 
               <div class="row">
-                <!-- accepted payments column -->
                 <div class="col-xs-6">
-                  <!--<p class="lead">Payment Methods:</p>
-                  <img src="../../dist/img/credit/visa.png" alt="Visa">
-                  <img src="../../dist/img/credit/mastercard.png" alt="Mastercard">
-                  <img src="../../dist/img/credit/american-express.png" alt="American Express">
-                  <img src="../../dist/img/credit/paypal2.png" alt="Paypal">
-                  <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
-                    This is in the PENDING phase which means items can still be added to this purchase order. 
-                  </p>-->
                 </div><!-- /.col -->
                 <div class="col-xs-6">
                   <p class="lead">Status: {{ $purchaseOrder['po_status'] }}</p>
@@ -178,9 +170,8 @@
               <!-- this row will not appear when printing -->
               <div class="row no-print">
                 <div class="col-xs-12">
-                  <a href="invoice-print.html" target="_blank" class="btn btn-info"><i class="fa fa-print"></i> Print</a>
                   <button class="btn btn-success pull-right">Confirm</button>
-                  <button class="btn btn-primary" style="margin-right: 5px;"><i class="fa fa-download"></i> Generate PDF</button>
+                  <button class="btn btn-primary downloadPDFbutton" style="margin-right: 5px;"><i class="fa fa-download"></i> Download PDF</button>
                   <button class="btn btn-info pull-right packyackPOEdit" style="margin-right: 5px;"><i class="fa fa-pencil"></i> Edit</button>
                   <button type="button" class="btn bg-maroon pull-right packyakNewItemButton" style="margin-right: 5px;" data-toggle="modal" data-target="#createItemModal">Create New Item</button>
                 </div>
@@ -196,24 +187,13 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<!-- 
+**
+**Modal for create and edit PO
+**
+-->
 <div class="row">     
     <div class='col-md-12'>
-        <?php //var_dump($existingLocations);?>
-        <!-- Modal for create and edit PO-->
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">

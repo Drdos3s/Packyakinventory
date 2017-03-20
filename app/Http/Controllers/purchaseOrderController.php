@@ -88,6 +88,7 @@ class purchaseOrderController extends Controller
         $existingPurchaseOrders = json_decode(
                                     json_encode(
                                         DB::table('purchase_orders')
+                                            //->leftJoin('locations', 'purchase_orders.po_location', '=', 'locations.locationCity')
                                             ->whereNotIn('po_status', ['Deleted', 'Closed'])
                                             ->orderBy('created_at', 'desc')
                                             ->get()
