@@ -80,7 +80,7 @@ class mainItemFeedController extends Controller {
                 if($variation['track_inventory'] == true){ //<- are we tracking inventory for that item variation?
 
                     //define variables for each item variation
-                    $itemInDB = Item::firstOrNew(['itemVariationID' => $variation['id']]);
+                    $itemInDB = Item::firstOrNew(['itemVariationID' => $variation['id'], 'itemLocationID' => $location]);
                     $itemInDB -> squareItemID = $item['id']; //DOne
                     
                     if(isset($item['category']['name'])){
@@ -107,6 +107,7 @@ class mainItemFeedController extends Controller {
                     }
                     
                     $itemInDB -> locationSoldAt = DB::table('locations')->where('squareID', $location)->value('locationCity');//Done
+                    $itemInDB -> itemLocationID = $location;
                     $itemInDB -> save();
                } 
             }
@@ -134,7 +135,7 @@ class mainItemFeedController extends Controller {
 
             $itemContents = $itemsRequest->getBody();
             $itemList = json_decode($itemContents, true);
-            //print_r($itemList);
+            //var_dump($itemList);
 
             //Save new items
             $this -> saveItemsToDB($itemList, $location);
@@ -215,6 +216,37 @@ class mainItemFeedController extends Controller {
             
             //Get all the items and send them to the view
             $dashLocations = Location::all();
+
+
+
+
+
+
+            //Testing item responses
+            $client = new Client();
+            $locationsRequest = $client->request('GET', 'https://connect.squareup.com/v1/1H5A5ZGP2T4DA/items/PC2R2A5R4EUDYPT4PGPFVCSE', [
+                'headers' => [
+                    'Authorization' => 'Bearer '.$access_token ,
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json'
+                ]
+            ]);
+            //store response
+            $locationsContents = $locationsRequest->getBody();
+
+            //get asssoc array from body to use to place into DB
+            $locationsList = json_decode($locationsContents, true);
+            //var_dump($locationsList);
+
+
+            //JB5EZDSFSFBPAHHUUGORGZ7M['variations'][0]
+            //JB5EZDSFSFBPAHHUUGORGZ7M
+
+
+
+
+
+
             return view('mainItemFeed', ['locations' => $dashLocations]);
         }else{
             return redirect('/auth/login');
@@ -284,24 +316,21 @@ class mainItemFeedController extends Controller {
         $access_token = 'KI0ethBHis2N76q1jyYung';
         $client = new Client();
         
-        //echo $request -> variation;
         
         //get the item
-        $item = DB::table('inventoryList')->where('itemVariationID', $request -> variation)->first();
-        //var_dump($item);
+        $itemID = DB::table('inventoryList')->where('itemVariationID', $request -> variation)->where('itemLocationID', $request -> locationID) ->value('squareItemID');
+        echo $itemID;
         
-        $itemLocationID = DB::table('locations')->where('locationCity', $item -> locationSoldAt)->value('squareID');
+        $itemLocationID = $request -> locationID;
         //echo $itemLocationID;
         
-
-        $itemID = $item -> squareItemID;
-        //echo $itemID;
 
         $itemVariationID = $request -> variation;
         //echo $itemVariationID;
 
         //Delete Item in DB
-        $deletedRow = Item::where('itemVariationID', $request -> variation)->delete();
+        $deletedRow = Item::where('itemVariationID', $request -> variation)->where('itemLocationID', $request -> locationID) ->delete();
+
         //set up response
         try{
             $client->delete('https://connect.squareup.com/v1/'.$itemLocationID.'/items/'.$itemID.'/variations/'.$itemVariationID, [
@@ -323,6 +352,6 @@ class mainItemFeedController extends Controller {
                 ]);
             }
         }
-
+        return json_encode($request);
     }
 }

@@ -29,7 +29,7 @@ $( document ).ready(function() {
 	});
 
 	$('#packyakInventoryDashTable').on('click', ".packyakInventory",function() {
-		console.log('Working and detecting click');
+		//console.log('Working and detecting click');
   		$(this).addClass("hidden");
   		$(this).next().removeClass("hidden");
 	});
@@ -46,10 +46,12 @@ $( document ).ready(function() {
 	//delete Item from DB and square
 	$('#packyakInventoryDashTable').on('click', '.packyakDeleteItem', function() {
 		var variationID = $(this).siblings('.packyakInventoryItemID').html();
+		var locationID = $(this).siblings('.packyakLocationSold').data('location-id');
 		$('#deleteItemModal').modal('toggle');
 
 		//adds variation ID to the button to be retrieved on confirmation
-		$('.deleteItemConfirmButton').data('varid', variationID);
+		$('.deleteItemConfirmButton').attr({'varid': variationID, 'locid': locationID});
+
 	});
 
 	//Second step in delete variation
@@ -58,8 +60,14 @@ $( document ).ready(function() {
 		$('.deleteItemConfirmButton').addClass('disabled');
 		$('.deleteItemSpinner').removeClass('hidden');
 		
-		varID = $(this).data('varid');
-		deleteItemVariation(varID);
+		varID = $(this).attr('varid');
+		locID = $(this).attr('locid');
+
+		/*console.log(varID);
+		console.log(locID);
+		console.log($(this));*/
+		
+		deleteItemVariation(varID, locID);
 	
 	});
 
@@ -201,7 +209,7 @@ $( document ).ready(function() {
 	        success: function(data) {        
 	           $('#myModal').modal('toggle');
 	           newPurchaseOrderParsed = JSON.parse(data);
-	           console.log(newPurchaseOrderParsed); 
+	           //console.log(newPurchaseOrderParsed); 
 	           switch(newPurchaseOrderParsed.action){
 	           		case 'createPO':
 	           			var newPurchaseOrderStringHtml =  $('<section class="invoice packyakPOHeader">Please refresh to see details for: ' + newPurchaseOrderParsed.po_name +
@@ -272,7 +280,7 @@ $( document ).ready(function() {
 
 	//ajax to get all pending purchase orders in chronological order
 	$("#packyakInventoryDashTable").on('click','.packyakPurchaseOrderList', function(){
-		console.log('here');
+		//console.log('here');
 		if($('.packyakAddItemToPOWrapper').is(":visible") != true){
 			var action = 'getPendingPO';
 			var thisRowAddToPOList = $(this).siblings('.packyakAddItemToPOWrapper');
@@ -313,6 +321,8 @@ $( document ).ready(function() {
 		var action = 'addToPO';
 		var selectedPurchaseOrder = $(this).html();
 		var itemVariationID = $(this).parents('.packYakItemFeedRow').find('.packyakInventoryItemID').html();
+		var itemVariationLocationID = $(this).parents('.packYakItemFeedRow').find('.packyakLocationSold').data('location-id');
+		//console.log(itemVariationLocationID);
 		var packyakPurchaseOrderID = $(this).siblings('.packyakPurchaseOrderID').html();
 		var itemUnitCost = $(this).parents('.packYakItemFeedRow').find('.packyakUnitPrice').html();
 
@@ -324,6 +334,7 @@ $( document ).ready(function() {
         data =  {'action': action,
         		 'selectedPurchaseOrder': selectedPurchaseOrder,
         		 'itemVariationID': itemVariationID,
+        		 'itemLocationID': itemVariationLocationID,
         		 'packyakPurchaseOrderID': packyakPurchaseOrderID,
         		 'itemUnitCost': itemUnitCost
     			};
@@ -345,6 +356,7 @@ $( document ).ready(function() {
 		var action = 'removeItemFromPO';
 		var packyakPurchaseOrderID = $(this).parents('.packyakPOHeader').find('.pypoid').html();
 		var itemVariationID = $(this).parents('.packyakPOItemListItem').find('.poitemid').html();
+		var itemLocationID = $(this).parents('.packyakPOItemListItem').find('.packyakLocationSoldAt').data('id');
 		var successCancelRow = $(this).parents('.packyakPOItemListItem');
 
 		$.ajaxSetup({
@@ -356,6 +368,7 @@ $( document ).ready(function() {
 		if(confirm('Are you sure you want to remove this item?')){
 	        data =  {'action': action,
 	        		 'itemVariationID': itemVariationID,
+	        		 'itemLocationID': itemLocationID,
 	        		 'packyakPurchaseOrderID': packyakPurchaseOrderID
 	    			};
 
@@ -577,6 +590,7 @@ $( document ).ready(function() {
 		}
 		var action = 'updateQuantityToOrder';
 		var poItemID = $(this).parents('.packyakPOItemListItem').find('.poitemid').text();
+		var itemLocationID = $(this).parents('.packyakPOItemListItem').find('.packyakLocationSoldAt').data('id');
 		var purchaseOrderID = $(this).parents('.packyakPOHeader').find('.pypoid').html();
 		var quantityToOrder = $(this).parents('.packyakPOItemListItem').find('.packyakOrderQuantityInput').val();
 		
@@ -591,7 +605,7 @@ $( document ).ready(function() {
 		        type: "POST",
 		        url: './purchaseOrders',
 
-		        data: {'action': action, 'purchaseOrderID': purchaseOrderID, 'poItemID': poItemID, 'quantityToOrder': quantityToOrder,'unitCost': unitCost},
+		        data: {'action': action, 'purchaseOrderID': purchaseOrderID, 'poItemID': poItemID, 'itemLocationID': itemLocationID, 'quantityToOrder': quantityToOrder,'unitCost': unitCost},
 		        success: function(data) {
 		        	quantityUpdatedItem = JSON.parse(data);
 		        	var rawUnitCost = quantityUpdatedItem.item.itemUnitCost/100;
@@ -676,12 +690,13 @@ $( document ).ready(function() {
 | @Param -> item variation to delete
 |--------------------------------------------------------------------------
 */
-function deleteItemVariation(varID){
+function deleteItemVariation(varID, locationID){
 	$.ajax({
         type: "POST",
         url: '/dashboard/deleteVariation',
 
-        data: {'variation': varID},
+        data: {'variation': varID,
+    			'locationID': locationID},
         success: function(data) {
         	//Reset the modal
         	console.log(data);
@@ -691,12 +706,17 @@ function deleteItemVariation(varID){
 			$('.deleteItemSpinner').addClass('hidden');
 
 			//hide the row
-			$( "tr:contains('"+varID+"')" ).addClass("hidden");
-        	
+			var tablerows = $( "tr:contains('"+varID+"')" );
 
+			$.each(tablerows, function(){
+				if($(this).find('.packyakLocationSold').attr('data-location-id') == locationID){
+					$(this).addClass('hidden');
+				}
+				//console.log($(this).find('.packyakLocationSold').attr('data-location-id'));
+			})
         },
         error: function(ts) { 
-        	console.log(ts.responseText);
+        	//console.log(ts.responseText);
         	$("#loadingImage").addClass('hidden');
         	$('#deleteItemModal').modal('toggle');
         	
@@ -714,6 +734,7 @@ function deleteItemVariation(varID){
 function retrieveItemData(locations){
 	var htmlString = [];
 
+	//hide stuff that says no locations selected
 	$("#loadingImage").removeClass('hidden');
 	$(".noItemCallout").hide();
 	
@@ -729,11 +750,11 @@ function retrieveItemData(locations){
         	//Start to display data
         	for(i=0; i < data.length; i++){
         		for(j=0; j < data[i].length; j++){
-        			//console.log(data[i][j].itemName);
+        			//console.log(data[i][j]);
 
         			htmlString.push(
         			'<tr class="packYakItemFeedRow">' +
-                        '<td class="packyakLocationSold">' + data[i][j].locationSoldAt + '</td>' +
+                        '<td class="packyakLocationSold" data-location-id='+ data[i][j].itemLocationID +'>' + data[i][j].locationSoldAt + '</td>' +
                         '<td>'+data[i][j].itemCategoryName+'</td>'+
                         '<td>'+data[i][j].itemName+'</td>'+
                         '<td>'+data[i][j].itemVariationName+'</td>'+
@@ -754,7 +775,7 @@ function retrieveItemData(locations){
                         '<td class="packyakSubmitButton"><i class="fa fa-check-circle-o fa-2 btn btn-default"></i></td>'+
                         '<td class="packyakCancel"><i class="fa fa-times-circle fa-2 btn btn-default"></i></td>'+
                         '<td class="packyakDeleteItem"><i class="fa fa-trash-o fa-2 btn btn-default"></i></td>'+
-                        '<td class="packyakInventoryItemID hidden">'+data[i][j].itemVariationID+'</td>'+
+                        '<td class="packyakInventoryItemID hidden" data-variation-id='+ data[i][j].itemVariationID +' >'+data[i][j].itemVariationID+'</td>'+
                     '</tr>');
         		}
         	}
@@ -763,7 +784,7 @@ function retrieveItemData(locations){
         	document.getElementById("itemTableBody").innerHTML = htmlString.join("");
         },
         error: function(ts) { 
-
+        	console.log(ts);
         	$("#loadingImage").addClass('hidden');
         }
     })
@@ -813,7 +834,7 @@ function table(data, columns) {
 }
 
 function createPDF(purchaseOrder){
-	console.log(purchaseOrder);
+	//console.log(purchaseOrder);
 	var purchaseOrderID = purchaseOrder.find('.pypoid').text();
 	var purchaseOrderName = purchaseOrder.find('.packYakPOName').text();
 	var purchaseOrderLocation = purchaseOrder.find('.packYakPOHeaderLocation').text();

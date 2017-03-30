@@ -34,14 +34,14 @@ class purchaseOrderController extends Controller
                     case 'getPendingPO':
                         return getPendingPurchaseOrder();
                         break;
-                    case 'addToPO':
-                        return addItemToPurchaseOrder($_POST['selectedPurchaseOrder'], $_POST['packyakPurchaseOrderID'], $_POST['itemVariationID'], $_POST['itemUnitCost']);
+                    case 'addToPO': //<-Added Location ID
+                        return addItemToPurchaseOrder($_POST['selectedPurchaseOrder'], $_POST['packyakPurchaseOrderID'], $_POST['itemVariationID'], $_POST['itemLocationID'], $_POST['itemUnitCost']);
                         break;
-                    case 'completePO':
+                    case 'completePO': //<-Added Location ID
                         return completePO_UpdateSquare($_POST['po_id_number']);
                         break;
-                    case 'removeItemFromPO':
-                        return removeItemFromPO($_POST['itemVariationID'], $_POST['packyakPurchaseOrderID']);
+                    case 'removeItemFromPO': //<-Added Location ID
+                        return removeItemFromPO($_POST['itemVariationID'], $_POST['itemLocationID'], $_POST['packyakPurchaseOrderID']);
                         break;
                     case 'deletePO':
                         return deletePurchaseOrder($_POST['packyakPurchaseOrderID']);
@@ -60,9 +60,9 @@ class purchaseOrderController extends Controller
                     case 'updateQuantityToOrder':
                         $integerUnitCost = $_POST['unitCost']*100;
 
-                        updateItemUnitPrice($_POST['poItemID'], $integerUnitCost);
+                        updateItemUnitPrice($_POST['poItemID'], $_POST['itemLocationID'], $integerUnitCost);//<-Added Location ID
 
-                        return updateQuantityToOrder($_POST['poItemID'], $_POST['purchaseOrderID'], $_POST['quantityToOrder']);
+                        return updateQuantityToOrder($_POST['poItemID'], $_POST['purchaseOrderID'], $_POST['itemLocationID'], $_POST['quantityToOrder']);//<-Added Location ID
                         break;
                 }
             }else{
@@ -138,7 +138,10 @@ class purchaseOrderController extends Controller
         //get all the items within a purchase order
         foreach($existingPurchaseOrders as $existingPurchaseOrder){
             $existingPurchaseOrder['po_items'] = json_decode(json_encode(DB::table('purchase_order_items')
-                                                ->leftJoin('inventoryList', 'purchase_order_items.purchaseOrderItemVariationID', '=', 'inventoryList.itemVariationID')
+                                                ->leftJoin('inventoryList', function($join){
+                                                    $join->on('purchase_order_items.purchaseOrderItemVariationID', '=', 'inventoryList.itemVariationID');
+                                                    $join->on('purchase_order_items.itemLocationID', '=', 'inventoryList.itemLocationID');
+                                                })
                                                 ->where('purchaseOrderID', '=', $existingPurchaseOrder['id'])
                                                 ->get()),true);
 
@@ -198,7 +201,7 @@ function getPendingPurchaseOrder(){
     return json_encode($allPendingPO);
 };
 
-function addItemToPurchaseOrder($poName, $poOrderID, $poVarID, $varUnitCost){
+function addItemToPurchaseOrder($poName, $poOrderID, $poVarID, $poLocationID, $varUnitCost){
     //retrieve data from POST
     $varUnitCost = substr($varUnitCost, 1);
     //set up new instance for purchase order item
@@ -206,6 +209,7 @@ function addItemToPurchaseOrder($poName, $poOrderID, $poVarID, $varUnitCost){
     $purchaseOrderItem->purchaseOrderName = $poName;
     $purchaseOrderItem->purchaseOrderID = $poOrderID;
     $purchaseOrderItem->purchaseOrderItemVariationID = $poVarID;
+    $purchaseOrderItem->itemLocationID = $poLocationID;
     $purchaseOrderItem->itemUnitCost = $varUnitCost*100;
 
     $purchaseOrderItem->save();
@@ -222,9 +226,7 @@ function completePO_UpdateSquare($po_id_number){
         $variationInventoryUpdateForSquare = [];
 
         foreach ($items as $item) {
-            $citySoldAt = DB::table('inventoryList')->where('itemVariationID', $item -> purchaseOrderItemVariationID)->value('locationSoldAt');
-
-            $locationID = DB::table('locations')->where('locationCity', $citySoldAt)->value('squareID');
+            $locationID = $item -> itemLocationID;
             $quantityToOrder = $item -> quantityToOrder;
             //set up JSON post data
             $postData = array(
@@ -265,11 +267,12 @@ function completePO_UpdateSquare($po_id_number){
     return json_encode(['action' => 'completePO', 'purchaseOrderID' => $po_id_number]);
 };
 
-function removeItemFromPO($itemVariationID, $purchaseOrderID){
+function removeItemFromPO($itemVariationID, $itemLocationID, $purchaseOrderID){
 
     DB::table('purchase_order_items')
         ->where('purchaseOrderID', '=', $purchaseOrderID)
         ->where('purchaseOrderItemVariationID','=', $itemVariationID)
+        ->where('itemLocationID','=', $itemLocationID)
         ->delete();
 
     updatePurchaseOrderPrices($purchaseOrderID);
@@ -487,7 +490,7 @@ function updateNewItemInventory($inventoryData) {
     return 'Update inventory is now working';
 };
 
-function updateQuantityToOrder($itemVariationID, $purchaseOrderID, $quantityToOrder) {
+function updateQuantityToOrder($itemVariationID, $purchaseOrderID, $itemLocationID, $quantityToOrder) {
 
     $itemCost = DB::table('purchase_order_items')->where('purchaseOrderItemVariationID', $itemVariationID)->value('itemUnitCost');
 
@@ -495,6 +498,7 @@ function updateQuantityToOrder($itemVariationID, $purchaseOrderID, $quantityToOr
     //update quantity of the line item in database
     purchaseOrderItem::where('purchaseOrderID', $purchaseOrderID)
                         ->where('purchaseOrderItemVariationID', $itemVariationID)
+                        ->where('itemLocationID', $itemLocationID)
                                 ->update(['quantityToOrder' => $quantityToOrder,
                                             'lineItemTotal' => $quantityToOrder*$itemCost]);
     //update the PO details
@@ -505,11 +509,14 @@ function updateQuantityToOrder($itemVariationID, $purchaseOrderID, $quantityToOr
     return json_encode($itemAndPOReturnInfo);
 };
 
-function updateItemUnitPrice($itemVariationID, $unitCost) {
+function updateItemUnitPrice($itemVariationID, $itemLocationID, $unitCost) {
+    //update unit cost within the item list
     item::where('itemVariationID', $itemVariationID)
+        ->where('itemLocationID', $itemLocationID)
         ->update(['itemVariationUnitCost' => $unitCost]);
 
     purchaseOrderItem::where('purchaseOrderItemVariationID', $itemVariationID)
+                        ->where('itemLocationID', $itemLocationID)
                                 ->update(['itemUnitCost' => $unitCost]);
 
 }

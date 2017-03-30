@@ -58,13 +58,13 @@
     <!-- Optionally, you can add Slimscroll and FastClick plugins.
           Both of these plugins are recommended to enhance the
           user experience -->
-<!-- DataTables -->
-<script src="{{ asset ('/bower_components/admin-lte/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset ('/bower_components/admin-lte/plugins/datatables/dataTables.bootstrap.min.js') }}"></script>
+    <!-- DataTables -->
+    <script src="{{ asset ('/bower_components/admin-lte/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset ('/bower_components/admin-lte/plugins/datatables/dataTables.bootstrap.min.js') }}"></script>
 
-<!-- InputMask -->
-<script src="{{ asset ('/bower_components/admin-lte/plugins/input-mask/jquery.inputmask.js') }}"></script>
-<script src="{{ asset ('/bower_components/admin-lte/plugins/input-mask/jquery.inputmask.phone.extensions.js') }}"></script>
+    <!-- InputMask -->
+    <script src="{{ asset ('/bower_components/admin-lte/plugins/input-mask/jquery.inputmask.js') }}"></script>
+    <script src="{{ asset ('/bower_components/admin-lte/plugins/input-mask/jquery.inputmask.phone.extensions.js') }}"></script>
           
     </body>
 @endsection

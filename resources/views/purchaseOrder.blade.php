@@ -120,7 +120,7 @@
                             <tr class='packyakPOItemListItem'>
                                 <td class=" poitemid hidden">{{ $item['itemVariationID'] }}</td>
                                 <td class=" poitemSKU hidden">{{ $item['itemVariationSKU'] }}</td>
-                                <td class="packyakLocationSoldAt"><h5>{{ $item['locationSoldAt'] }}</h5></td>
+                                <td class="packyakLocationSoldAt" data-id="{{ $item['itemLocationID'] }}"><h5>{{ $item['locationSoldAt'] }}</h5></td>
                                 <td><h5>{{ $item['itemCategoryName'] }}</h5></td>
                                 <td class="packyakItemName"><h5>{{ $item['itemName'] }}</h5></td>
                                 <td class="packyakVariationName"><h5>{{ $item['itemVariationName'] }}</h5></td>
