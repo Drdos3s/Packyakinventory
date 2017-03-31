@@ -17,34 +17,6 @@ $( document ).ready(function() {
 	    }
 	});
 
-
-
-//Need to update the purchase order location ID columns
-$('.packyakUpdate').click(function(){
-			$.ajax({
-		        type: "POST",
-		        url: './purchaseOrders',
-
-		        data: {'action': 'updatePOItemsTable'},
-		        success: function(data) {
-		        	console.log(data);
-		        	
-		        },
-		        error: function(ts) { console.log(ts.responseText) }
-		    })	
-})
-
-
-
-
-
-
-
-
-
-
-
-
     //cancel on search bar
     $('.packyakCancelSearch').click(function() {
     	$('#packyakInventoryDashSearch').val('').keyup();
