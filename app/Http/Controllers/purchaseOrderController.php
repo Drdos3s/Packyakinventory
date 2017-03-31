@@ -14,6 +14,7 @@ use App\Item;
 
 use DB;
 use Auth;
+use App;
 
 
 //Put in for auth check before finishing and pushing to production
@@ -63,6 +64,25 @@ class purchaseOrderController extends Controller
                         updateItemUnitPrice($_POST['poItemID'], $_POST['itemLocationID'], $integerUnitCost);//<-Added Location ID
 
                         return updateQuantityToOrder($_POST['poItemID'], $_POST['purchaseOrderID'], $_POST['itemLocationID'], $_POST['quantityToOrder']);//<-Added Location ID
+                        break;
+                    case 'updatePOItemsTable':
+                        //get null modals
+                        $poItems = App\PurchaseOrderItem::orderBy('id', 'desc')->where('itemLocationID', '=', NULL)->take(300)->get();
+
+                        //loop through models
+                        foreach($poItems as $poItem){
+                            //get item var id
+                            $varID = $poItem -> purchaseOrderItemVariationID;
+
+                            //get the location ID from the PO
+                            $location = App\PurchaseOrder::where('id', '=', $poItem -> purchaseOrderID)->first();
+                            $locationID = DB::table('locations')->where('locationCity', '=', $location -> po_location)->value('squareID');
+
+                            $poItem -> itemLocationID = $locationID;
+                            $poItem -> save();
+
+                        }
+                        return $poItems;
                         break;
                 }
             }else{
