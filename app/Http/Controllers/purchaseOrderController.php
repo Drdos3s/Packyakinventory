@@ -123,7 +123,7 @@ class purchaseOrderController extends Controller
         foreach ($existingLocations as $singleLocation) {
             $formattedCategoryRequest = array('method' => 'GET',
                                               'relative_path' => '/v1/'.$singleLocation['squareID'].'/categories',
-                                              'access_token' => 'KI0ethBHis2N76q1jyYung',
+                                              'access_token' => 'sq0atp-Pw3jbxOs3j4szZc7eUm1FQ',
                                               'request_id' => $singleLocation['squareID']
                                               );
             array_push($itemCategoriesAllLocations, $formattedCategoryRequest);
@@ -258,7 +258,7 @@ function completePO_UpdateSquare($po_id_number){
                 //running through and creating each request for the batch in order to create items
                 $formattedUpdateInventorySingleRequest = array('method' => 'POST',
                                       'relative_path' => '/'.'v1/'.$locationID.'/inventory/'.$item -> purchaseOrderItemVariationID,
-                                      'access_token' => 'KI0ethBHis2N76q1jyYung',
+                                      'access_token' => 'sq0atp-Pw3jbxOs3j4szZc7eUm1FQ',
                                       'body' => $postData
                                       );
 
@@ -322,7 +322,7 @@ function createNewItem($createdItem){
     $newItemVariationsDecoded = json_decode(json_encode($newItemVariationsRaw), true);
     $variationsListForSquare = [];
     $newItemArray = [];
-    $access_token = 'KI0ethBHis2N76q1jyYung';
+    $access_token = 'sq0atp-Pw3jbxOs3j4szZc7eUm1FQ';
     
     //adds each variation to an array that will be added to other data in order to create item
     foreach($newItemVariationsDecoded as $newItemVariation){
@@ -368,7 +368,7 @@ function createNewItem($createdItem){
         //running through and creating each request for the batch in order to create items
         $formattedCreateItemSingleRequest = array('method' => 'POST',
                                           'relative_path' => '/'.'v1/'.$existingLocation[0]['squareID'].'/items',
-                                          'access_token' => 'KI0ethBHis2N76q1jyYung',
+                                          'access_token' => 'sq0atp-Pw3jbxOs3j4szZc7eUm1FQ',
                                           'body' => $postData,
                                           'request_id' => $existingLocation[0]['squareID']
                                           );
@@ -483,7 +483,7 @@ function updateNewItemInventory($inventoryData) {
             //running through and creating each request for the batch in order to create items
             $formattedUpdateInventorySingleRequest = array('method' => 'POST',
                                   'relative_path' => '/'.'v1/'.$variationLocationID[0]['squareID'].'/inventory/'.$inventoryUpdate['newVariationID'],
-                                  'access_token' => 'KI0ethBHis2N76q1jyYung',
+                                  'access_token' => 'sq0atp-Pw3jbxOs3j4szZc7eUm1FQ',
                                   'body' => $postData,
                                   'request_id' => $inventoryUpdate['newVariationUnitPrice']
                                   );

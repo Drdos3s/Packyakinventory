@@ -119,7 +119,7 @@ class mainItemFeedController extends Controller {
         $completedItemList = [];
 
         //Set up tokens and variables
-        $access_token = 'KI0ethBHis2N76q1jyYung';
+        $access_token = 'sq0atp-Pw3jbxOs3j4szZc7eUm1FQ';
         $client = new Client();
 
         //Getting all the items from square
@@ -211,7 +211,7 @@ class mainItemFeedController extends Controller {
 
         if (Auth::check()){//The user is logged in
             //set the personal access token - used to make request to V1 API
-            $access_token = 'KI0ethBHis2N76q1jyYung';
+            $access_token = 'sq0atp-Pw3jbxOs3j4szZc7eUm1FQ';
             $this->createLocations($access_token); 
             
             //Get all the items and send them to the view
@@ -254,7 +254,7 @@ class mainItemFeedController extends Controller {
     }
 
     function setupAndSendInventoryUpdate() {
-        $access_token = 'KI0ethBHis2N76q1jyYung';
+        $access_token = 'sq0atp-Pw3jbxOs3j4szZc7eUm1FQ';
         $client = new Client();
         $itemLocation = $_POST['itemLocation'];
         $itemVariationID = $_POST['itemVariationID'];
@@ -313,7 +313,7 @@ class mainItemFeedController extends Controller {
     }
 
     function deleteItemVariation(Request $request){
-        $access_token = 'KI0ethBHis2N76q1jyYung';
+        $access_token = 'sq0atp-Pw3jbxOs3j4szZc7eUm1FQ';
         $client = new Client();
         
         
