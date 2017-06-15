@@ -1,6 +1,12 @@
-@extends('master_template')
+@extends('main')
 
-@section('body')
+@section('pagespecificstyles')
+    <!-- flot charts css-->
+    <link rel="stylesheet" href="{{ asset('assets/lib/owl-carousel/flot.css') }}">
+
+@stop
+
+@section('fullPage')
 <body>
 	<nav class="navbar navbar-default navbar-fixed-top">
 		<div class="packyakNavContainer">
@@ -56,6 +62,10 @@
             </div>
         </div>
     </section>
-    @include('footer')
 </body>
 @endsection
+
+@section('pagespecificscripts')
+    <!-- flot charts scripts-->
+    <script src="{{ asset('/assets/lib/flot/jquery.flot.min.js') }}"></script>
+@stop
