@@ -1,7 +1,11 @@
-@extends('admin_template')
+@extends('adminLayout')
+
+@section('pagespecificstyles')
+    <!-- vendor page speciic styles-->
+
+@stop
 
 @section('content')
-
 <div class='row'>
 		
 		<div class="col-md-2 col-md-offset-10">
@@ -81,21 +85,21 @@
             <form role="form">
               <div class="box-body">
         
-        		<!-- Company Name -->
+        		    <!-- Company Name -->
               	<div class="form-group">
-                  <label for="createVendorCompanyName">Company Name</label>
+                  <label for="createVendorCompanyName">Company Name*</label>
                   <input type="email" class="form-control" id="createVendorCompanyName" placeholder="Enter company name">
                 </div>
 
                 
                 <!-- Contact Name -->
               	<div class="form-group">
-                  <label for="createVendorContactName">Contact Name</label>
+                  <label for="createVendorContactName">Contact Name*</label>
                   <input type="email" class="form-control" id="createVendorContactName" placeholder="Enter contact name">
                 </div>
 
                 <div class="form-group">
-                  <label>Contact Phone Number:</label>
+                  <label>Contact Phone Number*:</label>
 
                   <div class="input-group">
                     <div class="input-group-addon">
@@ -106,6 +110,12 @@
                   <!-- /.input group -->
                 </div>
                 <!-- /.form group -->
+
+                <!-- Contact Email -->
+                <div class="form-group">
+                  <label for="createVendorContactEmail">Contact Email*</label>
+                  <input type="email" class="form-control" id="createVendorContactEmail" placeholder="Enter contact email">
+                </div>
 
                 <!-- Address Name -->
               	<div class="form-group">

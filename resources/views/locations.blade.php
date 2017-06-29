@@ -1,4 +1,9 @@
-@extends('admin_template')
+@extends('adminLayout')
+
+@section('pagespecificstyles')
+    <!-- vendor page speciic styles-->
+
+@stop
 
 @section('content')
 

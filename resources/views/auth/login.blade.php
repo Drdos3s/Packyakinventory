@@ -1,6 +1,12 @@
-@extends('master_template')
+@extends('main')
 
-@section('body')
+@section('pagespecificstyles')
+    <!-- flot charts css-->
+    <link rel="stylesheet" href="{{ asset('assets/lib/owl-carousel/flot.css') }}">
+
+@stop
+
+@section('fullPage')
 <body>    
 	<div class="container-fluid">
 		<div class="row">
