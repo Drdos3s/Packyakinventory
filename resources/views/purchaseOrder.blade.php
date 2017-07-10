@@ -397,3 +397,8 @@
 
 
 @endsection
+
+@section('pagespecificscripts')
+    <!-- purchaseOrder page speciic styles-->
+    <script src="{{ asset ("/js/purchaseOrders.js") }}" type="text/javascript"></script>
+@stop

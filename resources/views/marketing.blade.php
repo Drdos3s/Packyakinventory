@@ -67,5 +67,5 @@
 
 @section('pagespecificscripts')
     <!-- flot charts scripts-->
-    <script src="{{ asset('/assets/lib/flot/jquery.flot.min.js') }}"></script>
+
 @stop

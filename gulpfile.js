@@ -13,4 +13,10 @@ var elixir = require('laravel-elixir');
 
 elixir(function(mix) {
     mix.sass('app.scss');
+    mix.browserify('packyakJS.js');
+    mix.browserify('itemFeed.js');
+    mix.browserify('purchaseOrders.js');
+    mix.browserify('vendorCenter.js');
+    mix.browserify('locations.js')
 });
+

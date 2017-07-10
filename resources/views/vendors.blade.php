@@ -29,6 +29,7 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Phone Number</th>
+                                <th>Ext.</th>
                                 <th>Email</th>
                                 <th>Address</th>
                                 <th>City</th>
@@ -38,19 +39,28 @@
                         </thead>
                         
                         <tbody>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td> 
+
+                        @foreach($vendors as $vendor)
+
+                          <tr data-vendor="{{ $vendor['id'] or 'Error' }}" class="vendorRow">
+                            <td class="companyName"><a href="/vendors/{{$vendor['id']}}">{{ $vendor['company_name'] or 'None' }}</a></td>
+                            <td class="phoneNumber">{{ $vendor['phone_number'] or 'None' }}</td>
+                            <td class="phoneExtension">{{ $vendor['phone_extension'] or 'None' }}</td>
+                            <td class="email">{{ $vendor['email'] or 'None' }}</td>
+                            <td class="address">{{ $vendor['address'] or 'None' }}</td>
+                            <td class="city">{{ $vendor['city'] or 'None' }}</td>
+                            <td class="state">{{ $vendor['state'] or 'None' }}</td> 
+                            <td class="zip">{{ $vendor['zip'] or 'None' }}</td> 
+                          </tr>
+                        
+                        @endforeach
                         </tbody>
 
                         <tfoot>
                         	<tr>
                                 <th>Name</th>
                                 <th>Phone Number</th>
+                                <th>Ext.</th>
                                 <th>Email</th>
                                 <th>Address</th>
                                 <th>City</th>
@@ -81,6 +91,9 @@
           <h4 class="modal-title">New Vendor</h4>
         </div>
         <div class="modal-body">
+
+        <div id="form-errors"></div>
+
           <!-- form start -->
             <form role="form">
               <div class="box-body">
@@ -150,3 +163,8 @@
 </div>
 
 @endsection
+
+@section('pagespecificscripts')
+    <!-- vendor page speciic styles-->
+    <script src="{{ asset ("/js/vendorCenter.js") }}" type="text/javascript"></script>
+@stop

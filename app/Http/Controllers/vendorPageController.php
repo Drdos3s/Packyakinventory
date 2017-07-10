@@ -8,6 +8,9 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use Auth;
+use Mail;
+Use App\Vendor;
+
 
 class vendorPageController extends Controller
 {
@@ -19,8 +22,11 @@ class vendorPageController extends Controller
     public function index()
     {
         if (Auth::check()){//The user is logged in
-    
-            return view('vendors');
+            //get all of the availabe resources for vendors
+            $vendors = Vendor::all();
+
+            //return view with all vendors info
+            return view('vendors', ['vendors' => $vendors]);
         }else{
             return redirect('/auth/register');
         }
@@ -31,19 +37,9 @@ class vendorPageController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request)
-    {
-        $this->validate($request, [
-            'user_id' => 'required|integer',
-            'email' => 'required|email',
-            'phone_number' => 'required|max:20',
-            'contact_name' => 'required|max:255',
-            'company_name' => 'required|unique:company_name|max:255',
-            'address' => 'required|max:255',
-            'city' => 'required|max:255',
-            'state' => 'required|max:255',
-            'zip' => 'required|integer'
-        ]);
+    public function create()
+    {   
+        //FORM IS SHOWED IN VENDORS BLADE FILE
     }
 
     /**
@@ -52,10 +48,38 @@ class vendorPageController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store()
+    public function store(Request $request)
     {
+        $this->validate($request, [
+            'companyName' => 'required|max:255',
+            'contact_name' => 'required|max:255',
+            'phone_number' => 'required|max:10',
+            'extension' => 'max:5',
+            'email' => 'required|max:255|email',
+            'address' => 'max:255',
+            'city' => 'max:255',
+            'state' => 'max:255',
+            'zip' => 'integer'
+        ]);
 
+        //Initiate new model
+        $vendor = new Vendor;
 
+        //Set vendor model values
+        $vendor -> user_id = Auth::user() -> id;
+        $vendor -> email = $request -> email;
+        $vendor -> phone_number = $request -> phone_number;
+        $vendor -> phone_extension = $request -> extension;
+        //need to add in extension migration for vendor phone number
+        $vendor -> contact_name = $request -> contact_name;
+        $vendor -> company_name = $request -> companyName;
+        $vendor -> address = $request -> address;
+        $vendor -> city = $request -> city;
+        $vendor -> state = $request -> state;
+        $vendor -> zip = $request -> zip;
+
+        //save the model to the database 
+        $vendor -> save();  
     }
 
     /**
@@ -65,8 +89,8 @@ class vendorPageController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    {
-        //
+    {   
+        return view('singleVendor');
     }
 
     /**

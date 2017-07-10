@@ -106,3 +106,8 @@
                     </div>
 <!------------------------------------------------>s
 @endsection
+
+@section('pagespecificscripts')
+    <!-- mainItemFeed page speciic scripts-->
+    <script src="{{ asset ("/js/itemFeed.js") }}" type="text/javascript"></script>
+@stop

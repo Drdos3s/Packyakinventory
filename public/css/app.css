@@ -1,53 +1,84 @@
 /******** MARKETING PAGE ********/
+
 .packyakNavContainer {
   background-color: #008749;
-  height: 50px; }
-  .packyakNavContainer .packyakBrand, .packyakNavContainer .navbar-nav > li > a {
-    color: #FFFFFF; }
-  .packyakNavContainer .packyakRegister {
-    padding-right: 15px; }
+  height: 50px;
+}
+
+.packyakNavContainer .packyakBrand,
+.packyakNavContainer .navbar-nav > li > a {
+  color: #FFFFFF;
+}
+
+.packyakNavContainer .packyakRegister {
+  padding-right: 15px;
+}
 
 /******** DASHBOARD PAGE ********/
+
 .packYakItemFeedRow:hover {
   background-color: #ECF0F5;
-  color: #333; }
+  color: #333;
+}
 
 .panel .itemOptionButtons {
   list-style-type: none;
-  margin-bottom: 0px; }
-  .panel .itemOptionButtons li {
-    display: inline-block; }
+  margin-bottom: 0px;
+}
+
+.panel .itemOptionButtons li {
+  display: inline-block;
+}
 
 /*Change, add to order, and cancel icon button styling*/
+
 .fa-check-circle-o {
-  color: #00A65A; }
+  color: #00A65A;
+}
 
 .fa-times-circle {
-  color: #DD4B39; }
+  color: #DD4B39;
+}
 
 .fa-chevron-circle-down {
-  color: #3C8DBC; }
+  color: #3C8DBC;
+}
 
 .updateSuccess {
   background-color: #00A65A;
-  color: #FFFFFF; }
+  color: #FFFFFF;
+}
+
+.updateFailure {
+  background-color: #DD4C3A;
+  color: #FFFFFF;
+}
 
 .packyakInventoryTextInput {
-  max-width: 70px; }
+  max-width: 70px;
+}
 
 /******** PURCHASE ORDER ********/
+
 .singleVariationWrapper {
   border-top: 1px solid #F4F4F4;
   border-bottom: 1px solid #F4F4F4;
   padding-top: 15px;
-  padding-bottom: 15px; }
-  .singleVariationWrapper .packyakRemoveVariation {
-    color: #DD4B39; }
-  .singleVariationWrapper .addNewItemVariation {
-    color: #00A65A; }
-  .singleVariationWrapper .input-group-btn {
-    padding-right: 15px; }
-  .singleVariationWrapper .createNewItemSKUWrapper {
-    padding-right: 0px; }
+  padding-bottom: 15px;
+}
 
-/*# sourceMappingURL=app.css.map */
+.singleVariationWrapper .packyakRemoveVariation {
+  color: #DD4B39;
+}
+
+.singleVariationWrapper .addNewItemVariation {
+  color: #00A65A;
+}
+
+.singleVariationWrapper .input-group-btn {
+  padding-right: 15px;
+}
+
+.singleVariationWrapper .createNewItemSKUWrapper {
+  padding-right: 0px;
+}

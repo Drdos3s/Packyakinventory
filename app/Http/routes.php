@@ -39,13 +39,16 @@ Route::get('/locations', function () {
 
 Route::get('/locations', 'locationsPageController@index');
 
-//Vendor Page routes--->
-Route::get('/vendors', function () {
-    return view('admin_template');
-});
-
-Route::get('/vendors', 'vendorPageController@index');
-Route::post('/vendors/create', 'vendorPageController@create');
+//playing with laravel resource routes
+/*Contains:
+index
+create
+store
+show
+edit
+update
+destroy*/
+Route::resource('vendors', 'vendorPageController');
 
 //Purchase order routes--->
 Route::get('/purchaseOrders', function () {
@@ -64,6 +67,9 @@ Route::get('auth/logout', 'Auth\AuthController@getLogout');
 // Registration routes...
 Route::get('auth/register', 'Auth\AuthController@getRegister');
 Route::post('auth/register', 'Auth\AuthController@postRegister');
+
+// Square Permissions routes...
+Route::get('auth/permission', 'Auth\PermissionsController@getPermission');
 
 
 Route::controllers([

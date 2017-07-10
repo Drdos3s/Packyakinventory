@@ -163,3 +163,8 @@
 </div>
 
 @endsection
+
+@section('pagespecificscripts')
+    <!-- locations page speciic scripts-->
+    <script src="{{ asset ("/js/locations.js") }}" type="text/javascript"></script>
+@stop
