@@ -8,21 +8,8 @@ DELETE
 REMOVE ITEM
 
 */
-
-
 $(document).ready(function () {
 
-	//CHANGE TITLE OF THE MODAL INORDER TO NOT USE TWO
-	$('.packyakNewPOButton').click(function() {
-		$('#myModal').find('.modal-title').html('New Purchase Order');
-		$('.packYakPOCreateButtonLabel').html('Create');
-		$('.packyakPOButton').removeClass('packyakPurchaseOrderUpdate');
-		$('#myModal').find("input[type=email], select").val("");
-		$('#myModal').find('.pypoidModal').html('');
-		$('.packYakDeletePOButton').addClass("hidden");
-		$('#myModal').find('#purchaseOrderShippingCost').val("");
-
-	});
 
 	//CREATE AND EDIT NEW PURCHASE ORDER
 	$('.packYakPOButton').click(function() {
@@ -46,11 +33,11 @@ $(document).ready(function () {
 			action = 'completePO';
 		}
 		
-    	$.ajaxSetup({
+    	/*$.ajaxSetup({
 	        headers: {
 	            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 	        }
-		})
+		})*/
 
 		$.ajax({
 	        type: "POST",
@@ -185,11 +172,11 @@ $(document).ready(function () {
 		var itemLocationID = $(this).parents('.packyakPOItemListItem').find('.packyakLocationSoldAt').data('id');
 		var successCancelRow = $(this).parents('.packyakPOItemListItem');
 
-		$.ajaxSetup({
+		/*$.ajaxSetup({
 	        headers: {
 	            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 	        }
-		});
+		});*/
 
 		if(confirm('Are you sure you want to remove this item?')){
 	        data =  {'action': action,
@@ -214,5 +201,113 @@ $(document).ready(function () {
 		}
 	});
 
-
+	//CREATE PDF FROM CREATE PDF BUTTON ON PURCHASE
+	$('.packyakPOHeader').on('click', '.downloadPDFbutton', function(){
+		var purchaseOrder = $(this).parents('.packyakPOHeader');
+		createPDF(purchaseOrder);
+	});
 });
+
+/*
+|--------------------------------------------------------------------------
+| Make PDF download of a purchase order
+| @Param -> locations to search retrieve
+|--------------------------------------------------------------------------
+*/
+
+
+function buildTableBody(data, columns) {
+    var body = [];
+
+    body.push(columns);
+
+    data.forEach(function(row) {
+        var dataRow = [];
+
+        columns.forEach(function(column) {
+            dataRow.push(row[column].toString());
+        })
+
+        body.push(dataRow);
+    });
+
+    return body;
+}
+
+function table(data, columns) {
+    return {	style: 'POItemsList',
+	        	table: {
+	            headerRows: 1,
+	            widths: [80, '*', '*', 75, 50],
+	            body: buildTableBody(data, columns)
+        }
+    };
+}
+
+function createPDF(purchaseOrder){
+	//console.log(purchaseOrder);
+	var purchaseOrderID = purchaseOrder.find('.pypoid').text();
+	var purchaseOrderName = purchaseOrder.find('.packYakPOName').text();
+	var purchaseOrderLocation = purchaseOrder.find('.packYakPOHeaderLocation').text();
+	var purchaseOrderCreated = purchaseOrder.find('.packYakPOCreated').text();
+	var purchaseOrderItems = purchaseOrder.find('.packyakPOItemListItem');
+
+	var externalDataRetrievedFromServer = [];
+
+	purchaseOrderItems.each(function(){
+		var POItem = { Location: $(this).find('.packyakLocationSoldAt').text(), Item: $(this).find('.packyakItemName').text(), Variation: $(this).find('.packyakVariationName').text(), Quantity: $(this).find('.packyakQuantityToOrder').text(), SKU: $(this).find('.poitemSKU').text()}
+		externalDataRetrievedFromServer.push(POItem);
+	});
+
+	//define document
+	var dd = { content: [
+							{text: purchaseOrderName + ' - Purchase Order #' + purchaseOrderID, style: 'header'},
+							{text: purchaseOrderCreated.substring(0, purchaseOrderCreated.length - 2)}, //date created
+							{style: 'tableExample', 
+								table: {
+									widths: [200, 50, 200],
+									body: [
+										[
+											{text: 'Order From:\n',
+										}, 
+											{text: '', border: [false,false,false,false]}, //gap inbetween boxes
+											{text: 'Ship To: ' + purchaseOrderLocation.substring(0, purchaseOrderLocation.length - 2)}]
+									]
+								}
+							},
+							
+							table(externalDataRetrievedFromServer, ['Location', 'Item', 'Variation', 'SKU','Quantity'])
+
+							
+							],	styles: {
+									POItemsList: {
+										fontSize: 8
+									},
+									header: {
+										fontSize: 18,
+										bold: true,
+										margin: [0, 0, 0, 10]
+									},
+									subheader: {
+										fontSize: 16,
+										bold: true,
+										margin: [0, 10, 0, 5]
+									},
+									tableExample: {
+										margin: [0, 5, 0, 15],
+										fontSize: 8
+									},
+									tableHeader: {
+										bold: true,
+										fontSize: 13,
+										color: 'black'
+									}
+								},
+								defaultStyle: {
+									// alignment: 'justify'
+								}
+			
+	};
+	// open the PDF in a new window
+	pdfMake.createPdf(dd).open();
+}

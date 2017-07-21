@@ -45,10 +45,15 @@ $(document).ready(function () {
 
 
     //DELETE VENDOR
-    //Something something . click 
-    	//pull vendor ID
-    	//deleteVendor(vendorID)
+    $('.deleteVendorButton').on('click', function(){
+    	var vendorID = $('.deleteVendorButton').data('vendor');
+        console.log(vendorID);
+    	deleteVendor(vendorID);
+    });
+
+//End page load js
 });
+
 
 function createVendor(companyName, contactName, phoneNumber, email, address = '', city = '', state = '', zipCode = ''){
 
@@ -123,6 +128,17 @@ function createVendor(companyName, contactName, phoneNumber, email, address = ''
     })
 }
 
-function deleteVendor(vendorID){
+function deleteVendor(id){
+    //take the id and delete the resource and then redirect usere back to vendors page for reloading
+    $.ajax({
+        url: '/vendors/'+id,
+        type: 'DELETE',  // user.destroy
 
+        success: function(result) {
+            //Will need to change something in the modal that says it has been deleted and then the redirect can happen
+        },
+        error: function(ts){
+            console.log(ts);
+        }
+    })
 }

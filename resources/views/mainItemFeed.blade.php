@@ -104,7 +104,107 @@
                         </div>
                       <!-- /.modal-dialog -->
                     </div>
-<!------------------------------------------------>s
+<!------------------------------------------------>
+
+<!--MODAL MENU FOR THAT ITEMS OPTIONS SUCH AS PICKING VENDOR AND PURCHASE ORDER TO ADD TOO OPTIONS-->
+<div class="row">     
+    <div class='col-md-12'>
+        <div class="modal fade" id="itemOptionsModal" tabindex="-1" role="dialog" aria-labelledby="itemOptions">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="itemOptions">Options</h4>
+                        <span class='pypoidModal hidden'></span>
+                    </div>
+
+                    <div class="modal-body">
+                        <!-- This is where the content of the modal will go -->
+                        <div col-sm-12>
+                            <h1 class="itemName">None</h1>
+                            <h3 class="itemVariation">None</h3>
+
+                            <hr>
+
+                            <h5 class="itemLocation">None</h5>
+                            <h5 class="itemCategory">None</h5>
+                            <h5 class="itemInventory">None</h5>
+                            <h5 class="itemPrice">None</h5>
+                            <h5 class="itemCost">None</h5>
+                            <h5 class="itemMargin">None</h5>
+                            <h5 class="itemSKU">None</h5>
+                            <h5 class="variationID">None</h5>
+                        </div>
+
+                        <form class="form-horizontal itemOptionsForm">
+                            <div class="form-group">
+                                <label for="newPurchaseOrderTitle" class="col-sm-2 control-label">Title</label>
+                                <div class="col-sm-10">
+                                    <input type="email" class="form-control" id="newPurchaseOrderTitle" placeholder="Name your purchase order">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="purchaseOrderInvoiceNumber" class="col-sm-2 control-label">Invoice #</label>
+                                <div class="col-sm-3">
+                                  <input class="form-control" id="purchaseOrderInvoiceNumber" placeholder="(Optional)">
+                                </div>
+
+                                <label for="purchaseOrderShippingCost" class="col-sm-2 control-label">Shipping</label>
+                                <div class="col-sm-3">
+                                  <input class="form-control" id="purchaseOrderShippingCost" placeholder="Cost" min=".00" step=".01" name="currency" type="number" value="0.00">
+                                </div>
+                            </div>
+
+                            <div class="form-group col-sm-12">
+                                <label for="purchaseOrderLocationSelect" class="col-sm-2 control-label">Location</label>
+                                <div class="btn-group">
+                                    <select id="purchaseOrderLocationSelect" class="form-control col-sm-10">
+                                    <!-- Need to input dynamic location functionality -->
+                                       
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-sm-12">
+                                <label for="purchaseOrderVendorSelect" class="col-sm-2 control-label">Vendor</label>
+                                <div class="btn-group">
+                                    <select id="purchaseOrderVendorSelect" class="form-control col-sm-10">
+                                    <!-- Need to input dynamic location functionality -->
+                                          <option>Valken</option>
+                                          <option>Elite Force</option>
+                                          <option>GI Sports</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-sm-12">
+                                <label for="purchaseOrderStatusSelect" class="col-sm-2 control-label">Status</label>
+                                <div class="btn-group">    
+                                    <select id="purchaseOrderStatusSelect" class="form-control col-sm-10">
+                                      <option>Pending</option>
+                                      <option>Confirmed</option>
+                                      <option>Recieved</option>
+                                      <option>Completed</option>
+                                      <option>Closed</option>
+                                    </select>
+                                </div>       
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-warning packYakDeletePOButton hidden" data-dismiss="modal"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary packYakPOButton"><span class='packYakPOCreateButtonLabel'>Create</span></button>
+                            </div>
+
+                            {{ csrf_field() }}
+                            
+                        </form>
+                        <!-- ___________________END OF MODAL FORM FOR CREATE/ EDIT PURCHASE ORDER______________________ -->
+                    </div>
+                </div>
+            </div>
+        </div><!--END MODAL-->
+    </div><!--END WRAPPER-->
+</div><!--END ROW-->
 @endsection
 
 @section('pagespecificscripts')

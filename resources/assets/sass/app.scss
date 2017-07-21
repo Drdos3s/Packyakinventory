@@ -80,3 +80,19 @@
 	}
 }
 
+/******** SINGLE VENDOR DISPLAY ********/
+.infoWrapper{
+	height: 300px;
+	background-color: grey;
+
+	.vendorLogo{
+		height: 100px;
+		background-color:red;
+	}
+
+}
+
+.itemsWrapper{
+	height: 300px;
+	background-color: black;
+}

@@ -90,7 +90,19 @@ class vendorPageController extends Controller
      */
     public function show($id)
     {   
-        return view('singleVendor');
+        $vendor = Vendor::where('id', $id)->first();
+
+        //if there is no vendor that was found then 404
+        if(is_null($vendor)){
+            abort(404);
+        };
+
+        //This should be the variable to retrieve all the items associated with that vendor and display them in a nice way almost like a categlog. 
+        $items = null;
+        //Get all items associated with that vendor
+        //Show all information for that vendor
+        //This is where button to delete and edit are held as well as other info for the future
+        return view('singleVendor', ['info' => $vendor, 'items' => $items]);
     }
 
     /**
@@ -124,6 +136,7 @@ class vendorPageController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $deletedRows = Vendor::where('id', $id)->delete();
+        return $deletedRows;
     }
 }
