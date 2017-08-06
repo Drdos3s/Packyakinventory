@@ -26,6 +26,7 @@
 
 <form class="form-horizontal" role="form" method="POST" action="/auth/register">
 <input type="hidden" name="_token" value="{{ csrf_token() }}">
+<input type="hidden" name="role" value=1>
 
 <div class="form-group">
 <label class="col-md-4 control-label">Name</label>

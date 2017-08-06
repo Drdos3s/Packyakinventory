@@ -8,6 +8,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use User;
+Use Auth;
 
 class userController extends Controller
 {
@@ -20,12 +21,8 @@ class userController extends Controller
     {
         if (Auth::check()){//The user is logged in
             //Show all current managers associated to owner
-
-
-
-
-
-            return view('userProfile');
+            
+            return view('userProfile', ['ownerID' => Auth::user() -> id]);
         }else{
             return redirect('/auth/login');
         }
@@ -39,7 +36,7 @@ class userController extends Controller
      */
     public function create()
     {
-        //
+        //This is taken care of within the blade template
     }
 
     /**
@@ -50,7 +47,6 @@ class userController extends Controller
      */
     public function store(Request $request)
     {
-        
     }
 
     /**

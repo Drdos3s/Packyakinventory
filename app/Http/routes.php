@@ -71,6 +71,17 @@ Route::post('auth/register', 'Auth\AuthController@postRegister');
 // Square Permissions routes...
 Route::get('auth/permission', 'Auth\PermissionsController@getPermission');
 
+//User Profile Routes...
+Route::resource('users', 'userController');
+
+/*Contains:
+index
+create
+store
+show
+edit
+update
+destroy*/
 
 Route::controllers([
    'password' => 'Auth\PasswordController',
