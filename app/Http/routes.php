@@ -27,7 +27,7 @@ Route::post('/dashboard', 'mainItemFeedController@setupAndSendInventoryUpdate');
 
 Route::post('/dashboard/deleteVariation', 'mainItemFeedController@deleteItemVariation');
 
-
+Route::post('/dashboard/updateVendor', 'mainItemFeedController@updateItemVendor');
 
 
 
@@ -58,11 +58,14 @@ Route::get('/purchaseOrders', function () {
 Route::get('/purchaseOrders', 'purchaseOrderController@index');
 Route::post('/purchaseOrders', 'purchaseOrderController@ajaxRoute');
 
+Route::get('/purchaseOrders/itemSearch', 'purchaseOrderController@itemSearch');
+
 
 // Authentication routes...
 Route::get('auth/login', 'Auth\AuthController@getLogin');
 Route::post('auth/login', 'Auth\AuthController@postLogin');
 Route::get('auth/logout', 'Auth\AuthController@getLogout');
+
 
 // Registration routes...
 Route::get('auth/register', 'Auth\AuthController@getRegister');
@@ -72,7 +75,7 @@ Route::post('auth/register', 'Auth\AuthController@postRegister');
 Route::get('auth/permission', 'Auth\PermissionsController@getPermission');
 
 //User Profile Routes...
-Route::resource('users', 'userController');
+Route::resource('profile', 'userController');
 
 /*Contains:
 index

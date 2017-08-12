@@ -15,7 +15,8 @@ class UsersCreateUserRollColumn extends Migration
         //Add user role column to users table in DB
         Schema::table('users', function (Blueprint $table) {
             $table->integer('user_role'); //integer value for manager or owner
-            $table->integer('account_owner'); //Integer value for user ID that acocunt is owned by
+            $table->integer('account_owner')->nullable()->default(null); //Integer value for user ID that acocunt is owned by
+            $table->string('manager_location')->nullable()->default(null); //Location that manager is created for
         });
     }
 
@@ -30,6 +31,7 @@ class UsersCreateUserRollColumn extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('user_role');
             $table->dropColumn('account_owner');
+            $table->dropColumn('manager_location');
         });
     }
 }

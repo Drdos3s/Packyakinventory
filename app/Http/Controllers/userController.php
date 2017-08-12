@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-use User;
+use App\User;
+use App\Location;
 Use Auth;
 
 class userController extends Controller
@@ -21,8 +22,17 @@ class userController extends Controller
     {
         if (Auth::check()){//The user is logged in
             //Show all current managers associated to owner
+
+            $managers = User::where('account_owner', Auth::user() -> id)
+               ->where('user_role', 2)
+               ->orderBy('name', 'desc')
+               ->get();
+
+            $locations = Location::all(); //<---- Need to change this through application to only get locations vendors items and others based on user id
+
+            $user = Auth::user();
             
-            return view('userProfile', ['ownerID' => Auth::user() -> id]);
+            return view('userProfile', ['user' => $user, 'managers' => $managers, 'locations' => $locations]);
         }else{
             return redirect('/auth/login');
         }
@@ -47,6 +57,26 @@ class userController extends Controller
      */
     public function store(Request $request)
     {
+
+        $this->validate($request, [
+            'name' => 'required|max:100',
+            'email' => 'required|email|unique:users,email|max:255',
+            'password' => 'required|max:255|confirmed',
+            'password_confirmation' => 'required| max:255',
+        ]);
+
+        $manager = new User;
+
+        $manager -> name = $request -> name;
+        $manager -> email = $request -> email;
+        $manager -> password = bcrypt($request -> password);
+        $manager -> user_role = 2;  
+        $manager -> account_owner = Auth::user() -> id;
+        $manager -> manager_location = $request -> location;
+
+        $manager -> save();
+
+        return $manager;
     }
 
     /**
@@ -57,7 +87,7 @@ class userController extends Controller
      */
     public function show($id)
     {
-        //
+    
     }
 
     /**
@@ -91,6 +121,7 @@ class userController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $deletedRows = User::where('id', $id)->delete();
+        return $deletedRows;
     }
 }

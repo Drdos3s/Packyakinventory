@@ -17,6 +17,7 @@ elixir(function(mix) {
     mix.browserify('itemFeed.js');
     mix.browserify('purchaseOrders.js');
     mix.browserify('vendorCenter.js');
-    mix.browserify('locations.js')
+    mix.browserify('locations.js');
+    mix.browserify('users.js');
 });
 
