@@ -27,9 +27,30 @@ $('#newManagerSubmit').on('click', function(){
         	//Clear input fields for reuse
         	$('#createManagerModal').find('input').val('');
 
+          //add 'hide' class to callout
+          $('.noItemCallout').addClass('hidden');
+
         	//need to email the new manager their login info
 
         	console.log(data);
+
+          var html = '<div class="post manager" data-managerID="'+data['id']+'">' +
+                        '<div class="user-block">' +
+                          '<img class="img-circle img-bordered-sm" src="" alt="user image">' + 
+                            '<span class="username">' +
+                              '<a href="#">'+data['name']+'</a>' + 
+                            '</span>' +
+                            '<span class="description">'+data['manager_location']+'</span>' +
+                          '</div><!-- /.user-block -->' +
+                          
+                          '<ul class="list-inline">' +
+                            '<li><a href="#" class="link-black text-sm"><i class="fa fa-pencil margin-r-5"></i>Edit</a></li>' +
+                            '<li class="pull-right"><a href="#" data-managerID="'+ data['id'] +'" class="deleteManagerLink link-black text-sm"><i class="fa fa-trash-o margin-r-5"></i>Delete</a></li>' +
+                          '</ul>' + 
+                        '</div>';
+
+          $('#managers').append(html);
+          console.log($('#managers'));
         },
        	error: function(data) { 
        		console.log(data.responseText) 
@@ -57,7 +78,7 @@ $('#newManagerSubmit').on('click', function(){
 |--------------------------------------------------------------------------
 */
 
-$('.manager').on('click', '.deleteManagerLink', function(){
+$('#managers').on('click', '.deleteManagerLink', function(){
 
 	var managerID = $(this).data('managerid');
 
@@ -93,7 +114,7 @@ function deleteManager(id){
         	$('#deleteManagerModal').modal('toggle');
 
         	//Remove the resource from the view
-        	$('.manager[data-managerID="'+id+'"]').addClass('hidden');
+        	$('#managers').find($('.manager[data-managerID="'+id+'"]').addClass('hidden'));
         },
        	error: function(data) { 
        		console.log(data.responseText) 
