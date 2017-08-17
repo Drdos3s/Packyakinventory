@@ -13,6 +13,7 @@
 */
 
 $( document ).ready(function() { 
+
 	//SEARCH BAR SETUP
     $('#packyakInventoryDashSearch').on('keyup', function(e) {
 	    if ('' != this.value) {
@@ -45,7 +46,7 @@ $( document ).ready(function() {
 
 	//CLICKING INVENTORY PRICE SHOWS TEXTBOX--
 	$('#packyakInventoryDashTable').on('click', ".packyakInventory",function() {
-		//console.log('Working and detecting click this is wherea save should work so now we do itagain');
+		//console.log('Working and detecting click this is wherea  should work so now we do itagain');
   		$(this).addClass("hidden");
   		$(this).next().removeClass("hidden");
 	});
@@ -124,12 +125,55 @@ $( document ).ready(function() {
 		$('#itemOptionsModal').find('.itemMargin').text(feedItemRow.children('.packyakVariationMargin').text());
 		$('#itemOptionsModal').find('.itemSKU').text(feedItemRow.children('.packyakVariationSKU').text());
 		$('#itemOptionsModal').find('.variationID').text(feedItemRow.data('variation-id'));
-		
+
+	});
+
+
+	//This is all to select more than one vendor using select 2
+
+	$('#multiVendorSelect').select2();
+
+	$('#itemOptionsModal').on('click', '.saveItemEditInfoButton', function() {
+	    var selectedVendors = $('#multiVendorSelect').select2('data');
+	    var variationID = $('.variationID').text();
+
+	    $.ajax({
+		    type: "POST",
+		    url: './dashboard/updateVendor',
+
+		    data: {'updatedVendors': selectedVendors,
+					'variationID': variationID},
+		        success: function(data) {
+		        	console.log(data);
+		        },
+		        error: function(ts) { console.log(ts.responseText) }
+		    })
 	});
 
 
 
 
+
+
+	
+
+	//UPDATE VENDOR WHEN SELECTED VIA AJAX
+	/*$('#itemOptionsModal').on('change', '.itemVendorSelect',function(){
+		var newVendor = $(this).val();
+		var item = $('#itemOptionsModal').find('.variationID').text();
+
+		$.ajax({
+		    type: "POST",
+		    url: './dashboard/updateVendor',
+
+		    data: {'updatedVendor': newVendor,
+					'variationID': item},
+		        success: function(data) {
+		        	console.log(data);
+		        },
+		        error: function(ts) { console.log(ts.responseText) }
+		    })
+	});*/
 
 
 
@@ -156,7 +200,7 @@ $( document ).ready(function() {
 
 
 	//GET ALL PENDING PURCHASE ORDERS IN CHRONOLOGICAL ORDER
-	$("#packyakInventoryDashTable").on('click','.packyakPurchaseOrderList', function(){
+	$("#itemOptionsModal").on('click','.packyakPurchaseOrderList', function(){
 		//console.log('here');
 		if($('.packyakAddItemToPOWrapper').is(":visible") != true){
 			var action = 'getPendingPO';
@@ -192,7 +236,7 @@ $( document ).ready(function() {
 	});
 
 	//ADD ITEM TO PURCHASE ORDER FROM MAIN ITEM FEED
-	$("#packyakInventoryDashTable").on('click', '.packyakPurchaseOrderListItem', function(){
+	$("#itemOptionsModal").on('click', '.packyakPurchaseOrderListItem', function(){
 		console.log('working again');
 		var action = 'addToPO';
 		var selectedPurchaseOrder = $(this).html();
@@ -395,7 +439,7 @@ function retrieveItemData(locations){
         	}
 
         	/*
-				                            '<div class="dropdown">'+
+				            '<div class="dropdown">'+
                                 '<i class="fa-bars fa-2 btn btn-default dropdown-toggle packyakPurchaseOrderList" type="button" id="packyakPurchaseOrderList" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"></i>'+
                                 '<ul class="dropdown-menu dropdown-menu-right packyakAddItemToPOWrapper" aria-labelledby="packyakPurchaseOrderList">'+
                                 '</ul>'+

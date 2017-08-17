@@ -79,7 +79,7 @@ class vendorPageController extends Controller
         $vendor -> zip = $request -> zip;
 
         //save the model to the database 
-        $vendor -> save();  
+        $vendor -> save(); 
     }
 
     /**

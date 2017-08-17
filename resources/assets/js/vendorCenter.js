@@ -4,6 +4,11 @@ CREATE*/
 
 $(document).ready(function () {
 
+    //GOOGLE MAPS API TO SUGGEST PROPER ADDRESS --> not working
+    /*var input = document.getElementById('createVendorAddressName');
+    var options = {};
+    var autocomplete = new google.maps.places.Autocomplete(input, options);*/
+
 	//DATA TABLE DISPLAY SETTINGS
     $('#vendorsTable').DataTable({
 		"iDisplayLength": 50,

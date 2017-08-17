@@ -210,4 +210,20 @@ $.ajaxSetup({
 });
 
 
+/*
+|--------------------------------------------------------------------------
+| Utility functions that can be used across the application if PackYakJS is loaded
+|--------------------------------------------------------------------------
+*/
+
+function addSpinner(){
+	//add the loading spinner here
+
+	console.log('testing function call from other file');
+};
+
+function removeSpinner(){
+	//remove loading spinner
+}
+
 

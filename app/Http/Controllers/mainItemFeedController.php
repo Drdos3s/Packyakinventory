@@ -16,9 +16,113 @@ use DB;
 use Schema;
 use App\Item;
 use App\Location;
+Use App\Vendor;
+use App\VendorItemTag;
 
 
 class mainItemFeedController extends Controller {
+    function index() {
+
+        if (Auth::check()){//The user is logged in
+            //set the personal access token - used to make request to V1 API
+            $access_token = 'sq0atp-Pw3jbxOs3j4szZc7eUm1FQ';
+            $this->createLocations($access_token); 
+
+            //***Should add in userID variable to allow multiple accounts to not mix data
+            $dashLocations = Location::all();
+            $vendors = Vendor::all();
+
+
+
+
+
+
+            /*Testing item responses
+            $client = new Client();
+            $locationsRequest = $client->request('GET', 'https://connect.squareup.com/v1/1H5A5ZGP2T4DA/items/PC2R2A5R4EUDYPT4PGPFVCSE', [
+                'headers' => [
+                    'Authorization' => 'Bearer '.$access_token ,
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json'
+                ]
+            ]);
+            //store response
+            $locationsContents = $locationsRequest->getBody();
+
+            //get asssoc array from body to use to place into DB
+            $locationsList = json_decode($locationsContents, true);
+            //var_dump($locationsList);
+
+
+            //JB5EZDSFSFBPAHHUUGORGZ7M['variations'][0]
+            //JB5EZDSFSFBPAHHUUGORGZ7M*/
+
+
+
+
+
+
+            return view('mainItemFeed', ['locations' => $dashLocations, 'vendors' => $vendors]);
+        }else{
+            return redirect('/auth/login');
+        }
+    }
+
+    function createLocations($token) {
+        //Count number of locations
+        $numberOfLocations = count(DB::table('locations')->get());
+        $locationListID = [];
+
+        //access token that is created through square
+        $access_token = $token;
+        $client = new Client();
+
+        $locationsRequest = $client->request('GET', 'https://connect.squareup.com/v1/me/locations', [
+            'headers' => [
+                'Authorization' => 'Bearer '.$access_token ,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ]
+        ]);
+        //store response
+        $locationsContents = $locationsRequest->getBody();
+
+        //get asssoc array from body to use to place into DB
+        $locationsList = json_decode($locationsContents, true);
+
+        //var_dump($locationsList);
+        if($numberOfLocations !== count($locationsList)){
+            //-------------------Get location variables and add to database--------------//
+            foreach($locationsList as $location){
+                //Initialize new location to be stored
+                $squareLocation = new Location;
+
+                $squareLocation -> squareID = $location['id'];
+                $squareLocation -> businessName = $location['name'];
+                $squareLocation -> businessEmail = $location['email'];
+                $squareLocation -> locationAddressLine1 = $location['business_address']['address_line_1'];
+                $squareLocation -> locationAddressLine2 = $location['business_address']['address_line_2'];
+                $squareLocation -> locationCity = $location['business_address']['locality'];
+                $squareLocation -> locationState = $location['business_address']['administrative_district_level_1'];
+                $squareLocation -> locationZip = $location['business_address']['postal_code'];
+                $squareLocation -> locationPhone = $location['business_phone']['number'];
+
+                $squareLocation -> locationNickname = $location['location_details']['nickname'];
+
+                $squareLocation -> save();
+
+                array_push($locationListID, $squareLocation->value('squareID'));
+            }
+            //echo 'locations have been updated ';
+            //return $this->createAndUpdateItems($access_token, $locations);
+        }else{
+            //echo 'locations did not need updated ';
+            //Grabs all the location ID's to work with moving forward
+            $locationListID = DB::table('locations')->lists('squareID');
+            //var_dump($locationListID);
+            //return $this->createAndUpdateItems($access_token, $locationListID);
+        }
+    }
 
     function getInventory($token, $client, $location){
         //Retrieve data from square about inventory
@@ -151,108 +255,6 @@ class mainItemFeedController extends Controller {
         
     }
 
-    function createLocations($token) {
-        //Count number of locations
-        $numberOfLocations = count(DB::table('locations')->get());
-        $locationListID = [];
-
-        //access token that is created through square
-        $access_token = $token;
-        $client = new Client();
-
-        $locationsRequest = $client->request('GET', 'https://connect.squareup.com/v1/me/locations', [
-            'headers' => [
-                'Authorization' => 'Bearer '.$access_token ,
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
-        ]);
-        //store response
-        $locationsContents = $locationsRequest->getBody();
-
-        //get asssoc array from body to use to place into DB
-        $locationsList = json_decode($locationsContents, true);
-
-        //var_dump($locationsList);
-        if($numberOfLocations !== count($locationsList)){
-            //-------------------Get location variables and add to database--------------//
-            foreach($locationsList as $location){
-                //Initialize new location to be stored
-                $squareLocation = new Location;
-
-                $squareLocation -> squareID = $location['id'];
-                $squareLocation -> businessName = $location['name'];
-                $squareLocation -> businessEmail = $location['email'];
-                $squareLocation -> locationAddressLine1 = $location['business_address']['address_line_1'];
-                $squareLocation -> locationAddressLine2 = $location['business_address']['address_line_2'];
-                $squareLocation -> locationCity = $location['business_address']['locality'];
-                $squareLocation -> locationState = $location['business_address']['administrative_district_level_1'];
-                $squareLocation -> locationZip = $location['business_address']['postal_code'];
-                $squareLocation -> locationPhone = $location['business_phone']['number'];
-
-                $squareLocation -> locationNickname = $location['location_details']['nickname'];
-
-                $squareLocation -> save();
-
-                array_push($locationListID, $squareLocation->value('squareID'));
-            }
-            //echo 'locations have been updated ';
-            //return $this->createAndUpdateItems($access_token, $locations);
-        }else{
-            //echo 'locations did not need updated ';
-            //Grabs all the location ID's to work with moving forward
-            $locationListID = DB::table('locations')->lists('squareID');
-            //var_dump($locationListID);
-            //return $this->createAndUpdateItems($access_token, $locationListID);
-        }
-    }
-
-    function index() {
-
-        if (Auth::check()){//The user is logged in
-            //set the personal access token - used to make request to V1 API
-            $access_token = 'sq0atp-Pw3jbxOs3j4szZc7eUm1FQ';
-            $this->createLocations($access_token); 
-            
-            //Get all the items and send them to the view
-            $dashLocations = Location::all();
-
-
-
-
-
-
-            //Testing item responses
-            $client = new Client();
-            $locationsRequest = $client->request('GET', 'https://connect.squareup.com/v1/1H5A5ZGP2T4DA/items/PC2R2A5R4EUDYPT4PGPFVCSE', [
-                'headers' => [
-                    'Authorization' => 'Bearer '.$access_token ,
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json'
-                ]
-            ]);
-            //store response
-            $locationsContents = $locationsRequest->getBody();
-
-            //get asssoc array from body to use to place into DB
-            $locationsList = json_decode($locationsContents, true);
-            //var_dump($locationsList);
-
-
-            //JB5EZDSFSFBPAHHUUGORGZ7M['variations'][0]
-            //JB5EZDSFSFBPAHHUUGORGZ7M
-
-
-
-
-
-
-            return view('mainItemFeed', ['locations' => $dashLocations]);
-        }else{
-            return redirect('/auth/login');
-        }
-    }
-
     function setupAndSendInventoryUpdate() {
         $access_token = 'sq0atp-Pw3jbxOs3j4szZc7eUm1FQ';
         $client = new Client();
@@ -353,5 +355,21 @@ class mainItemFeedController extends Controller {
             }
         }
         return json_encode($request);
+    }
+
+    function updateItemVendor(Request $request){
+
+        $this->validate($request, [
+            'updatedVendor' => 'required|max:255',
+            'variationID' => 'required|max:255'
+        ]);
+
+        $tag = new VendorItemTag;
+
+        //Set tag model values
+        $tag -> vendor_id = $request -> updatedVendor;
+        $tag -> item_variation_id = $request -> variationID;
+
+        return $request -> updatedVendor;
     }
 }

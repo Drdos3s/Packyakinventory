@@ -99,6 +99,22 @@ class purchaseOrderController extends Controller
         }
     }
 
+    public function itemSearch(){
+        
+        if(isset($_GET['term']))
+        {
+            $term = $_GET['term'];
+
+            $searchedItems = App\Item::where('itemName', $term)->get();
+        }
+
+
+        $test = ['testKey' => 'paintballvendor1',
+                    'testKey2' => 'paintballvendor2',
+                    'totally' => 'different'];
+        return json_encode($test);
+    }
+
     public function populatePurchaseOrderPage() {
         //creating the array for item categories to populate the DB
         $itemCategoriesAllLocations = [];
@@ -554,4 +570,3 @@ function updatePurchaseOrderPrices($purchaseOrderID){
                     ->update(['po_subtotal' => $purchaseOrderSubtotal,
                             'po_total_cost' => $purchaseOrderTotal]);
 };
-

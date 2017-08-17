@@ -3,6 +3,9 @@
 @section('pagespecificstyles')
     <!-- vendor page speciic styles-->
 
+    <!--Head specific scripts-->
+    <!--<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAyQgS9XSBC5xfHxrHtpY_Zwec2COylYzs&libraries=places"></script>-->
+
 @stop
 
 @section('content')
@@ -133,7 +136,7 @@
                 <!-- Address Name -->
               	<div class="form-group">
                   <label for="createVendorAddressName">Address</label>
-                  <input type="email" class="form-control" id="createVendorAddressName" placeholder="Enter address">
+                  <input type="text" class="form-control" id="createVendorAddressName" placeholder="Enter address">
                  </div>
                  <!-- Address Name -->
               	<div class="form-group">
